@@ -295,7 +295,7 @@ void CMario::SetState(int state)
 		{
 			state = MARIO_STATE_IDLE;
 			isSitting = true;
-			vx = 0; vy = 0.0f;
+			vx = 0.0f; vy = 0.0f;
 			y += MARIO_SIT_HEIGHT_ADJUST;
 		}
 		break;
