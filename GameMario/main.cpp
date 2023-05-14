@@ -19,6 +19,7 @@
 #include "Goomba.h"
 #include "Coin.h"
 #include "Platform.h"
+#include "Grass.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -28,7 +29,7 @@
 #define MAIN_WINDOW_TITLE L"MarioGame"
 #define WINDOW_ICON_PATH L"mario.ico"
 
-#define BACKGROUND_COLOR D3DXCOLOR(156.0f/255, 252.0f/255, 240.0f/255, 0.0f)
+#define BACKGROUND_COLOR D3DXCOLOR(175.0f/255, 249.0f/255, 240.0f/255, 1.0f/255)
 
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
