@@ -10,6 +10,8 @@
 #include "Coin.h"
 #include "Platform.h"
 #include "Grass.h"
+#include "CloudBackground.h"
+#include "ColorBox.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -139,6 +141,64 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 		break;
 	}
+
+	case OBJECT_TYPE_COLORBOX:
+	{
+
+		float cell_width = (float)atof(tokens[3].c_str());
+		float cell_height = (float)atof(tokens[4].c_str());
+		int length = atoi(tokens[5].c_str());
+		int height = atoi(tokens[6].c_str());
+
+		int sprite_left_top = atoi(tokens[7].c_str());
+		int sprite_left_mid = atoi(tokens[8].c_str());
+		int sprite_left_bot = atoi(tokens[9].c_str());
+
+		int sprite_middle_top = atoi(tokens[10].c_str());
+		int sprite_middle_mid = atoi(tokens[11].c_str());
+		int sprite_middle_bot = atoi(tokens[12].c_str());
+
+		int sprite_right_top = atoi(tokens[13].c_str());
+		int sprite_right_mid = atoi(tokens[14].c_str());
+		int sprite_right_bot = atoi(tokens[15].c_str());
+
+
+		obj = new CColorBox(
+			x, y,
+			cell_width, cell_height, length, height,
+			sprite_left_top, sprite_left_mid, sprite_left_bot,
+			sprite_middle_top, sprite_middle_mid, sprite_middle_bot,
+			sprite_right_top, sprite_right_mid, sprite_right_bot
+		);
+
+		break;
+	}
+
+	case OBJECT_TYPE_CLOUD_BACKGROUND:
+	{
+
+		float cell_width = (float)atof(tokens[3].c_str());
+		float cell_height = (float)atof(tokens[4].c_str());
+		int length = atoi(tokens[5].c_str());
+		int sprite_begin_top = atoi(tokens[6].c_str());
+		int sprite_begin_bot = atoi(tokens[7].c_str());
+		int sprite_middle_top = atoi(tokens[8].c_str());
+		int sprite_middle_bot = atoi(tokens[9].c_str());
+		int sprite_end_top = atoi(tokens[10].c_str());
+		int sprite_end_bot = atoi(tokens[11].c_str());
+
+
+		obj = new CCloudBackground(
+			x, y,
+			cell_width, cell_height, length,
+			sprite_begin_top, sprite_begin_bot,
+			sprite_middle_top, sprite_middle_bot, 
+			sprite_end_top, sprite_end_bot
+		);
+
+		break;
+	}
+
 	case OBJECT_TYPE_GRASS:
 	{
 		int sprite_id = atoi(tokens[3].c_str());
