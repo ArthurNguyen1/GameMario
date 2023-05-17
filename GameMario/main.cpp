@@ -20,6 +20,8 @@
 #include "Coin.h"
 #include "Platform.h"
 #include "Grass.h"
+#include "CloudBackground.h"
+#include "ColorBox.h"
 
 #include "SampleKeyEventHandler.h"
 

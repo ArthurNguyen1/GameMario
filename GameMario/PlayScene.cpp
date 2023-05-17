@@ -12,6 +12,7 @@
 #include "Grass.h"
 #include "CloudBackground.h"
 #include "ColorBox.h"
+#include "Pipe.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -169,6 +170,27 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			sprite_left_top, sprite_left_mid, sprite_left_bot,
 			sprite_middle_top, sprite_middle_mid, sprite_middle_bot,
 			sprite_right_top, sprite_right_mid, sprite_right_bot
+		);
+
+		break;
+	}
+
+	case OBJECT_TYPE_PIPE:
+	{
+
+		float cell_width = (float)atof(tokens[3].c_str());
+		float cell_height = (float)atof(tokens[4].c_str());
+		int height = atoi(tokens[5].c_str());
+		int sprite_top_left = atoi(tokens[6].c_str());
+		int sprite_top_right = atoi(tokens[7].c_str());
+		int sprite_body_left = atoi(tokens[8].c_str());
+		int sprite_body_right = atoi(tokens[9].c_str());
+
+
+		obj = new CPipe(
+			x, y,
+			cell_width, cell_height, height,
+			sprite_top_left, sprite_top_right, sprite_body_left, sprite_body_right
 		);
 
 		break;
