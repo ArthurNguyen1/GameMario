@@ -32,8 +32,10 @@ void CColorBox::Render()
 {
 	if (this->length <= 0) return;
 	if (this->height <= 0) return;
+
 	float xx = x;
 	float yy = y;
+
 	CSprites* s = CSprites::GetInstance();
 
 	//Vẽ viền trên colorbox
@@ -46,6 +48,7 @@ void CColorBox::Render()
 	}
 	if (length > 1)
 		s->Get(this->spriteIdRightTop)->Draw(xx, yy);
+
 	//Vẽ viền phải colorbox
 	yy += this->cellHeight;
 	for (int i = 1; i < this->height - 1; i++)
@@ -53,11 +56,13 @@ void CColorBox::Render()
 		s->Get(this->spriteIdRightMid)->Draw(xx, yy);
 		yy += this->cellHeight;
 	}
-	if (height > 1)
+	if ( (height > 1) && (length > 1) )
 		s->Get(this->spriteIdRightBot)->Draw(xx, yy);
+
 	//Set up lại về tọa độ điểm trái trên cùng (left,top)
 	xx = x;
 	yy = y;
+
 	//Vẽ viền trái colorbox
 	yy += this->cellHeight;
 	for (int i = 1; i < this->height - 1; i++)
@@ -67,6 +72,7 @@ void CColorBox::Render()
 	}
 	if (height > 1)
 		s->Get(this->spriteIdLeftBot)->Draw(xx, yy);
+
 	//Vẽ viền dưới colorbox
 	xx += this->cellWidth;
 	for (int i = 1; i < this->length - 1; i++)
@@ -74,18 +80,21 @@ void CColorBox::Render()
 		s->Get(this->spriteIdMiddleBot)->Draw(xx, yy);
 		xx += this->cellWidth;
 	}
-	if (length > 1)
-		s->Get(this->spriteIdRightBot)->Draw(xx, yy);
+
 	//Set up lại lần nữa
 	xx = x + this->cellWidth;
-	yy = y + this->cellHeight;
+
+	//Vẽ phần thân
 	for (int i = 1; i < this->length - 1; i++)
 	{
+		yy = y + this->cellHeight;
+
 		for (int j = 1; j < this->height - 1; j++)
 		{
 			s->Get(this->spriteIdMiddleMid)->Draw(xx, yy);
 			yy += this->cellHeight;
 		}
+
 		xx += this->cellWidth;
 	}
 
