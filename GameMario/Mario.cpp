@@ -7,6 +7,8 @@
 #include "Goomba.h"
 #include "Coin.h"
 #include "Portal.h"
+#include "ColorBox.h"
+#include "QuestionBlock.h"
 
 #include "Collision.h"
 
@@ -50,10 +52,14 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 
 	if (dynamic_cast<CGoomba*>(e->obj))
 		OnCollisionWithGoomba(e);
+	else if (dynamic_cast<CQuestionBlock*>(e->obj))
+		OnCollisionWithQuestionBlock(e);
 	else if (dynamic_cast<CCoin*>(e->obj))
 		OnCollisionWithCoin(e);
 	else if (dynamic_cast<CPortal*>(e->obj))
 		OnCollisionWithPortal(e);
+	else if (dynamic_cast<CColorBox*>(e->obj))
+		OnCollisionWithColorBox(e);
 }
 
 void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
@@ -94,6 +100,39 @@ void CMario::OnCollisionWithCoin(LPCOLLISIONEVENT e)
 {
 	e->obj->Delete();
 	coin++;
+}
+
+void CMario::OnCollisionWithColorBox(LPCOLLISIONEVENT e)
+{
+	CColorBox* colorbox = dynamic_cast<CColorBox*>(e->obj);
+
+	if (e->ny < 0)
+	{
+		vy = 0;
+		//colorbox->SetState(COLORBOX_STATE_MARIO_DOWN);
+		isOnPlatform = true;
+	}	
+	if (e->ny > 0)
+	{
+		//colorbox->SetState(COLORBOX_STATE_MARIO_UP);
+		isOnPlatform = false;
+	}
+}
+
+void CMario::OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e)
+{
+	CQuestionBlock* questionblock = dynamic_cast<CQuestionBlock*>(e->obj);
+
+	if (e->ny > 0)
+	{
+		questionblock->SetMovingState(true);
+		questionblock->SetState(QUESTION_BLOCK_STATE_EMPTY);
+		//DebugOut(L"%d\n", questionblock->GetState());
+	}
+	if (e->ny < 0)
+	{
+		this->isOnPlatform = true;
+	}
 }
 
 void CMario::OnCollisionWithPortal(LPCOLLISIONEVENT e)
@@ -239,7 +278,7 @@ void CMario::Render()
 
 	animations->Get(aniId)->Render(x, y);
 
-	//RenderBoundingBox();
+	RenderBoundingBox();
 
 	DebugOutTitle(L"Coins: %d", coin);
 }

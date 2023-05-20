@@ -12,7 +12,7 @@
 
 
 #define OBJECT_TYPE_MARIO	0
-#define OBJECT_TYPE_BRICK	1
+#define OBJECT_TYPE_QUESTION_BLOCK	1
 #define OBJECT_TYPE_GOOMBA	2
 #define OBJECT_TYPE_KOOPAS	3
 #define OBJECT_TYPE_COIN 4
@@ -21,7 +21,7 @@
 #define OBJECT_TYPE_CLOUD_BACKGROUND 7
 #define OBJECT_TYPE_COLORBOX 8
 #define OBJECT_TYPE_PIPE 9
-
+#define OBJECT_TYPE_BRICK 10
 
 
 #define OBJECT_TYPE_PORTAL	50
@@ -86,8 +86,8 @@
 
 #pragma endregion 
 
-#pragma region BRICK
-#define ID_SPRITE_BRICK 20000
+#pragma region QUESTION_BLOCK
+#define ID_SPRITE_QUESTION_BLOCK 20000
 #pragma endregion
 
 #pragma region GOOMBA
@@ -181,4 +181,8 @@
 #define ID_SPRITE_PIPE_TOP_RIGHT (ID_SPRITE_PIPE+2000)
 #define ID_SPRITE_PIPE_BODY_LEFT (ID_SPRITE_PIPE+3000)
 #define ID_SPRITE_PIPE_BODY_RIGHT (ID_SPRITE_PIPE+4000)
+#pragma endregion
+
+#pragma region BRICK
+//#define ID_SPRITE_BRICK 80000
 #pragma endregion

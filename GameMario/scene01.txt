@@ -1,6 +1,7 @@
 # list of object assets to load in this scene
 [ASSETS]
 mario.txt
+questionblock.txt
 brick.txt
 coin.txt
 goomba.txt
@@ -12,7 +13,7 @@ pipe.txt
 #
 [OBJECTS]
 # type	x	y	extra_settings per object type
-# type: 0 = Mario , 1 = Brick, 2 = Goomba, 3 = Koopas
+# type: 0 = Mario , 1 = Question Block, 2 = Goomba, 3 = Koopas
 # See OBJECT_TYPE constants in AssetIDs.h
 
 #GRASS_BACKGROUND
@@ -83,7 +84,7 @@ pipe.txt
 5 	629	304	16	15	29	51000	52000	53000
 5	629	320	16	15	29	54000	55000	56000
 
-#BRICK
+#QUESTION BLOCK
 1	177	256
 1	193	256
 

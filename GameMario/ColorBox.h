@@ -2,6 +2,10 @@
 
 #include "GameObject.h"
 
+#define COLORBOX_STATE_MARIO_DOWN		1
+#define COLORBOX_STATE_MARIO_UP			2
+
+
 class CColorBox : public CGameObject
 {
 protected:
@@ -42,6 +46,8 @@ public:
 	void Update(DWORD dt) {}
 	void GetBoundingBox(float& l, float& t, float& r, float& b);
 	void RenderBoundingBox();
+
+	//int IsBlocking() { return (state == COLORBOX_STATE_MARIO_DOWN); }
 };
 
 typedef CColorBox* LPCOLORBOX;
