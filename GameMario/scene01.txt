@@ -10,6 +10,7 @@ grass.txt
 cloud-background.txt
 colorbox.txt
 pipe.txt
+piranhaplant.txt
 #
 [OBJECTS]
 # type	x	y	extra_settings per object type
