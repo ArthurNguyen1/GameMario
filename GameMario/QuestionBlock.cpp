@@ -3,13 +3,13 @@
 
 void CQuestionBlock::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	if (state == QUESTION_BLOCK_STATE_WITH_ITEM) 
+	if (state == QUESTION_BLOCK_STATE_WITH_COIN_ITEM) 
 	{
 
 	}
 	else if (state == QUESTION_BLOCK_STATE_EMPTY)
 	{
-		if (IsMoving == true)
+		if (isMoving == true)
 		{
 			y += vy * dt;
 			if (y <= y_end)
@@ -19,7 +19,7 @@ void CQuestionBlock::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 			else if (y >= y_start)
 			{
-				IsMoving = false;
+				isMoving = false;
 				y = y_start;
 			}
 		}
@@ -31,14 +31,14 @@ void CQuestionBlock::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		
 	}
 	CGameObject::Update(dt, coObjects);
-
+	CCollision::GetInstance()->Process(this, dt, coObjects);
 }
 
 void CQuestionBlock::Render()
 {
 	CAnimations* animations = CAnimations::GetInstance();
 
-	if (IsMoving == false && state == QUESTION_BLOCK_STATE_WITH_ITEM)
+	if (isMoving == false && state == QUESTION_BLOCK_STATE_WITH_COIN_ITEM)
 	{
 		animations->Get(ID_ANI_QUESTION_BLOCK_WITH_ITEM)->Render(x, y);
 	}

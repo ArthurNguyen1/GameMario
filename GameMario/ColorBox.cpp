@@ -5,6 +5,13 @@
 
 #include "Textures.h"
 
+void CColorBox::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+{
+	CGameObject::Update(dt, coObjects);
+	CCollision::GetInstance()->Process(this, dt, coObjects);
+}
+
+
 void CColorBox::RenderBoundingBox()
 {
 	D3DXVECTOR3 p(x, y, 0);

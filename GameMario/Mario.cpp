@@ -108,15 +108,12 @@ void CMario::OnCollisionWithColorBox(LPCOLLISIONEVENT e)
 
 	if (e->ny < 0)
 	{
-		vy = 0;
-		//colorbox->SetState(COLORBOX_STATE_MARIO_DOWN);
-		isOnPlatform = true;
+		colorbox->SetState(COLORBOX_STATE_MARIO_DOWN);
 	}	
-	if (e->ny > 0)
+	/*if (e->ny > 0)
 	{
-		//colorbox->SetState(COLORBOX_STATE_MARIO_UP);
-		isOnPlatform = false;
-	}
+		colorbox->SetState(COLORBOX_STATE_MARIO_UP);
+	}*/
 }
 
 void CMario::OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e)
@@ -128,10 +125,6 @@ void CMario::OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e)
 		questionblock->SetMovingState(true);
 		questionblock->SetState(QUESTION_BLOCK_STATE_EMPTY);
 		//DebugOut(L"%d\n", questionblock->GetState());
-	}
-	if (e->ny < 0)
-	{
-		this->isOnPlatform = true;
 	}
 }
 

@@ -2,8 +2,8 @@
 
 #include "GameObject.h"
 
-#define COLORBOX_STATE_MARIO_DOWN		1
-#define COLORBOX_STATE_MARIO_UP			2
+#define COLORBOX_STATE_MARIO_DOWN		1001
+#define COLORBOX_STATE_MARIO_UP			1002
 
 
 class CColorBox : public CGameObject
@@ -40,14 +40,17 @@ public:
 		this->spriteIdRightTop = sprite_id_right_top;
 		this->spriteIdRightMid = sprite_id_right_mid;
 		this->spriteIdRightBot = sprite_id_right_bot;
+
+		state = COLORBOX_STATE_MARIO_UP;
 	}
 
 	void Render();
-	void Update(DWORD dt) {}
+	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void GetBoundingBox(float& l, float& t, float& r, float& b);
 	void RenderBoundingBox();
 
-	//int IsBlocking() { return (state == COLORBOX_STATE_MARIO_DOWN); }
+	int IsBlocking() { return (state != COLORBOX_STATE_MARIO_UP); }
+
 };
 
 typedef CColorBox* LPCOLORBOX;
