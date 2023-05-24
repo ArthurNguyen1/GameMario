@@ -49,7 +49,7 @@ public:
 	void GetBoundingBox(float& l, float& t, float& r, float& b);
 	void RenderBoundingBox();
 
-	int IsBlocking() { return (state != COLORBOX_STATE_MARIO_UP); }
+	//int IsBlocking() { return (state != COLORBOX_STATE_MARIO_UP); }
 
 };
 

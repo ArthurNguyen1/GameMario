@@ -11,6 +11,7 @@ cloud-background.txt
 colorbox.txt
 pipe.txt
 piranhaplant.txt
+
 #
 [OBJECTS]
 # type	x	y	extra_settings per object type
@@ -85,6 +86,9 @@ piranhaplant.txt
 5 	629	304	16	15	29	51000	52000	53000
 5	629	320	16	15	29	54000	55000	56000
 
+# MARIO
+0	28	305
+
 #QUESTION BLOCK
 1	177	256	1101
 1	193	256	1101
@@ -93,6 +97,3 @@ piranhaplant.txt
 1	243	205	1101
 
 1	421	224	1101	
-
-# MARIO
-0	28	305
