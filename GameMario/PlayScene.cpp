@@ -13,6 +13,7 @@
 #include "CloudBackground.h"
 #include "ColorBox.h"
 #include "Pipe.h"
+#include "PiranhaPlant.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -180,6 +181,19 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			sprite_left_top, sprite_left_mid, sprite_left_bot,
 			sprite_middle_top, sprite_middle_mid, sprite_middle_bot,
 			sprite_right_top, sprite_right_mid, sprite_right_bot
+		);
+
+		break;
+	}
+
+	case OBJECT_TYPE_PIRANHA_PLANT:
+	{
+		BOOLEAN PlantColor = (BOOLEAN)atoi(tokens[3].c_str());
+		BOOLEAN CanShootFire = (BOOLEAN)atoi(tokens[4].c_str()); 
+
+		obj = new CPiranhaPlant(
+			x, y,
+			PlantColor, CanShootFire
 		);
 
 		break;

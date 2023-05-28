@@ -33,6 +33,9 @@ protected:
 	float y_start;
 	float y_end;
 
+	int CountingTimeAtTop;
+	int CountingTimeAtBot;
+
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	virtual void Render();
@@ -41,6 +44,7 @@ protected:
 	virtual int IsBlocking() { return 0; }
 
 public:
-	CPiranhaPlant(float x, float y, BOOLEAN PlantColor, BOOLEAN CanShootFire, int state);
-	virtual void SetState(int state);
+	CPiranhaPlant(float x, float y, BOOLEAN PlantColor, BOOLEAN CanShootFire);
+
+	int GetAniId();
 };
