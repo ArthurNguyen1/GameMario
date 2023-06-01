@@ -11,7 +11,7 @@
 #define ID_TEX_MISC_2 40
 #define ID_TEX_Enemies_Right_To_Left 50
 #define ID_TEX_Enemies_LEFT_To_RIGHT 60
-
+#define	ID_TEX_Particles 70
 
 
 #define OBJECT_TYPE_MARIO	0

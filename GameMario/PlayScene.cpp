@@ -125,15 +125,19 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 	case OBJECT_TYPE_QUESTION_BLOCK: 
 	{
-		int state = atoi(tokens[3].c_str());
-
-		obj = new CQuestionBlock(x, y, state); 
+		obj = new CQuestionBlock(x, y); 
 
 		break; 
 	}
 
 	case OBJECT_TYPE_BRICK: obj = new CBrick(x, y); break;
-	case OBJECT_TYPE_COIN: obj = new CCoin(x, y); break;
+	case OBJECT_TYPE_COIN: 
+	{
+		BOOLEAN type = (bool)atoi(tokens[3].c_str());
+
+		obj = new CCoin(x, y, type);
+		break;
+	}
 
 	case OBJECT_TYPE_PLATFORM:
 	{

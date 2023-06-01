@@ -1,11 +1,36 @@
 #include "Coin.h"
 
+void CCoin::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+{
+	if (type == 0)
+	{
+		y += vy * dt;
+		if (y <= y_end)
+		{
+			vy = -vy;
+			y = y_end;
+		}
+		else if (y > y_start)
+		{
+			isDeleted = true;
+		}
+	}
+	else
+	{
+		//Big coin is not moving
+	}
+}
+
 void CCoin::Render()
 {
 	CAnimations* animations = CAnimations::GetInstance();
-	animations->Get(ID_ANI_COIN)->Render(x, y);
 
-	//RenderBoundingBox();
+	if(type == 0)
+		animations->Get(ID_ANI_COIN_SMALL)->Render(x, y);
+	else
+		animations->Get(ID_ANI_COIN_BIG)->Render(x, y);
+
+	RenderBoundingBox();
 }
 
 void CCoin::GetBoundingBox(float& l, float& t, float& r, float& b)

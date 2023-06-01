@@ -14,6 +14,8 @@
 
 #include "Collision.h"
 
+#include "PlayScene.h"
+
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	vy += ay * dt;
@@ -162,9 +164,19 @@ void CMario::OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e)
 
 	if (e->ny > 0)
 	{
+		float x, y;
+		questionblock->GetPosition(x, y);
+		CGameObject* obj = NULL;
+		obj = new CCoin(this->x, this->y - 26, 0);
+
+		obj->SetPosition(x, y - 26);
+		((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+
 		questionblock->SetMovingState(true);
 		questionblock->SetState(QUESTION_BLOCK_STATE_EMPTY);
 		//DebugOut(L"%d\n", questionblock->GetState());
+
+
 	}
 }
 

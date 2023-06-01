@@ -21,3 +21,4 @@ height	240
 40	textures\misc2.png
 50	textures\EnemiesRightToLeft.png
 60	textures\EnemiesLeftToRight.png
+70	textures\Particles.png

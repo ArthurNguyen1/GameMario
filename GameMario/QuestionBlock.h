@@ -11,8 +11,7 @@
 #define QUESTION_BLOCK_BBOX_WIDTH 16
 #define QUESTION_BLOCK_BBOX_HEIGHT 16
 
-#define QUESTION_BLOCK_STATE_WITH_SPECIAL_ITEM 1102
-#define QUESTION_BLOCK_STATE_WITH_COIN_ITEM 1101
+#define QUESTION_BLOCK_STATE_WITH_ITEM 1101
 #define QUESTION_BLOCK_STATE_EMPTY	1100
 
 #define QUESTION_BLOCK_SPEED_Y 0.03f
@@ -23,10 +22,10 @@ private:
 	float y_start;
 	float y_end;
 public:
-	CQuestionBlock(float x, float y, int state) : CGameObject(x, y) 
+	CQuestionBlock(float x, float y) : CGameObject(x, y) 
 	{ 
-		isMoving = false; 
-		this->state = state; 
+		isMoving = 0; 
+		this->state = QUESTION_BLOCK_STATE_WITH_ITEM;
 		y_start = y;
 		y_end = y - 20;
 		vy = -QUESTION_BLOCK_SPEED_Y;

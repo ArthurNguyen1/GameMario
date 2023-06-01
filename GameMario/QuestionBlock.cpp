@@ -3,13 +3,13 @@
 
 void CQuestionBlock::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	if (state == QUESTION_BLOCK_STATE_WITH_COIN_ITEM) 
+	if (state == QUESTION_BLOCK_STATE_WITH_ITEM) 
 	{
 
 	}
 	else if (state == QUESTION_BLOCK_STATE_EMPTY)
 	{
-		if (isMoving == true)
+		if (isMoving == 1)
 		{
 			y += vy * dt;
 			if (y <= y_end)
@@ -19,7 +19,7 @@ void CQuestionBlock::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 			else if (y >= y_start)
 			{
-				isMoving = false;
+				isMoving = 0;
 				y = y_start;
 			}
 		}
@@ -38,7 +38,7 @@ void CQuestionBlock::Render()
 {
 	CAnimations* animations = CAnimations::GetInstance();
 
-	if (isMoving == false && state == QUESTION_BLOCK_STATE_WITH_COIN_ITEM)
+	if (isMoving == false && state == QUESTION_BLOCK_STATE_WITH_ITEM)
 	{
 		animations->Get(ID_ANI_QUESTION_BLOCK_WITH_ITEM)->Render(x, y);
 	}

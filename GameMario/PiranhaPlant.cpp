@@ -11,7 +11,7 @@ CPiranhaPlant::CPiranhaPlant(float x, float y, BOOLEAN PlantColor, BOOLEAN CanSh
 	this->CanShootFire = CanShootFire;
 	this->isActivate = 0;
 
-	y_start = y;
+	y_start = y + 10;
 	y_end = y - 33;
 
 	this->vy = -PIRANHA_PLANT_SPEED_Y;
@@ -46,7 +46,7 @@ void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 
 		y += vy * dt;
-		isActivate = true;
+		isActivate = 1;
 
 		if (y <= y_end)
 		{
@@ -56,7 +56,7 @@ void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 			if (CountingTimeAtTop % 30 == 0)
 			{
-				if (this->CanShootFire == true)
+				if (this->CanShootFire == 1)
 				{
 					if (this->state == PIRANHA_PLANT_STATE_LEFT)
 					{
@@ -131,7 +131,7 @@ void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			
 			CountingTimeAtBot += 1;
 
-			if (CountingTimeAtBot % 40 == 0)
+			if (CountingTimeAtBot % 80 == 0)
 			{
 				vy = -PIRANHA_PLANT_SPEED_Y;
 				CountingTimeAtBot = 0;
@@ -145,7 +145,7 @@ void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	else
 	{
 		y = y_start;
-		isActivate = false;
+		isActivate = 0;
 		this->vy = -PIRANHA_PLANT_SPEED_Y;
 	}
 
@@ -172,13 +172,13 @@ int CPiranhaPlant::GetAniId()
 
 	int aniId = ID_ANI_PIRANHA_PLANT_RED_LEFT_DOWN;
 
-	if (isActivate == false)
+	if (isActivate == 0)
 	{
 		return aniId;
 	}
 	else
 	{
-		if (PlantColor == false)
+		if (PlantColor == 0)
 		{
 			if (this->y_end <= mario_y && this->x + PIRANHA_PLANT_BBOX_WIDTH/2 >= mario_x)
 			{
