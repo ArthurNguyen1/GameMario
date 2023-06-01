@@ -85,22 +85,27 @@ void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 					else
 					{
-						/*if (mario_y < this->y_end - 40)
-						{
+						CGameObject* obj = NULL;
 
+						if (mario_y < this->y_end - 40)
+						{
+							obj = new CBullet(this->x + 1, this->y, BULLET_STATE_RIGHT_UP_HIGH);
 						}
 						if (this->y_end - 40 <= mario_y && mario_y < this->y_end)
 						{
-
+							obj = new CBullet(this->x + 1, this->y, BULLET_STATE_RIGHT_UP);
 						}
 						if (this->y_end <= mario_y && mario_y < this->y_end + 40)
 						{
-
+							obj = new CBullet(this->x + 1, this->y, BULLET_STATE_RIGHT_DOWN);
 						}
 						if (this->y_end + 40 <= mario_y)
 						{
+							obj = new CBullet(this->x + 1, this->y, BULLET_STATE_RIGHT_DOWN_LOW);
+						}
 
-						}*/
+						obj->SetPosition(x, y);
+						((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
 					}
 
 				}
