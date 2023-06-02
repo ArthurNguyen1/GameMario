@@ -34,111 +34,192 @@ void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	float mario_x, mario_y;
 	mario->GetPosition(mario_x, mario_y);
 
-	if (abs(this->x - mario_x) <= 100)
+	if (abs(this->x - mario_x) <= 110)
 	{
-		if (this->x + PIRANHA_PLANT_BBOX_WIDTH/2 >= mario_x)
+		if (abs(this->x - mario_x) <= 30) //this condition prevents the plant moving out of the pipe when mario is standing above it
 		{
-			state = PIRANHA_PLANT_STATE_LEFT;
-		}
-		else
-		{
-			state = PIRANHA_PLANT_STATE_RIGHT;
-		}
-
-		y += vy * dt;
-		isActivate = 1;
-
-		if (y <= y_end)
-		{
-			y = y_end;
-
-			CountingTimeAtTop += 1;
-
-			if (CountingTimeAtTop % 30 == 0)
+			if (this->GetActivateState() == 1 && y < y_start)
 			{
-				if (this->CanShootFire == 1)
+				if (this->x + PIRANHA_PLANT_BBOX_WIDTH / 2 >= mario_x)
 				{
-					if (this->state == PIRANHA_PLANT_STATE_LEFT)
-					{
-						CGameObject* obj = NULL;
-
-						if (mario_y < this->y_end - 40)
-						{
-							obj = new CBullet(this->x-1, this->y, BULLET_STATE_LEFT_UP_HIGH);
-						}
-						if (this->y_end - 40 <= mario_y && mario_y < this->y_end)
-						{
-							obj = new CBullet(this->x - 1, this->y, BULLET_STATE_LEFT_UP);
-						}
-						if (this->y_end <= mario_y && mario_y < this->y_end + 40)
-						{
-							obj = new CBullet(this->x - 1, this->y, BULLET_STATE_LEFT_DOWN);
-						}
-						if (this->y_end + 40 <= mario_y)
-						{
-							obj = new CBullet(this->x - 1, this->y, BULLET_STATE_LEFT_DOWN_LOW);
-						}
-
-						obj->SetPosition(x, y);
-						((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
-
-					}
-					else
-					{
-						CGameObject* obj = NULL;
-
-						if (mario_y < this->y_end - 40)
-						{
-							obj = new CBullet(this->x + 1, this->y, BULLET_STATE_RIGHT_UP_HIGH);
-						}
-						if (this->y_end - 40 <= mario_y && mario_y < this->y_end)
-						{
-							obj = new CBullet(this->x + 1, this->y, BULLET_STATE_RIGHT_UP);
-						}
-						if (this->y_end <= mario_y && mario_y < this->y_end + 40)
-						{
-							obj = new CBullet(this->x + 1, this->y, BULLET_STATE_RIGHT_DOWN);
-						}
-						if (this->y_end + 40 <= mario_y)
-						{
-							obj = new CBullet(this->x + 1, this->y, BULLET_STATE_RIGHT_DOWN_LOW);
-						}
-
-						obj->SetPosition(x, y);
-						((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
-					}
-
+					state = PIRANHA_PLANT_STATE_LEFT;
 				}
 				else
 				{
+					state = PIRANHA_PLANT_STATE_RIGHT;
+				}
 
+				y += vy * dt;
+				isActivate = 1;
+
+				if (y <= y_end)
+				{
+					y = y_end;
+
+					CountingTimeAtTop += 1;
+
+					if (CountingTimeAtTop % 30 == 0)
+					{
+						if (this->CanShootFire == 1)
+						{
+							if (this->state == PIRANHA_PLANT_STATE_LEFT)
+							{
+								CGameObject* obj = NULL;
+
+								if (mario_y < this->y_end)
+								{
+									obj = new CBullet(this->x - 1, this->y, BULLET_STATE_LEFT_UP_HIGH);
+								}
+								else if (this->y_end <= mario_y)
+								{
+									obj = new CBullet(this->x - 1, this->y, BULLET_STATE_LEFT_DOWN_LOW);
+								}
+
+								obj->SetPosition(x, y);
+								((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+
+							}
+							else
+							{
+								CGameObject* obj = NULL;
+
+								if (mario_y < this->y_end)
+								{
+									obj = new CBullet(this->x + 1, this->y, BULLET_STATE_RIGHT_UP_HIGH);
+								}
+								else if (this->y_end <= mario_y)
+								{
+									obj = new CBullet(this->x + 1, this->y, BULLET_STATE_RIGHT_DOWN_LOW);
+								}
+
+								obj->SetPosition(x, y);
+								((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+							}
+
+						}
+					}
+
+					if (CountingTimeAtTop % 40 == 0)
+					{
+						vy = PIRANHA_PLANT_SPEED_Y;
+						CountingTimeAtTop = 0;
+					}
+					else
+					{
+						vy = 0.0f;
+					}
 				}
 			}
-
-			if (CountingTimeAtTop % 40 == 0)
-			{
-				vy = PIRANHA_PLANT_SPEED_Y;
-				CountingTimeAtTop = 0;
-			}
 			else
 			{
-				vy = 0.0f;
+				y = y_start;
+				isActivate = 0;
+				this->vy = -PIRANHA_PLANT_SPEED_Y;
 			}
+
 		}
-		if (y >= y_start)
+		else
 		{
-			y = y_start;
-			
-			CountingTimeAtBot += 1;
-
-			if (CountingTimeAtBot % 80 == 0)
+			if (this->x + PIRANHA_PLANT_BBOX_WIDTH / 2 >= mario_x)
 			{
-				vy = -PIRANHA_PLANT_SPEED_Y;
-				CountingTimeAtBot = 0;
+				state = PIRANHA_PLANT_STATE_LEFT;
 			}
 			else
 			{
-				vy = 0.0f;
+				state = PIRANHA_PLANT_STATE_RIGHT;
+			}
+
+			y += vy * dt;
+			isActivate = 1;
+
+			if (y <= y_end)
+			{
+				y = y_end;
+
+				CountingTimeAtTop += 1;
+
+				if (CountingTimeAtTop % 30 == 0)
+				{
+					if (this->CanShootFire == 1)
+					{
+						if (this->state == PIRANHA_PLANT_STATE_LEFT)
+						{
+							CGameObject* obj = NULL;
+
+							if (mario_y < this->y_end - 40)
+							{
+								obj = new CBullet(this->x - 1, this->y, BULLET_STATE_LEFT_UP_HIGH);
+							}
+							else if (this->y_end - 40 <= mario_y && mario_y < this->y_end)
+							{
+								obj = new CBullet(this->x - 1, this->y, BULLET_STATE_LEFT_UP);
+							}
+							else if (this->y_end <= mario_y && mario_y < this->y_end + 40)
+							{
+								obj = new CBullet(this->x - 1, this->y, BULLET_STATE_LEFT_DOWN);
+							}
+							else if (this->y_end + 40 <= mario_y)
+							{
+								obj = new CBullet(this->x - 1, this->y, BULLET_STATE_LEFT_DOWN_LOW);
+							}
+
+							obj->SetPosition(x, y);
+							((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+
+						}
+						else
+						{
+							CGameObject* obj = NULL;
+
+							if (mario_y < this->y_end - 40)
+							{
+								obj = new CBullet(this->x + 1, this->y, BULLET_STATE_RIGHT_UP_HIGH);
+							}
+							else if (this->y_end - 40 <= mario_y && mario_y < this->y_end)
+							{
+								obj = new CBullet(this->x + 1, this->y, BULLET_STATE_RIGHT_UP);
+							}
+							else if (this->y_end <= mario_y && mario_y < this->y_end + 40)
+							{
+								obj = new CBullet(this->x + 1, this->y, BULLET_STATE_RIGHT_DOWN);
+							}
+							else if (this->y_end + 40 <= mario_y)
+							{
+								obj = new CBullet(this->x + 1, this->y, BULLET_STATE_RIGHT_DOWN_LOW);
+							}
+
+							obj->SetPosition(x, y);
+							((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+						}
+
+					}
+				}
+
+				if (CountingTimeAtTop % 40 == 0)
+				{
+					vy = PIRANHA_PLANT_SPEED_Y;
+					CountingTimeAtTop = 0;
+				}
+				else
+				{
+					vy = 0.0f;
+				}
+			}
+			if (y >= y_start)
+			{
+				y = y_start;
+
+				CountingTimeAtBot += 1;
+
+				if (CountingTimeAtBot % 80 == 0)
+				{
+					vy = -PIRANHA_PLANT_SPEED_Y;
+					CountingTimeAtBot = 0;
+				}
+				else
+				{
+					vy = 0.0f;
+				}
 			}
 		}
 	}

@@ -6,12 +6,12 @@ CBullet::CBullet(float x, float y, int state) :CGameObject(x, y)
 	if (this->state == BULLET_STATE_LEFT_UP_HIGH)
 	{
 		vx = -BULLET_SPEED_X;
-		vy = -BULLET_SPEED_Y * 2;
+		vy = -BULLET_SPEED_Y * 5;
 	}
 	if (this->state == BULLET_STATE_LEFT_UP)
 	{
 		vx = -BULLET_SPEED_X;
-		vy = -BULLET_SPEED_Y;
+		vy = -BULLET_SPEED_Y * 2;
 	}
 	if (this->state == BULLET_STATE_LEFT_DOWN)
 	{
@@ -21,17 +21,17 @@ CBullet::CBullet(float x, float y, int state) :CGameObject(x, y)
 	if (this->state == BULLET_STATE_LEFT_DOWN_LOW)
 	{
 		vx = -BULLET_SPEED_X;
-		vy = BULLET_SPEED_Y * 2;
+		vy = BULLET_SPEED_Y * 5;
 	}
 	if (this->state == BULLET_STATE_RIGHT_UP_HIGH)
 	{
 		vx = BULLET_SPEED_X;
-		vy = -BULLET_SPEED_Y * 2;
+		vy = -BULLET_SPEED_Y * 5;
 	}
 	if (this->state == BULLET_STATE_RIGHT_UP)
 	{
 		vx = BULLET_SPEED_X;
-		vy = -BULLET_SPEED_Y;
+		vy = -BULLET_SPEED_Y * 2;
 	}
 	if (this->state == BULLET_STATE_RIGHT_DOWN)
 	{
@@ -41,7 +41,7 @@ CBullet::CBullet(float x, float y, int state) :CGameObject(x, y)
 	if (this->state == BULLET_STATE_RIGHT_DOWN_LOW)
 	{
 		vx = BULLET_SPEED_X;
-		vy = BULLET_SPEED_Y * 2;
+		vy = BULLET_SPEED_Y * 5;
 	}
 }
 

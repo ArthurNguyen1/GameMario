@@ -106,7 +106,9 @@ void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 
 void CMario::OnCollisionWithPiranhaPlant(LPCOLLISIONEVENT e)
 {
-	if (untouchable == 0)
+	CPiranhaPlant* piranhaplant = dynamic_cast<CPiranhaPlant*>(e->obj);
+
+	if (untouchable == 0 && piranhaplant->GetActivateState() != 0)
 	{
 		if (level > MARIO_LEVEL_SMALL)
 		{
@@ -140,8 +142,16 @@ void CMario::OnCollisionWithBullet(LPCOLLISIONEVENT e)
 
 void CMario::OnCollisionWithCoin(LPCOLLISIONEVENT e)
 {
-	e->obj->Delete();
-	coin++;
+	CCoin* coin= dynamic_cast<CCoin*>(e->obj);
+	if (coin->GetType() == 0)
+	{
+
+	}
+	else
+	{
+		e->obj->Delete();
+		coin++;
+	}	
 }
 
 void CMario::OnCollisionWithColorBox(LPCOLLISIONEVENT e)
@@ -162,14 +172,14 @@ void CMario::OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e)
 {
 	CQuestionBlock* questionblock = dynamic_cast<CQuestionBlock*>(e->obj);
 
-	if (e->ny > 0)
+	if (e->ny > 0 && questionblock->GetState() != QUESTION_BLOCK_STATE_EMPTY)
 	{
 		float x, y;
 		questionblock->GetPosition(x, y);
 		CGameObject* obj = NULL;
-		obj = new CCoin(this->x, this->y - 26, 0);
+		obj = new CCoin(this->x, this->y - 32, 0);
 
-		obj->SetPosition(x, y - 26);
+		obj->SetPosition(x, y - 32);
 		((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
 
 		questionblock->SetMovingState(true);

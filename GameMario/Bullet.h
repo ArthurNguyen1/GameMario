@@ -1,8 +1,8 @@
 #pragma once
 #include "GameObject.h"
 
-#define BULLET_SPEED_X 0.05f
-#define BULLET_SPEED_Y 0.03f
+#define BULLET_SPEED_X 0.04f
+#define BULLET_SPEED_Y 0.01f
 
 #define BULLET_BBOX_WIDTH 8
 #define BULLET_BBOX_HEIGHT 9

@@ -47,4 +47,5 @@ public:
 	CPiranhaPlant(float x, float y, BOOLEAN PlantColor, BOOLEAN CanShootFire);
 
 	int GetAniId();
+	bool GetActivateState() { return this->isActivate; }
 };

@@ -12,7 +12,7 @@
 #define COIN_BBOX_WIDTH 8
 #define COIN_BBOX_HEIGHT 14
 
-#define COIN_SPEED_Y 0.04f
+#define COIN_SPEED_Y 0.1f
 
 class CCoin : public CGameObject {
 private:
@@ -24,7 +24,7 @@ public:
 	{ 
 		this->type = type; 
 		y_start = y;
-		y_end = y - 30;
+		y_end = y - 40;
 
 		vy = -COIN_SPEED_Y;
 	}
@@ -32,4 +32,6 @@ public:
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void GetBoundingBox(float& l, float& t, float& r, float& b);
 	int IsBlocking() { return 0; }
+
+	bool GetType() { return this->type; }
 };

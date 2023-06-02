@@ -14,7 +14,7 @@
 #define QUESTION_BLOCK_STATE_WITH_ITEM 1101
 #define QUESTION_BLOCK_STATE_EMPTY	1100
 
-#define QUESTION_BLOCK_SPEED_Y 0.03f
+#define QUESTION_BLOCK_SPEED_Y 0.08f
 
 class CQuestionBlock : public CGameObject {
 private:
@@ -27,7 +27,7 @@ public:
 		isMoving = 0; 
 		this->state = QUESTION_BLOCK_STATE_WITH_ITEM;
 		y_start = y;
-		y_end = y - 20;
+		y_end = y - 10;
 		vy = -QUESTION_BLOCK_SPEED_Y;
 	}
 	void Render();
