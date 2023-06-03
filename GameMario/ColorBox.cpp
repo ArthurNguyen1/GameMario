@@ -5,6 +5,12 @@
 
 #include "Textures.h"
 
+int CColorBox::IsDirectionColliable(float nx, float ny)
+{
+	if (nx == 0 && ny == -1) return 1;
+	else return 0;
+}
+
 void CColorBox::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt, coObjects);

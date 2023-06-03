@@ -49,6 +49,7 @@ public:
 	void GetBoundingBox(float& l, float& t, float& r, float& b);
 	void RenderBoundingBox();
 
+	int IsDirectionColliable(float nx, float ny);
 	//int IsBlocking() { return (state != COLORBOX_STATE_MARIO_UP); }
 
 };
