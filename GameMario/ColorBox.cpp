@@ -41,6 +41,15 @@ void CColorBox::RenderBoundingBox()
 	CGame::GetInstance()->Draw(xx - cx, y - cy, bbox, nullptr, BBOX_ALPHA, rect.right - 1, rect.bottom - 1);
 }
 
+//Co' 1 matrix collisionTag -> gom nhom' doi' tuong. -> nguoi dung co the customize/set logic cho game object
+// Vd: trong game engine, minh muon Ghost di qua 
+// 
+//void CColorBox::CanCollideWith(CGameObject *obj);
+//{
+// if(dynamic_cast<CGameGhost*>(obj) ) return 0;
+// else return 1;
+//}
+
 void CColorBox::Render()
 {
 	if (this->length <= 0) return;
