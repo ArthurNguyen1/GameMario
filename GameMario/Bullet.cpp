@@ -1,6 +1,6 @@
 #include "Bullet.h"
 
-CBullet::CBullet(float x, float y, int state) :CGameObject(x, y)
+CBullet::CBullet(float x, float y, int state) : CGameObject(x,y)
 {
 	this->state = state;
 	if (this->state == BULLET_STATE_LEFT_UP_HIGH)
@@ -21,7 +21,7 @@ CBullet::CBullet(float x, float y, int state) :CGameObject(x, y)
 	if (this->state == BULLET_STATE_LEFT_DOWN_LOW)
 	{
 		vx = -BULLET_SPEED_X;
-		vy = BULLET_SPEED_Y * 5;
+		vy = BULLET_SPEED_Y * 3;
 	}
 	if (this->state == BULLET_STATE_RIGHT_UP_HIGH)
 	{
@@ -41,7 +41,7 @@ CBullet::CBullet(float x, float y, int state) :CGameObject(x, y)
 	if (this->state == BULLET_STATE_RIGHT_DOWN_LOW)
 	{
 		vx = BULLET_SPEED_X;
-		vy = BULLET_SPEED_Y * 5;
+		vy = BULLET_SPEED_Y * 3;
 	}
 }
 
