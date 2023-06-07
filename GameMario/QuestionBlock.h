@@ -14,21 +14,23 @@
 #define QUESTION_BLOCK_STATE_WITH_ITEM 1101
 #define QUESTION_BLOCK_STATE_EMPTY	1100
 
-#define QUESTION_BLOCK_SPEED_Y 0.08f
+#define QUESTION_BLOCK_SPEED_Y 0.04f
 
 class CQuestionBlock : public CGameObject {
 private:
 	BOOLEAN isMoving;
 	float y_start;
 	float y_end;
+	BOOLEAN type; //0: coin; 1: special item (mushroom/leaf)
 public:
-	CQuestionBlock(float x, float y) : CGameObject(x, y) 
+	CQuestionBlock(float x, float y, BOOLEAN type) : CGameObject(x, y) 
 	{ 
 		isMoving = 0; 
 		this->state = QUESTION_BLOCK_STATE_WITH_ITEM;
 		y_start = y;
 		y_end = y - 10;
 		vy = -QUESTION_BLOCK_SPEED_Y;
+		this->type = type;
 	}
 	void Render();
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
@@ -36,4 +38,5 @@ public:
 
 	int IsCollidable() { return 0; }
 	void SetMovingState(BOOLEAN value) { this->isMoving = value; }
+	bool GetType() { return this->type; }
 };

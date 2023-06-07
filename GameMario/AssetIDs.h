@@ -9,9 +9,10 @@
 #define ID_TEX_MISC 20
 #define ID_TEX_TILESET 30
 #define ID_TEX_MISC_2 40
-#define ID_TEX_Enemies_Right_To_Left 50
-#define ID_TEX_Enemies_LEFT_To_RIGHT 60
-#define	ID_TEX_Particles 70
+#define ID_TEX_ENEMIES_RIGHT_TO_LEFT 50
+#define ID_TEX_ENEMIES_LEFT_TO_RIGHT 60
+#define	ID_TEX_PARTICLES 70
+#define ID_TEX_MISC_2_REVERSE 80
 
 
 #define OBJECT_TYPE_MARIO	0
@@ -27,6 +28,9 @@
 #define OBJECT_TYPE_BRICK 10
 #define OBJECT_TYPE_PIRANHA_PLANT 11
 #define OBJECT_TYPE_BULLET	12
+#define OBJECT_TYPE_MUSHROOM	13
+#define OBJECT_TYPE_LEAF	14
+
 
 #define OBJECT_TYPE_PORTAL	50
 
@@ -101,7 +105,8 @@
 #pragma endregion
 
 #pragma region COIN
-#define ID_SPRITE_COIN 40000
+//#define ID_SPRITE_COIN 40000
+#define ID_SPRITE_COIN 130000
 #pragma endregion
 
 #pragma region PLATFORM
@@ -232,4 +237,13 @@
 
 #pragma region BULLET
 #define ID_SPRITE_BULLET 120000
+#pragma endregion
+
+#pragma region MUSHROOM
+#define ID_SPRITE_MUSHROOM	141000
+#pragma endregion
+
+#pragma region LEAF
+#define ID_SPRITE_LEAF_RIGHT_TO_LEFT	151000
+#define ID_SPRITE_LEAF_LEFT_TO_RIGHT	152000
 #pragma endregion

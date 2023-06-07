@@ -11,6 +11,7 @@
 #include "QuestionBlock.h"
 #include "PiranhaPlant.h"
 #include "Bullet.h"
+#include "Mushroom.h"
 
 #include "Collision.h"
 
@@ -156,12 +157,12 @@ void CMario::OnCollisionWithCoin(LPCOLLISIONEVENT e)
 
 void CMario::OnCollisionWithColorBox(LPCOLLISIONEVENT e)
 {
-	CColorBox* colorbox = dynamic_cast<CColorBox*>(e->obj);
+	/*CColorBox* colorbox = dynamic_cast<CColorBox*>(e->obj);
 
 	if (e->ny < 0)
 	{
 		colorbox->SetState(COLORBOX_STATE_MARIO_DOWN);
-	}	
+	}	*/
 	/*if (e->ny > 0)
 	{
 		colorbox->SetState(COLORBOX_STATE_MARIO_UP);
@@ -172,21 +173,38 @@ void CMario::OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e)
 {
 	CQuestionBlock* questionblock = dynamic_cast<CQuestionBlock*>(e->obj);
 
+	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
+	
+	int mario_level;
+	mario->GetLevel(mario_level);
+
 	if (e->ny > 0 && questionblock->GetState() != QUESTION_BLOCK_STATE_EMPTY)
 	{
 		float x, y;
 		questionblock->GetPosition(x, y);
 		CGameObject* obj = NULL;
-		obj = new CCoin(this->x, this->y - 32, 0);
 
-		obj->SetPosition(x, y - 32);
-		((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+		if (questionblock->GetType() == 0)
+		{
+			obj = new CCoin(x, y - 24, 0);
+
+			obj->SetPosition(x, y - 24);
+			((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+		}
+		else
+		{
+			if (mario_level == MARIO_LEVEL_SMALL)
+			{
+				obj = new CMushroom(x, y - 1);
+
+				obj->SetPosition(x, y - 1);
+				((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->InsertObject(obj);
+			}
+		}
 
 		questionblock->SetMovingState(true);
 		questionblock->SetState(QUESTION_BLOCK_STATE_EMPTY);
 		//DebugOut(L"%d\n", questionblock->GetState());
-
-
 	}
 }
 

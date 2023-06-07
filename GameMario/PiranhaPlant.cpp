@@ -1,6 +1,5 @@
 #include "PiranhaPlant.h"
 
-#include "Mario.h"
 #include "PlayScene.h"
 
 #include "Bullet.h"

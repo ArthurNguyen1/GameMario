@@ -14,6 +14,8 @@
 #include "ColorBox.h"
 #include "Pipe.h"
 #include "PiranhaPlant.h"
+#include "Bullet.h"
+#include "Mushroom.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -125,7 +127,9 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 	case OBJECT_TYPE_QUESTION_BLOCK: 
 	{
-		obj = new CQuestionBlock(x, y); 
+		BOOLEAN type = atoi(tokens[3].c_str());
+
+		obj = new CQuestionBlock(x, y, type); 
 
 		break; 
 	}
@@ -133,7 +137,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case OBJECT_TYPE_BRICK: obj = new CBrick(x, y); break;
 	case OBJECT_TYPE_COIN: 
 	{
-		BOOLEAN type = (bool)atoi(tokens[3].c_str());
+		BOOLEAN type = atoi(tokens[3].c_str());
 
 		obj = new CCoin(x, y, type);
 		break;

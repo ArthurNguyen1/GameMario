@@ -1,4 +1,5 @@
 #include "QuestionBlock.h"
+
 #include "debug.h"
 
 void CQuestionBlock::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)

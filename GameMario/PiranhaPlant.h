@@ -36,12 +36,12 @@ protected:
 	int CountingTimeAtTop;
 	int CountingTimeAtBot;
 
-	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
-	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
-	virtual void Render();
+	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
+	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
+	void Render();
 
-	virtual int IsCollidable() { return 1; };
-	virtual int IsBlocking() { return 0; }
+	int IsCollidable() { return 1; };
+	int IsBlocking() { return 0; }
 
 public:
 	CPiranhaPlant(float x, float y, BOOLEAN PlantColor, BOOLEAN CanShootFire);
