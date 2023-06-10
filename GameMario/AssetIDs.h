@@ -107,6 +107,10 @@
 #define ID_SPRITE_GOOMBA_DIE (ID_SPRITE_GOOMBA + 2000)
 #pragma endregion
 
+#pragma region KOOPAS
+#define ID_SPRITE_KOOPAS 160000
+#pragma endregion
+
 #pragma region COIN
 //#define ID_SPRITE_COIN 40000
 #define ID_SPRITE_COIN 130000

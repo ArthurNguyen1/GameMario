@@ -13,7 +13,6 @@
 
 #define MUSHROOM_SPEED_X 0.04f
 #define MUSHROOM_SPEED_Y 0.01f
-#define MUSHROOM_SPEED_Y_ONCE 0.04f
 
 #define MUSHROOM_GRAVITY 0.002f
 
@@ -21,9 +20,7 @@ class CMushroom : public CGameObject {
 protected:
 	float y_start;
 	float y_end;
-	BOOLEAN isAlreadyMovedBackOnce;
 	BOOLEAN isAlreadyMovedOutOfBlock;
-	BOOLEAN isCollidable;
 
 	float ax;
 	float ay;
@@ -34,11 +31,9 @@ public:
 	{
 		y_start = y + 0.5;
 		y_end = y - 15;
-		vy = -MUSHROOM_SPEED_Y_ONCE;
+		vy = -MUSHROOM_SPEED_Y;
 		vx = 0.0f;
-		isAlreadyMovedBackOnce = 0;
 		isAlreadyMovedOutOfBlock = 0;
-		isCollidable = 0;
 		this->ax = 0;
 		this->ay = MUSHROOM_GRAVITY;
 	}
@@ -52,6 +47,6 @@ public:
 
 	void OnCollisionWith(LPCOLLISIONEVENT e);
 
-	int IsCollidable() { return isCollidable; }
+	int IsCollidable() { return 1; }
 	int IsBlocking() { return 0; }
 };

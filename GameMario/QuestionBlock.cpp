@@ -1,9 +1,16 @@
 #include "QuestionBlock.h"
 
+#include "PlayScene.h"
+#include "Mushroom.h"
 #include "debug.h"
 
 void CQuestionBlock::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
+	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
+
+	int mario_level;
+	mario->GetLevel(mario_level);
+
 	if (state == QUESTION_BLOCK_STATE_WITH_ITEM) 
 	{
 
@@ -22,6 +29,16 @@ void CQuestionBlock::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			{
 				isMoving = 0;
 				y = y_start;
+
+				if (mario_level == MARIO_LEVEL_SMALL && type == 1)
+				{
+					CGameObject* obj = NULL;
+
+					obj = new CMushroom(x, y - 1);
+
+					obj->SetPosition(x, y - 1);
+					((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->InsertObject(obj);
+				}
 			}
 		}
 		else

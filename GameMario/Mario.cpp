@@ -11,7 +11,6 @@
 #include "QuestionBlock.h"
 #include "PiranhaPlant.h"
 #include "Bullet.h"
-#include "Mushroom.h"
 
 #include "Collision.h"
 
@@ -173,11 +172,6 @@ void CMario::OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e)
 {
 	CQuestionBlock* questionblock = dynamic_cast<CQuestionBlock*>(e->obj);
 
-	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
-	
-	int mario_level;
-	mario->GetLevel(mario_level);
-
 	if (e->ny > 0 && questionblock->GetState() != QUESTION_BLOCK_STATE_EMPTY)
 	{
 		float x, y;
@@ -193,13 +187,7 @@ void CMario::OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e)
 		}
 		else
 		{
-			if (mario_level == MARIO_LEVEL_SMALL)
-			{
-				obj = new CMushroom(x, y - 1);
-
-				obj->SetPosition(x, y - 1);
-				((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->InsertObject(obj);
-			}
+			
 		}
 
 		questionblock->SetMovingState(true);

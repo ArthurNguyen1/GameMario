@@ -47,29 +47,12 @@ void CMushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 	else
 	{
-		if (isAlreadyMovedBackOnce == 0)
+		if (y <= y_end)
 		{
-			if (y <= y_end + 5)
-			{
-				y = y_end + 5;
-				vy = -vy;
-			}
-			else if (y >= y_start)
-			{
-				y = y_start;
-				vy = -vy;
-				isAlreadyMovedBackOnce = 1;
-			}
-		}
-		else
-		{
-			if (y <= y_end)
-			{
-				vx = MUSHROOM_SPEED_X;
-				y = y_end;
-				isAlreadyMovedOutOfBlock = 1;
-				isCollidable = 1;
-			}
+			y = y_end;
+			isAlreadyMovedOutOfBlock = 1;
+			vx = MUSHROOM_SPEED_X;
+			vy = 0;
 		}
 	}
 	
