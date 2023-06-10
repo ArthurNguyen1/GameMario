@@ -23,6 +23,11 @@
 
 #define ID_ANI_PIRANHA_PLANT_GREEN_NO_SHOOT 12200
 
+#define PIRANHA_AT_TOP_TIME	2500
+#define PIRANHA_SHOOTING_TIME 2200
+#define PIRANHA_AT_BOT_TIME 2500
+
+
 class CPiranhaPlant : public CGameObject
 {
 protected:
@@ -33,8 +38,13 @@ protected:
 	float y_start;
 	float y_end;
 
-	int CountingTimeAtTop;
-	int CountingTimeAtBot;
+	BOOLEAN isTickingAtTop;
+	BOOLEAN isTickingToShoot;
+	BOOLEAN isTickingAtBot;
+
+	ULONGLONG time_at_top_start;
+	ULONGLONG time_shooting_start;
+	ULONGLONG time_at_bot_start;
 
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);

@@ -14,7 +14,8 @@ CPiranhaPlant::CPiranhaPlant(float x, float y, BOOLEAN PlantColor, BOOLEAN CanSh
 	y_end = y - 33;
 
 	this->vy = -PIRANHA_PLANT_SPEED_Y;
-	CountingTimeAtTop = CountingTimeAtBot = 0;
+	isTickingAtTop = isTickingToShoot = isTickingAtBot = 0;
+	time_at_top_start = time_at_bot_start = time_shooting_start = -1;
 }
 
 void CPiranhaPlant::GetBoundingBox(float& left, float& top, float& right, float& bottom)
@@ -53,9 +54,14 @@ void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			{
 				y = y_end;
 
-				CountingTimeAtTop += 1;
+				if (isTickingAtTop == 0 && isTickingToShoot == 0)
+				{
+					time_at_top_start = time_shooting_start = GetTickCount64();
+					isTickingAtTop = 1;
+					isTickingToShoot = 1;
+				}
 
-				if (CountingTimeAtTop % 30 == 0)
+				if (GetTickCount64() - time_shooting_start > PIRANHA_SHOOTING_TIME && isTickingToShoot == 1)
 				{
 					if (this->CanShootFire == 1)
 					{
@@ -75,6 +81,8 @@ void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 							obj->SetPosition(x, y);
 							((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
 
+							time_shooting_start = -1;
+							isTickingToShoot = 0;
 						}
 						else
 						{
@@ -91,15 +99,19 @@ void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 							obj->SetPosition(x, y);
 							((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+
+							time_shooting_start = -1;
+							isTickingToShoot = 0;
 						}
 
 					}
 				}
 
-				if (CountingTimeAtTop % 40 == 0)
+				if (GetTickCount64() - time_at_top_start > PIRANHA_AT_TOP_TIME && isTickingAtTop == 1)
 				{
 					vy = PIRANHA_PLANT_SPEED_Y;
-					CountingTimeAtTop = 0;
+					time_at_top_start = time_shooting_start = -1;
+					isTickingAtTop = 0;
 				}
 				else
 				{
@@ -110,12 +122,17 @@ void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			{
 				y = y_start;
 
-				CountingTimeAtBot += 1;
+				if (isTickingAtBot == 0)
+				{
+					time_at_bot_start = GetTickCount64();
+					isTickingAtBot = 1;
+				}
 
-				if (CountingTimeAtBot % 80 == 0)
+				if (GetTickCount64() - time_at_bot_start > PIRANHA_AT_BOT_TIME && isTickingAtBot == 1)
 				{
 					vy = -PIRANHA_PLANT_SPEED_Y;
-					CountingTimeAtBot = 0;
+					time_at_bot_start = -1;
+					isTickingAtBot = 0;
 				}
 				else
 				{
@@ -141,9 +158,14 @@ void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			{
 				y = y_end;
 
-				CountingTimeAtTop += 1;
+				if (isTickingAtTop == 0 && isTickingToShoot == 0)
+				{
+					time_at_top_start = time_shooting_start = GetTickCount64();
+					isTickingAtTop = 1;
+					isTickingToShoot = 1;
+				}
 
-				if (CountingTimeAtTop % 30 == 0)
+				if (GetTickCount64() - time_shooting_start > PIRANHA_SHOOTING_TIME && isTickingToShoot == 1)
 				{
 					if (this->CanShootFire == 1)
 					{
@@ -171,6 +193,8 @@ void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 							obj->SetPosition(x, y);
 							((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
 
+							time_shooting_start = -1;
+							isTickingToShoot = 0;
 						}
 						else
 						{
@@ -195,15 +219,19 @@ void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 							obj->SetPosition(x, y);
 							((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+
+							time_shooting_start = -1;
+							isTickingToShoot = 0;
 						}
 
 					}
 				}
 
-				if (CountingTimeAtTop % 40 == 0)
+				if (GetTickCount64() - time_at_top_start > PIRANHA_AT_TOP_TIME && isTickingAtTop == 1)
 				{
 					vy = PIRANHA_PLANT_SPEED_Y;
-					CountingTimeAtTop = 0;
+					time_at_top_start = time_shooting_start = -1;
+					isTickingAtTop = 0;
 				}
 				else
 				{
@@ -214,12 +242,17 @@ void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			{
 				y = y_start;
 
-				CountingTimeAtBot += 1;
+				if (isTickingAtBot == 0)
+				{
+					time_at_bot_start = GetTickCount64();
+					isTickingAtBot = 1;
+				}
 
-				if (CountingTimeAtBot % 80 == 0)
+				if (GetTickCount64() - time_at_bot_start > PIRANHA_AT_BOT_TIME && isTickingAtBot == 1)
 				{
 					vy = -PIRANHA_PLANT_SPEED_Y;
-					CountingTimeAtBot = 0;
+					time_at_bot_start = -1;
+					isTickingAtBot = 0;
 				}
 				else
 				{
@@ -248,9 +281,14 @@ void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				{
 					y = y_end;
 
-					CountingTimeAtTop += 1;
+					if (isTickingToShoot == 0 && isTickingAtTop == 0)
+					{
+						time_shooting_start = time_at_top_start = GetTickCount64();
+						isTickingAtTop = 1;
+						isTickingToShoot = 1;
+					}
 
-					if (CountingTimeAtTop % 30 == 0)
+					if (GetTickCount64() - time_shooting_start > PIRANHA_SHOOTING_TIME && isTickingToShoot == 1)
 					{
 						if (this->CanShootFire == 1)
 						{
@@ -270,6 +308,9 @@ void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 								obj->SetPosition(x, y);
 								((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
 
+								time_shooting_start = -1;
+								isTickingToShoot = 0;
+
 							}
 							else
 							{
@@ -286,15 +327,19 @@ void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 								obj->SetPosition(x, y);
 								((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+
+								time_shooting_start = -1;
+								isTickingToShoot = 0;
 							}
 
 						}
 					}
 
-					if (CountingTimeAtTop % 40 == 0)
+					if (GetTickCount64() - time_at_top_start > PIRANHA_AT_TOP_TIME && isTickingAtTop == 1)
 					{
 						vy = PIRANHA_PLANT_SPEED_Y;
-						CountingTimeAtTop = 0;
+						time_at_top_start = -1;
+						isTickingAtTop = 0;
 					}
 					else
 					{
@@ -331,12 +376,17 @@ void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			{
 				y = y_end;
 
-				CountingTimeAtTop += 1;
+				if (isTickingAtTop == 0)
+				{
+					time_at_top_start = GetTickCount64();
+					isTickingAtTop = 1;
+				}
 
-				if (CountingTimeAtTop % 40 == 0)
+				if (GetTickCount64() - time_at_top_start > PIRANHA_AT_TOP_TIME && isTickingAtTop == 1)
 				{
 					vy = PIRANHA_PLANT_SPEED_Y;
-					CountingTimeAtTop = 0;
+					time_at_top_start = -1;
+					isTickingAtTop = 0;
 				}
 				else
 				{
@@ -349,7 +399,7 @@ void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			y = y_start;
 			isActivate = 0;
 			this->vy = -PIRANHA_PLANT_SPEED_Y;
-			CountingTimeAtBot = 0;
+			time_at_bot_start = -1;
 		}
 	}
 

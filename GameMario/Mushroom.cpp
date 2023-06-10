@@ -51,8 +51,15 @@ void CMushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		{
 			y = y_end;
 			isAlreadyMovedOutOfBlock = 1;
-			vx = MUSHROOM_SPEED_X;
 			vy = 0;
+
+			srand(time(NULL));
+			int rd = rand() % (1 - 0 + 1) + 0;
+			if(rd == 0)
+				vx = MUSHROOM_SPEED_X;
+			else
+				vx = -MUSHROOM_SPEED_X;
+
 		}
 	}
 	
