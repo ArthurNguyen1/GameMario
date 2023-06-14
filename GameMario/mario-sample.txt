@@ -23,5 +23,4 @@ height	240
 60	textures\EnemiesLeftToRight.png
 70	textures\Particles.png
 80	textures\misc2_reverse.png
-90	textures\MarioLeftToRight.png
-100	textures\MarioRightToLeft.png
+90	textures\EnemiesReverse.png

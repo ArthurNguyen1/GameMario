@@ -33,6 +33,8 @@
 #define MARIO_STATE_SIT				600
 #define MARIO_STATE_SIT_RELEASE		601
 
+#define MARIO_STATE_KICKING_RIGHT	700
+#define MARIO_STATE_KICKING_LEFT	701
 
 #pragma region ANIMATION_ID
 
@@ -57,6 +59,9 @@
 #define ID_ANI_MARIO_BRACE_RIGHT 1000
 #define ID_ANI_MARIO_BRACE_LEFT 1001
 
+#define ID_ANI_MARIO_KICKING_RIGHT 1700
+#define ID_ANI_MARIO_KICKING_LEFT 1701
+
 #define ID_ANI_MARIO_DIE 999
 
 // SMALL MARIO
@@ -77,6 +82,9 @@
 
 #define ID_ANI_MARIO_SMALL_JUMP_RUN_RIGHT 1600
 #define ID_ANI_MARIO_SMALL_JUMP_RUN_LEFT 1601
+
+#define ID_ANI_MARIO_SMALL_KICKING_RIGHT 1800
+#define ID_ANI_MARIO_SMALL_KICKING_LEFT 1801
 
 #pragma endregion
 
@@ -101,6 +109,8 @@
 
 
 #define MARIO_UNTOUCHABLE_TIME 2500
+#define MARIO_KICKING_TIME 250
+
 
 class CMario : public CGameObject
 {
@@ -115,16 +125,22 @@ class CMario : public CGameObject
 	BOOLEAN isOnPlatform;
 	int coin;
 
+	BOOLEAN isKicking;
+	ULONGLONG kicking_start;
+
 	void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
+	void OnCollisionWithKoopas(LPCOLLISIONEVENT e);
 	void OnCollisionWithCoin(LPCOLLISIONEVENT e);
 	void OnCollisionWithPortal(LPCOLLISIONEVENT e);
-	void OnCollisionWithColorBox(LPCOLLISIONEVENT e);
 	void OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e);
 	void OnCollisionWithPiranhaPlant(LPCOLLISIONEVENT e);
 	void OnCollisionWithBullet(LPCOLLISIONEVENT e);
+	void OnCollisionWithLeaf(LPCOLLISIONEVENT e);
+
 
 	int GetAniIdBig();
 	int GetAniIdSmall();
+	int GetAniIdHaveTail();
 
 public:
 	CMario(float x, float y) : CGameObject(x, y)
@@ -139,6 +155,9 @@ public:
 		untouchable_start = -1;
 		isOnPlatform = false;
 		coin = 0;
+
+		isKicking = 0;
+		kicking_start = -1;
 	}
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();
@@ -157,6 +176,9 @@ public:
 	void GetLevel(int& level) { level = this->level; }
 	void SetLevel(int l);
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount64(); }
+	
+	void StartKicking() { isKicking = 1; kicking_start = GetTickCount64(); }
+	void StopKicking() { isKicking = 0; kicking_start = -1; }
 
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 };

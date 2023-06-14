@@ -22,15 +22,14 @@
 #define ID_ANI_BULLET_RIGHT 13002
 
 class CBullet : public CGameObject
-{
-protected:
+{	
+public:
+	CBullet(float x, float y, int state);
+
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();
 
 	int IsCollidable() { return 1; };
 	int IsBlocking() { return 0; }
-
-public:
-	CBullet(float x, float y, int state);
 };

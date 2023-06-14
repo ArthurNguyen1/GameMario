@@ -16,6 +16,8 @@
 #include "PiranhaPlant.h"
 #include "Bullet.h"
 #include "Mushroom.h"
+#include "Koopas.h"
+#include "InvinsibleBlock.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -125,6 +127,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		break;
 	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(x, y); break;
 
+	case OBJECT_TYPE_KOOPAS: obj = new CKoopas(x, y); break;
+
 	case OBJECT_TYPE_QUESTION_BLOCK: 
 	{
 		BOOLEAN type = atoi(tokens[3].c_str());
@@ -191,6 +195,17 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			sprite_right_top, sprite_right_mid, sprite_right_bot
 		);
 
+		break;
+	}
+
+	case OBJECT_TYPE_INVINSIBLE_BLOCK:
+	{
+		int length = atoi(tokens[3].c_str());
+		int height = atoi(tokens[4].c_str());
+		BOOLEAN type = atoi(tokens[5].c_str());
+
+
+		obj = new CInvinsibleBlock(x, y, length, height, type);
 		break;
 	}
 

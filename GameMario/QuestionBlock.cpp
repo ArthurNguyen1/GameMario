@@ -2,6 +2,7 @@
 
 #include "PlayScene.h"
 #include "Mushroom.h"
+#include "Leaf.h"
 #include "debug.h"
 
 void CQuestionBlock::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -38,6 +39,15 @@ void CQuestionBlock::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 					obj->SetPosition(x, y - 1);
 					((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->InsertObject(obj);
+				}
+				else if (mario_level >= MARIO_LEVEL_BIG && type == 1)
+				{
+					CGameObject* obj = NULL;
+
+					obj = new CLeaf(x, y - 8);
+
+					obj->SetPosition(x, y - 8);
+					((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
 				}
 			}
 		}

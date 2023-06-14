@@ -2,9 +2,6 @@
 
 #include "GameObject.h"
 
-#define COLORBOX_STATE_MARIO_DOWN		1001
-#define COLORBOX_STATE_MARIO_UP			1002
-
 
 class CColorBox : public CGameObject
 {
@@ -40,8 +37,6 @@ public:
 		this->spriteIdRightTop = sprite_id_right_top;
 		this->spriteIdRightMid = sprite_id_right_mid;
 		this->spriteIdRightBot = sprite_id_right_bot;
-
-		state = COLORBOX_STATE_MARIO_UP;
 	}
 
 	void Render();
@@ -51,8 +46,5 @@ public:
 	void RenderShade();
 
 	int IsDirectionColliable(float nx, float ny);
-	//int IsBlocking() { return (state != COLORBOX_STATE_MARIO_UP); }
 
 };
-
-typedef CColorBox* LPCOLORBOX;
