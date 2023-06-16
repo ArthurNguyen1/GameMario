@@ -24,3 +24,5 @@ height	240
 70	textures\Particles.png
 80	textures\misc2_reverse.png
 90	textures\EnemiesReverse.png
+100	textures\EnemyHasWingsRightToLeft.png
+110	textures\EnemyHasWingsLeftToRight.png

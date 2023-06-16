@@ -13,8 +13,9 @@
 #define ID_TEX_ENEMIES_LEFT_TO_RIGHT 60
 #define	ID_TEX_PARTICLES 70
 #define ID_TEX_MISC_2_REVERSE 80
-#define ID_TEX_ENEMIES_REVERSE	90
-
+#define ID_TEX_ENEMIES_REVERSE 90
+#define ID_TEX_ENEMY_HAS_WINGS_RIGHT_TO_LEFT 100
+#define ID_TEX_ENEMY_HAS_WINGS_LEFT_TO_RIGHT 110
 
 
 #define OBJECT_TYPE_MARIO 0
@@ -214,7 +215,7 @@
 #pragma endregion
 
 #pragma region BRICK
-//#define ID_SPRITE_BRICK 100000
+#define ID_SPRITE_BRICK 100000
 #pragma endregion
 
 #pragma region PIRANHAPLANT

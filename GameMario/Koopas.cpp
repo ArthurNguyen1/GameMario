@@ -89,7 +89,7 @@ void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 				SetState(KOOPAS_STATE_WALKING_LEFT);
 		}
 	if (dynamic_cast<CGoomba*>(e->obj) && form == KOOPAS_SHELL_FORM) 
-		e->obj->Delete();
+		e->obj->SetState(GOOMBA_STATE_DIE);
 	else if (dynamic_cast<CInvinsibleBlock*>(e->obj) && form == KOOPAS_NORMAL_FORM)
 		OnCollisionWithInvinsibleBlock(e);
 	else if (dynamic_cast<CQuestionBlock*>(e->obj) && form == KOOPAS_SHELL_FORM)

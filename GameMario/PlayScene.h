@@ -7,7 +7,7 @@
 #include "Brick.h"
 #include "Mario.h"
 #include "Goomba.h"
-//#include "Koopas.h"
+#include "Koopas.h"
 
 
 class CPlayScene : public CScene
@@ -37,7 +37,7 @@ public:
 	LPGAMEOBJECT GetPlayer() { return player; }
 	
 	void AddObject(LPGAMEOBJECT obj) { objects.push_back(obj); }
-	void InsertObject(LPGAMEOBJECT obj) { objects.insert(objects.begin() + 83, obj); } //Insert right after mario
+	void InsertObject(LPGAMEOBJECT obj) { objects.insert(objects.begin() + 94, obj); } //Insert right after mario
 
 
 	void Clear();

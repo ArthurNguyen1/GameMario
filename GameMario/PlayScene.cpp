@@ -125,7 +125,15 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 		DebugOut(L"[INFO] Player object has been created!\n");
 		break;
-	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(x, y); break;
+	case OBJECT_TYPE_GOOMBA: 
+	{
+		BOOLEAN color = atoi(tokens[3].c_str());
+		int level = atoi(tokens[4].c_str());
+
+		obj = new CGoomba(x, y, color, level);
+
+		break;
+	}
 
 	case OBJECT_TYPE_KOOPAS: obj = new CKoopas(x, y); break;
 
@@ -387,6 +395,7 @@ void CPlayScene::Update(DWORD dt)
 	{
 		objects[i]->Update(dt, &coObjects);
 	}
+
 
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
 	if (player == NULL) return;

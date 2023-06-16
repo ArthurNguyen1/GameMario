@@ -4,7 +4,7 @@
 #include "Animation.h"
 #include "Animations.h"
 
-//#define ID_ANI_BRICK
+#define ID_ANI_BRICK 18000
 #define BRICK_WIDTH 16
 #define BRICK_BBOX_WIDTH 16
 #define BRICK_BBOX_HEIGHT 16
@@ -15,4 +15,8 @@ public:
 	void Render();
 	void Update(DWORD dt) {}
 	void GetBoundingBox(float& l, float& t, float& r, float& b);
+
+	int IsCollidable() { return 1; };
+	int IsBlocking() { return 1; }
+
 };
