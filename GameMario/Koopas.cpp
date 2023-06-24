@@ -3,6 +3,7 @@
 #include "PlayScene.h"
 #include "Mushroom.h"
 #include "Leaf.h"
+#include "PlayScene.h"
 
 #include "InvinsibleBlock.h"
 
@@ -14,6 +15,7 @@ CKoopas::CKoopas(float x, float y) : CGameObject(x, y)
 	isTimeout = 0;
 	shell_start_timeout = -1;
 	SetState(KOOPAS_STATE_WALKING_LEFT);
+	isHeld = 0;
 }
 
 void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& bottom)
@@ -61,6 +63,40 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			StopTickingTimeout();
 		}
 	}
+
+	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
+	int mario_nx = 0;
+	mario->GetDirection(mario_nx);
+
+	if (isHeld == 1 && mario->IsPressKeyA() == 1 && mario->GetHoldingState() == 1)
+	{
+		float mario_x = 0, mario_y = 0;
+		mario->GetPosition(mario_x, mario_y);
+
+		if (mario_nx >= 0)
+		{
+			x = mario_x + 10;
+			y = mario_y;
+		}
+		else
+		{
+			x = mario_x - 10;
+			y = mario_y;
+		}
+	}
+	else if (isHeld == 1 && mario->IsPressKeyA() == 0)
+	{
+		StopTickingTimeout();
+
+		mario->StartUntouchable();
+		mario->IsNoLongerActuallyHolding();
+		mario->StartKicking();
+		if(mario_nx >= 0)
+			SetState(KOOPAS_STATE_SHELL_ROLL_RIGHT);
+		else
+			SetState(KOOPAS_STATE_SHELL_ROLL_LEFT);
+	}
+
 
 	CGameObject::Update(dt, coObjects);
 	CCollision::GetInstance()->Process(this, dt, coObjects);
@@ -224,6 +260,10 @@ void CKoopas::SetFormation(int f)
 	if (this->form == KOOPAS_SHELL_FORM)
 	{
 		y -= (KOOPAS_BBOX_HEIGHT - KOOPAS_SHELL_BBOX_HEIGHT) / 2;
+	}
+	else if (this->form == KOOPAS_NORMAL_FORM)
+	{
+		y += (KOOPAS_BBOX_HEIGHT - KOOPAS_SHELL_BBOX_HEIGHT) / 2;
 	}
 
 	form = f;

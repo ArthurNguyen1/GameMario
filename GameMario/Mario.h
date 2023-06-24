@@ -36,6 +36,9 @@
 #define MARIO_STATE_KICKING_RIGHT	700
 #define MARIO_STATE_KICKING_LEFT	701
 
+#define MARIO_STATE_HOLDING			800
+#define MARIO_STATE_HOLDING_RELEASE	801
+
 #pragma region ANIMATION_ID
 
 #define ID_ANI_MARIO_IDLE_RIGHT 400
@@ -62,6 +65,12 @@
 #define ID_ANI_MARIO_KICKING_RIGHT 1700
 #define ID_ANI_MARIO_KICKING_LEFT 1701
 
+#define ID_ANI_MARIO_HOLDING_SHELL_IDLE_RIGHT 2700
+#define ID_ANI_MARIO_HOLDING_SHELL_IDLE_LEFT 2701
+
+#define ID_ANI_MARIO_HOLDING_SHELL_WALKING_RIGHT 2800
+#define ID_ANI_MARIO_HOLDING_SHELL_WALKING_LEFT 2801
+
 #define ID_ANI_MARIO_DIE 999
 
 // SMALL MARIO
@@ -85,6 +94,12 @@
 
 #define ID_ANI_MARIO_SMALL_KICKING_RIGHT 1800
 #define ID_ANI_MARIO_SMALL_KICKING_LEFT 1801
+
+#define ID_ANI_MARIO_SMALL_HOLDING_SHELL_IDLE_RIGHT 2900
+#define ID_ANI_MARIO_SMALL_HOLDING_SHELL_IDLE_LEFT 2902
+
+#define ID_ANI_MARIO_SMALL_HOLDING_SHELL_WALKING_RIGHT 3000
+#define ID_ANI_MARIO_SMALL_HOLDING_SHELL_WALKING_LEFT 3001
 
 // MARIO HAVE TAIL
 #define ID_ANI_MARIO_HAVE_TAIL_IDLE_RIGHT 1900
@@ -110,6 +125,12 @@
 
 #define ID_ANI_MARIO_HAVE_TAIL_SIT_RIGHT 2600
 #define ID_ANI_MARIO_HAVE_TAIL_SIT_LEFT 2601
+
+#define ID_ANI_MARIO_HAVE_TAIL_HOLDING_SHELL_IDLE_RIGHT 3100
+#define ID_ANI_MARIO_HAVE_TAIL_HOLDING_SHELL_IDLE_LEFT 3102
+
+#define ID_ANI_MARIO_HAVE_TAIL_HOLDING_SHELL_WALKING_RIGHT 3200
+#define ID_ANI_MARIO_HAVE_TAIL_HOLDING_SHELL_WALKING_LEFT 3201
 
 #pragma endregion
 
@@ -155,6 +176,9 @@ class CMario : public CGameObject
 	BOOLEAN isKicking;
 	ULONGLONG kicking_start;
 
+	BOOLEAN isPressKeyA;
+	BOOLEAN isHolding;
+
 	void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
 	void OnCollisionWithKoopas(LPCOLLISIONEVENT e);
 	void OnCollisionWithCoin(LPCOLLISIONEVENT e);
@@ -183,8 +207,11 @@ public:
 		isOnPlatform = false;
 		coin = 0;
 
-		isKicking = 0;
+		isKicking = false;
 		kicking_start = -1;
+
+		isPressKeyA = false;
+		isHolding = false;
 	}
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();
@@ -204,8 +231,13 @@ public:
 	void SetLevel(int l);
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount64(); }
 	
-	void StartKicking() { isKicking = 1; kicking_start = GetTickCount64(); }
-	void StopKicking() { isKicking = 0; kicking_start = -1; }
+	void StartKicking() { isKicking = true; kicking_start = GetTickCount64(); }
+	void StopKicking() { isKicking = false; kicking_start = -1; }
 
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
+
+	BOOLEAN IsPressKeyA() { return this->isPressKeyA; }
+
+	BOOLEAN GetHoldingState() { return this->isHolding; }
+	void IsNoLongerActuallyHolding() { this->isHolding = false; }
 };

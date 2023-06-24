@@ -48,6 +48,8 @@ protected:
 	BOOLEAN isTimeout;
 	ULONGLONG shell_start_timeout;
 
+	BOOLEAN isHeld;
+
 	void OnCollisionWithInvinsibleBlock(LPCOLLISIONEVENT e);
 	void OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e);
 
@@ -68,7 +70,9 @@ public:
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();
 
-	void StartTickingTimeout() { isTimeout= 1; shell_start_timeout = GetTickCount64(); }
-	void StopTickingTimeout() { isTimeout = 0; shell_start_timeout = -1; }
+	void StartTickingTimeout() { isTimeout = 1; shell_start_timeout = GetTickCount64(); this->ay = 0; this->vy = 0; }
+	void StopTickingTimeout() { isTimeout = 0; shell_start_timeout = -1; this->isHeld = 0; 	this->ay = KOOPAS_GRAVITY;}
 
+	void IsHeld() { this->isHeld = 1; }
+	void IsNotHeld() { this->isHeld = 0; }
 };

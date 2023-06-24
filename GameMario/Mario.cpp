@@ -33,7 +33,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 
 	//reset kick action
-	if (isKicking == 1)
+	if (isKicking == true)
 	{
 		if (GetTickCount64() - kicking_start > MARIO_KICKING_TIME)
 		{
@@ -239,11 +239,20 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 	{
 		if (koopas->GetState() == KOOPAS_STATE_SHELL_IDLE)
 		{
-			koopas->StopTickingTimeout();
-			koopas->SetState(KOOPAS_STATE_SHELL_ROLL_RIGHT);
-			StartUntouchable();
-			StartKicking();
-			DebugOut(L"[KOOPAS] HIT FROM {LEFT} -> turn SHELL IDLE into SHELL IDLE ROLLING ... LEFT TO RIGHT\n");
+			if (isPressKeyA == true)
+			{
+				koopas->IsHeld();
+				isHolding = true;
+				DebugOut(L"[MARIO] Holding shell RIGHT\n");
+			}
+			else
+			{
+				koopas->StopTickingTimeout();
+				koopas->SetState(KOOPAS_STATE_SHELL_ROLL_RIGHT);
+				StartUntouchable();
+				StartKicking();
+				DebugOut(L"[KOOPAS] HIT FROM {LEFT} -> turn SHELL IDLE into SHELL IDLE ROLLING ... LEFT TO RIGHT\n");
+			}
 		}
 		else // hit mario
 		{
@@ -273,11 +282,20 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 	{
 		if (koopas->GetState() == KOOPAS_STATE_SHELL_IDLE)
 		{
-			koopas->StopTickingTimeout();
-			koopas->SetState(KOOPAS_STATE_SHELL_ROLL_LEFT);
-			StartUntouchable();
-			StartKicking();
-			DebugOut(L"[KOOPAS] HIT FROM {RIGHT} -> turn SHELL IDLE into SHELL IDLE ROLLING ... LEFT TO RIGHT\n");
+			if (isPressKeyA == true)
+			{
+				koopas->IsHeld();
+				isHolding = true;
+				DebugOut(L"[MARIO] Holding shell LEFT\n");
+			}
+			else
+			{
+				koopas->StopTickingTimeout();
+				koopas->SetState(KOOPAS_STATE_SHELL_ROLL_LEFT);
+				StartUntouchable();
+				StartKicking();
+				DebugOut(L"[KOOPAS] HIT FROM {RIGHT} -> turn SHELL IDLE into SHELL IDLE ROLLING ... LEFT TO RIGHT\n");
+			}
 		}
 		else // hit mario
 		{
@@ -427,10 +445,23 @@ int CMario::GetAniIdSmall()
 		}
 	}
 	else
+		if (isHolding)
+		{
+			if (vx == 0)
+			{
+				if (nx > 0) aniId = ID_ANI_MARIO_SMALL_HOLDING_SHELL_IDLE_RIGHT;
+				else aniId = ID_ANI_MARIO_SMALL_HOLDING_SHELL_IDLE_LEFT;
+			}
+			else
+			{
+				if (nx > 0) aniId = ID_ANI_MARIO_SMALL_HOLDING_SHELL_WALKING_RIGHT;
+				else aniId = ID_ANI_MARIO_SMALL_HOLDING_SHELL_WALKING_LEFT;
+			}
+		}
 		if (state == MARIO_STATE_KICKING_RIGHT && level == MARIO_LEVEL_SMALL)
 			aniId = ID_ANI_MARIO_SMALL_KICKING_RIGHT;
 		else if (state == MARIO_STATE_KICKING_LEFT && level == MARIO_LEVEL_SMALL)
-			aniId = ID_ANI_MARIO_SMALL_KICKING_LEFT;		
+			aniId = ID_ANI_MARIO_SMALL_KICKING_LEFT;	
 		else
 			if (vx == 0)
 			{
@@ -497,6 +528,21 @@ int CMario::GetAniIdBig()
 			else
 				aniId = ID_ANI_MARIO_SIT_LEFT;
 		}
+		else
+			if (isHolding)
+			{
+				if (vx == 0)
+				{
+					if (nx > 0) aniId = ID_ANI_MARIO_HOLDING_SHELL_IDLE_RIGHT;
+					else aniId = ID_ANI_MARIO_HOLDING_SHELL_IDLE_LEFT;
+				}
+				else
+				{
+					if (nx > 0) aniId = ID_ANI_MARIO_HOLDING_SHELL_WALKING_RIGHT;
+					else aniId = ID_ANI_MARIO_HOLDING_SHELL_WALKING_LEFT;
+				}
+			}
+
 		else if (state == MARIO_STATE_KICKING_RIGHT && level == MARIO_LEVEL_BIG)
 			aniId = ID_ANI_MARIO_KICKING_RIGHT;
 		else if (state == MARIO_STATE_KICKING_LEFT && level == MARIO_LEVEL_BIG)
@@ -566,6 +612,20 @@ int CMario::GetAniIdHaveTail()
 			else
 				aniId = ID_ANI_MARIO_HAVE_TAIL_SIT_LEFT;
 		}
+		else
+			if (isHolding)
+			{
+				if (vx == 0)
+				{
+					if (nx > 0) aniId = ID_ANI_MARIO_HAVE_TAIL_HOLDING_SHELL_IDLE_RIGHT;
+					else aniId = ID_ANI_MARIO_HAVE_TAIL_HOLDING_SHELL_IDLE_LEFT;
+				}
+				else
+				{
+					if (nx > 0) aniId = ID_ANI_MARIO_HAVE_TAIL_HOLDING_SHELL_WALKING_RIGHT;
+					else aniId = ID_ANI_MARIO_HAVE_TAIL_HOLDING_SHELL_WALKING_LEFT;
+				}				
+			}
 		else if (state == MARIO_STATE_KICKING_RIGHT && level == MARIO_LEVEL_HAVE_TAIL)
 			aniId = ID_ANI_MARIO_HAVE_TAIL_KICKING_RIGHT;
 		else if (state == MARIO_STATE_KICKING_LEFT && level == MARIO_LEVEL_HAVE_TAIL)
@@ -696,9 +756,22 @@ void CMario::SetState(int state)
 		vx = 0;
 		ax = 0;
 		break;
+
 	case MARIO_STATE_KICKING_LEFT:
+		if (isSitting) break;
 		break;
+
 	case MARIO_STATE_KICKING_RIGHT:
+		if (isSitting) break;
+		break;
+
+	case MARIO_STATE_HOLDING:
+		if (isSitting) break;
+		isPressKeyA = true;
+		break;
+
+	case MARIO_STATE_HOLDING_RELEASE:
+		isPressKeyA = false;
 		break;
 	}
 
