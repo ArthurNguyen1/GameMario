@@ -41,6 +41,8 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	vy += ay * dt;
 	vx += ax * dt;
 
+	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
+
 	if (isTimeout == 1)
 	{
 		if (GetTickCount64() - shell_start_timeout > KOOPAS_SHELL_START_TIMEOUT && GetTickCount64() - shell_start_timeout <= KOOPAS_SHELL_TIMEOUT)
@@ -61,10 +63,10 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 			
 			StopTickingTimeout();
+			mario->IsNoLongerActuallyHolding();
 		}
 	}
 
-	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 	int mario_nx = 0;
 	mario->GetDirection(mario_nx);
 
