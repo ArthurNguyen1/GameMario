@@ -13,6 +13,7 @@
 #include "PiranhaPlant.h"
 #include "Bullet.h"
 #include "Leaf.h"
+#include "InvinsibleBlock.h"
 
 #include "Collision.h"
 
@@ -92,6 +93,8 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithBullet(e);
 	else if (dynamic_cast<CLeaf*>(e->obj))
 		OnCollisionWithLeaf(e);
+	else if (dynamic_cast<CInvinsibleBlock*>(e->obj))
+		OnCollisionWithInvinsibleBlock(e);
 }
 
 void CMario::OnCollisionWithLeaf(LPCOLLISIONEVENT e)
@@ -407,6 +410,30 @@ void CMario::OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e)
 		questionblock->SetMovingState(true);
 		questionblock->SetState(QUESTION_BLOCK_STATE_EMPTY);
 		//DebugOut(L"%d\n", questionblock->GetState());
+	}
+}
+
+void CMario::OnCollisionWithInvinsibleBlock(LPCOLLISIONEVENT e)
+{
+	CInvinsibleBlock* invinsibleblock = dynamic_cast<CInvinsibleBlock*>(e->obj);
+
+	if (e->nx < 0 && invinsibleblock->GetType() == INVINSIBLE_BLOCK_TYPE_CREATE_GOOMBA && invinsibleblock->IsCreated() == 0)
+	{
+		CGameObject* obj = NULL;
+
+		obj = new CGoomba(830, 272, 0, 1);
+		obj->SetPosition(830, 272);
+		((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+
+		obj = new CGoomba(880, 272, 0, 1);
+		obj->SetPosition(880, 272);
+		((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+
+		obj = new CGoomba(930, 272, 1, 2);
+		obj->SetPosition(930, 272);
+		((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+
+		invinsibleblock->IsAlreadyCreated();
 	}
 }
 

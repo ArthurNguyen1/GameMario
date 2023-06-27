@@ -210,7 +210,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	{
 		int length = atoi(tokens[3].c_str());
 		int height = atoi(tokens[4].c_str());
-		BOOLEAN type = atoi(tokens[5].c_str());
+		int type = atoi(tokens[5].c_str());
 
 
 		obj = new CInvinsibleBlock(x, y, length, height, type);
