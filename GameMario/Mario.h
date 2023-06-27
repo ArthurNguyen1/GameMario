@@ -151,7 +151,7 @@
 #define MARIO_SMALL_BBOX_WIDTH  13
 #define MARIO_SMALL_BBOX_HEIGHT 14
 
-#define MARIO_HAVE_TAIL_BBOX_WIDTH  15
+#define MARIO_HAVE_TAIL_BBOX_WIDTH  14
 #define MARIO_HAVE_TAIL_BBOX_HEIGHT 26
 #define MARIO_HAVE_TAIL_SITTING_BBOX_WIDTH  15
 #define MARIO_HAVE_TAIL_SITTING_BBOX_HEIGHT 18
@@ -230,6 +230,7 @@ public:
 	void GetLevel(int& level) { level = this->level; }
 	void SetLevel(int l);
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount64(); }
+	void StopUntouchable() { untouchable = 0; untouchable_start = -1; }
 	
 	void StartKicking() { isKicking = true; kicking_start = GetTickCount64(); }
 	void StopKicking() { isKicking = false; kicking_start = -1; }

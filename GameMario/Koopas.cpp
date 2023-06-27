@@ -61,7 +61,15 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				SetState(KOOPAS_STATE_WALKING_RIGHT);
 				SetFormation(KOOPAS_NORMAL_FORM);
 			}
-			
+
+			mario->StopUntouchable();
+			if (isHeld == 1 && mario->IsPressKeyA() == 1 && mario->GetHoldingState() == 1)
+			{
+				int level;
+				mario->GetLevel(level);
+				mario->SetLevel(--level);
+			}
+
 			StopTickingTimeout();
 			mario->IsNoLongerActuallyHolding();
 		}
@@ -136,7 +144,7 @@ void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 
 void CKoopas::OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e)
 {
-	if (e->nx != 0)
+	if (e->nx != 0 && e->obj->GetState() != QUESTION_BLOCK_STATE_EMPTY)
 	{
 		CQuestionBlock* questionblock = dynamic_cast<CQuestionBlock*>(e->obj);
 		float xx, yy;
