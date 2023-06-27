@@ -142,11 +142,11 @@ void CGoomba::Render()
 	if (level == GOOMBA_LEVEL_JUMP)
 	{
 		if (state == GOOMBA_STATE_WALKING)
-		{
 			aniId = ID_ANI_GOOMBA_RED_HAS_WINGS_WALKING;
-		}
-		else
+		else if (state == GOOMBA_STATE_READY_TO_JUMP)
 			aniId = ID_ANI_GOOMBA_RED_HAS_WINGS_JUMPING;
+		else
+			aniId = ID_ANI_GOOMBA_RED_HAS_WINGS_FLYING;
 	}
 	else if (level == GOOMBA_LEVEL_WALK)
 	{
@@ -190,12 +190,15 @@ void CGoomba::SetState(int state)
 		break;
 	case GOOMBA_STATE_WALKING:
 		vy = 0;
+		ay = GOOMBA_GRAVITY;
 		break;
 	case GOOMBA_STATE_READY_TO_JUMP:
 		vy = -GOOMBA_READY_TO_JUMP_SPEED_Y;
+		ay = GOOMBA_GRAVITY;
 		break;
 	case GOOMBA_STATE_JUMPING:
 		vy = -GOOMBA_JUMPING_SPEED_Y;
+		ay = GOOMBA_GRAVITY;
 		break;
 	}
 }
