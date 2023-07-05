@@ -55,6 +55,76 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	isOnPlatform = false;
 
+	//Loop to get total time that pressing key A
+	if (isCountingTimeToFly == true)
+	{
+		//DebugOut(L"[MARIO UPDATE] time increase\n");
+
+		//DebugOut(L"[SYSTEM] time: %d\n", GetTickCount64());
+
+		total_time_press_key_A_running += (GetTickCount64() - press_key_A_running_start);
+		
+	}
+	else
+	{
+		//DebugOut(L"[MARIO UPDATE] decrease\n");
+
+		//DebugOut(L"[SYSTEM] time: %d\n", GetTickCount64());
+
+		if(total_time_press_key_A_running > 0)
+			total_time_press_key_A_running -= (GetTickCount64() - release_key_A_stop_running_start);
+	}
+	if (total_time_press_key_A_running <= 0)
+	{
+		total_time_press_key_A_running = 0;
+	}
+
+	//Get to know when mario can fly
+	if (total_time_press_key_A_running >= MARIO_FLYABLE_TIME)
+	{
+		canFly = true;
+		//DebugOut(L"[MARIO] CAN FLY: %d\n", release_key_A_stop_running_start);
+	}
+	else
+	{
+		canFly = false;
+	}
+
+	//Decrease flying time
+	if (isFlying == true)
+	{
+		if (vy < maxVy) vy = maxVy;
+		total_time_to_fly -= (GetTickCount64() - flying_start);
+		canFly = true;
+		if (total_time_to_fly < 0)
+		{
+			total_time_to_fly = 0;
+			isFlying = false;
+			canFly = false;
+
+			isFalling = true;
+			StartFalling();
+		}
+	}
+
+	//Falling time decrease
+	if (isFalling == true && isCountingFalling == true)
+	{
+		if (vy > maxVy) vy = maxVy;
+		total_time_to_fall -= (GetTickCount64() - falling_start);
+		if (total_time_to_fall < 0)
+		{
+			total_time_to_fall = 0;
+			isFalling = false;
+			isCountingFalling = false;
+
+			ay = MARIO_GRAVITY;
+		}
+	}
+
+	//DebugOut(L"[MARIO] total time: %d\n", total_time_press_key_A_running);
+	//DebugOut(L"[MARIO-FLY STATE] %d\n", canFly);
+
 	CCollision::GetInstance()->Process(this, dt, coObjects);
 }
 
@@ -69,7 +139,13 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 	if (e->ny != 0 && e->obj->IsBlocking())
 	{
 		vy = 0;
-		if (e->ny < 0) isOnPlatform = true;
+		if (e->ny < 0) 
+		{
+			isOnPlatform = true;
+			isFalling = false;
+			StopFalling();
+			ay = MARIO_GRAVITY;
+		}
 	}
 	else
 		if (e->nx != 0 && e->obj->IsBlocking())
@@ -471,7 +547,7 @@ int CMario::GetAniIdSmall()
 				aniId = ID_ANI_MARIO_SMALL_JUMP_WALK_LEFT;
 		}
 	}
-	else
+	else 
 		if (isHolding)
 		{
 			if (vx == 0)
@@ -485,7 +561,7 @@ int CMario::GetAniIdSmall()
 				else aniId = ID_ANI_MARIO_SMALL_HOLDING_SHELL_WALKING_LEFT;
 			}
 		}
-		if (state == MARIO_STATE_KICKING_RIGHT && level == MARIO_LEVEL_SMALL)
+		else if (state == MARIO_STATE_KICKING_RIGHT && level == MARIO_LEVEL_SMALL)
 			aniId = ID_ANI_MARIO_SMALL_KICKING_RIGHT;
 		else if (state == MARIO_STATE_KICKING_LEFT && level == MARIO_LEVEL_SMALL)
 			aniId = ID_ANI_MARIO_SMALL_KICKING_LEFT;	
@@ -569,7 +645,6 @@ int CMario::GetAniIdBig()
 					else aniId = ID_ANI_MARIO_HOLDING_SHELL_WALKING_LEFT;
 				}
 			}
-
 		else if (state == MARIO_STATE_KICKING_RIGHT && level == MARIO_LEVEL_BIG)
 			aniId = ID_ANI_MARIO_KICKING_RIGHT;
 		else if (state == MARIO_STATE_KICKING_LEFT && level == MARIO_LEVEL_BIG)
@@ -610,7 +685,57 @@ int CMario::GetAniIdBig()
 int CMario::GetAniIdHaveTail()
 {
 	int aniId = -1;
-	if (!isOnPlatform)
+	if (isFlying)
+	{
+		if (state == MARIO_STATE_FLYING_RIGHT || state == MARIO_STATE_FLYING_FAST_RIGHT)
+			aniId = ID_ANI_MARIO_HAVE_TAIL_FLYING_RIGHT;
+		else if (state == MARIO_STATE_FLYING_LEFT || state == MARIO_STATE_FLYING_FAST_LEFT)
+			aniId = ID_ANI_MARIO_HAVE_TAIL_FLYING_LEFT;
+		else if (state == MARIO_STATE_FLYING_IDLE)
+		{
+			if (nx >= 0)
+				aniId = ID_ANI_MARIO_HAVE_TAIL_FLYING_RIGHT;
+			else
+				aniId = ID_ANI_MARIO_HAVE_TAIL_FLYING_LEFT;
+		}
+		else if (state == MARIO_STATE_FLYABLE_FALLING_RIGHT)
+			aniId = ID_ANI_MARIO_HAVE_TAIL_FLYABLE_FALLING_RIGHT;
+		else if (state == MARIO_STATE_FLYABLE_FALLING_LEFT)
+			aniId = ID_ANI_MARIO_HAVE_TAIL_FLYABLE_FALLING_LEFT;
+		else //else if (state == MARIO_STATE_FLYABLE_FALLING_IDLE)
+		{
+			if (nx >= 0)
+				aniId = ID_ANI_MARIO_HAVE_TAIL_FLYABLE_FALLING_RIGHT;
+			else
+				aniId = ID_ANI_MARIO_HAVE_TAIL_FLYABLE_FALLING_LEFT;
+		}
+	}
+	else if (isFalling)
+	{
+		if (state == MARIO_STATE_FALLING_SLOW_RIGHT)
+			aniId = ID_ANI_MARIO_HAVE_TAIL_FALLING_SLOW_RIGHT;
+		else if (state == MARIO_STATE_FALLING_SLOW_LEFT)
+			aniId = ID_ANI_MARIO_HAVE_TAIL_FALLING_SLOW_LEFT;
+		else if (state == MARIO_STATE_FALLING_FAST_RIGHT)
+			aniId = ID_ANI_MARIO_HAVE_TAIL_FALLING_FAST_RIGHT;
+		else if (state == MARIO_STATE_FALLING_FAST_LEFT)
+			aniId = ID_ANI_MARIO_HAVE_TAIL_FALLING_FAST_LEFT;
+		else if (state == MARIO_STATE_FALLING_SLOW_IDLE)
+		{
+			if (nx >= 0)
+				aniId = ID_ANI_MARIO_HAVE_TAIL_FALLING_SLOW_RIGHT;
+			else
+				aniId = ID_ANI_MARIO_HAVE_TAIL_FALLING_SLOW_LEFT;
+		}
+		else //else if (state == MARIO_STATE_FALLING_FAST_IDLE)
+		{
+			if(nx >= 0)
+				aniId = ID_ANI_MARIO_HAVE_TAIL_FALLING_FAST_RIGHT;
+			else
+				aniId = ID_ANI_MARIO_HAVE_TAIL_FALLING_FAST_LEFT;
+		}
+	}
+	else if (!isOnPlatform)
 	{
 		if (state == MARIO_STATE_KICKING_RIGHT && level == MARIO_LEVEL_HAVE_TAIL)
 			aniId = ID_ANI_MARIO_HAVE_TAIL_KICKING_RIGHT;
@@ -710,6 +835,8 @@ void CMario::Render()
 
 void CMario::SetState(int state)
 {
+	//DebugOut(L"[MARIO] state: %d\n", state);
+
 	// DIE is the end state, cannot be changed! 
 	if (this->state == MARIO_STATE_DIE) return;
 
@@ -720,24 +847,52 @@ void CMario::SetState(int state)
 		maxVx = MARIO_RUNNING_SPEED;
 		ax = MARIO_ACCEL_RUN_X;
 		nx = 1;
+		if (isCountingTimeToFly == false)
+		{
+			//DebugOut(L"[MARIO] SET STATE {RUNNING RIGHT} Counting time start\n");
+			StartPressingKeyA();
+			//DebugOut(L"[MILESTONE] time start count to fly: %d\n", press_key_A_running_start);
+			isCountingTimeToFly = true;
+		}
 		break;
 	case MARIO_STATE_RUNNING_LEFT:
 		if (isSitting) break;
 		maxVx = -MARIO_RUNNING_SPEED;
 		ax = -MARIO_ACCEL_RUN_X;
 		nx = -1;
+		if (isCountingTimeToFly == false)
+		{
+			//DebugOut(L"[MARIO] SET STATE {RUNNING LEFT} Counting time start\n");
+			StartPressingKeyA();
+			//DebugOut(L"[MILESTONE] time start count to fly: %d\n", press_key_A_running_start);
+			isCountingTimeToFly = true;
+		}
 		break;
 	case MARIO_STATE_WALKING_RIGHT:
 		if (isSitting) break;
 		maxVx = MARIO_WALKING_SPEED;
 		ax = MARIO_ACCEL_WALK_X;
 		nx = 1;
+		if (isCountingTimeToFly == true)
+		{
+			//DebugOut(L"[MARIO] SET STATE {WALKING RIGHT} Counting time decrease\n");
+			StopPressingKeyA();
+			//DebugOut(L"[MILESTONE-stop] stop count to fly: %d\n", release_key_A_stop_running_start);
+			isCountingTimeToFly = false;
+		}
 		break;
 	case MARIO_STATE_WALKING_LEFT:
 		if (isSitting) break;
 		maxVx = -MARIO_WALKING_SPEED;
 		ax = -MARIO_ACCEL_WALK_X;
 		nx = -1;
+		if (isCountingTimeToFly == true)
+		{
+			//DebugOut(L"[MARIO] SET STATE {WALKING LEFT} Counting time decrease\n");
+			StopPressingKeyA();
+			//DebugOut(L"[MILESTONE-stop] stop count to fly: %d\n", release_key_A_stop_running_start);
+			isCountingTimeToFly = false;
+		}
 		break;
 	case MARIO_STATE_JUMP:
 		if (isSitting) break;
@@ -747,6 +902,14 @@ void CMario::SetState(int state)
 				vy = -MARIO_JUMP_RUN_SPEED_Y;
 			else
 				vy = -MARIO_JUMP_SPEED_Y;
+
+			if (isCountingTimeToFly == true)
+			{
+				//DebugOut(L"[MARIO] SET STATE {JUMPING} Counting time decrease\n");
+				StopPressingKeyA();
+				//DebugOut(L"[MILESTONE-stop] stop count to fly: %d\n", release_key_A_stop_running_start);
+				isCountingTimeToFly = false;
+			}
 		}
 		break;
 
@@ -776,6 +939,13 @@ void CMario::SetState(int state)
 	case MARIO_STATE_IDLE:
 		ax = 0.0f;
 		vx = 0.0f;
+		if (isCountingTimeToFly == true)
+		{
+			//DebugOut(L"[MARIO] SET STATE {IDLE} Counting time decrease\n");
+			StopPressingKeyA();
+			//DebugOut(L"[MILESTONE-stop] stop count to fly: %d\n", release_key_A_stop_running_start);
+			isCountingTimeToFly = false;
+		}
 		break;
 
 	case MARIO_STATE_DIE:
@@ -787,7 +957,6 @@ void CMario::SetState(int state)
 	case MARIO_STATE_KICKING_LEFT:
 		if (isSitting) break;
 		break;
-
 	case MARIO_STATE_KICKING_RIGHT:
 		if (isSitting) break;
 		break;
@@ -796,11 +965,216 @@ void CMario::SetState(int state)
 		if (isSitting) break;
 		isPressKeyA = true;
 		break;
-
 	case MARIO_STATE_HOLDING_RELEASE:
-		isPressKeyA = false;
+		isPressKeyA = false;		
+		if (isCountingTimeToFly == true)
+		{
+			//DebugOut(L"[MARIO] SET STATE {RELEASE HOLDING} Counting time decrease\n");
+			StopPressingKeyA();
+			//DebugOut(L"[MILESTONE-stop] stop count to fly: %d\n", release_key_A_stop_running_start);
+			isCountingTimeToFly = false;
+		}
 		break;
+
+	// FLYING //
+	case MARIO_STATE_FLYING_RIGHT:
+		if (isSitting) break;
+		maxVx = MARIO_FLYING_SPEED_X;
+		maxVy = -MARIO_FLYING_SPEED_Y;
+		ax = MARIO_ACCEL_FLY_X;
+		ay = -MARIO_ACCEL_FLY_Y;
+		nx = 1;
+		if (isFlying == false)
+		{
+			//DebugOut(L"[MARIO] SET STATE {FYING RIGHT}\n");
+			StartFlying();
+			isFlying = true;
+		}
+		break;
+	case MARIO_STATE_FLYING_LEFT:
+		if (isSitting) break;
+		maxVx = -MARIO_FLYING_SPEED_X;
+		maxVy = -MARIO_FLYING_SPEED_Y;
+		ax = -MARIO_ACCEL_FLY_X;
+		ay = -MARIO_ACCEL_FLY_Y;
+		nx = -1;
+		if (isFlying == false)
+		{
+			//DebugOut(L"[MARIO] SET STATE {FYING LEFT}\n");
+			StartFlying();
+			isFlying = true;
+		}
+		break;
+	case MARIO_STATE_FLYING_FAST_RIGHT:
+		if (isSitting) break;
+		maxVx = MARIO_FLYING_FAST_SPEED_X;
+		maxVy = -MARIO_FLYING_SPEED_Y;
+		ax = MARIO_ACCEL_FLY_FAST_X;
+		ay = -MARIO_ACCEL_FLY_Y;
+		nx = 1;
+		if (isFlying == false)
+		{
+			//DebugOut(L"[MARIO] SET STATE {FYING FAST RIGHT}\n");
+			StartFlying();
+			isFlying = true;
+		}
+		break;
+	case MARIO_STATE_FLYING_FAST_LEFT:
+		if (isSitting) break;
+		maxVx = -MARIO_FLYING_FAST_SPEED_X;
+		maxVy = -MARIO_FLYING_SPEED_Y;
+		ax = -MARIO_ACCEL_FLY_FAST_X;
+		ay = -MARIO_ACCEL_FLY_Y;
+		nx = -1;
+		if (isFlying == false)
+		{
+			//DebugOut(L"[MARIO] SET STATE {FYING FAST LEFT}\n");
+			StartFlying();
+			isFlying = true;
+		}
+		break;
+	case MARIO_STATE_FLYING_IDLE:
+		maxVy = -MARIO_FLYING_SPEED_Y;
+		ay = -MARIO_ACCEL_FLY_Y;
+		ax = 0.0f;
+		vx = 0.0f;
+		if (isFlying == false)
+		{
+			//DebugOut(L"[MARIO] SET STATE {FYING FAST LEFT}\n");
+			StartFlying();
+			isFlying = true;
+		}
+		break;
+
+	case MARIO_STATE_FLYABLE_FALLING_RIGHT:
+		if (!isOnPlatform)
+		{
+			maxVx = MARIO_FLYING_SPEED_X;
+			maxVy = MARIO_FLYING_SPEED_Y;
+			ax = MARIO_ACCEL_FLY_X;
+			ay = MARIO_GRAVITY;
+			nx = 1;
+			if (isFlying == false)
+			{
+				//DebugOut(L"[MARIO] SET STATE {FYING RIGHT}\n");
+				StartFlying();
+				isFlying = true;
+			}
+		}		
+		break;
+	case MARIO_STATE_FLYABLE_FALLING_LEFT:
+		if (!isOnPlatform)
+		{
+			maxVx = -MARIO_FLYING_SPEED_X;
+			maxVy = MARIO_FLYING_SPEED_Y;
+			ax = -MARIO_ACCEL_FLY_X;
+			ay = MARIO_GRAVITY;
+			nx = -1;
+			if (isFlying == false)
+			{
+				//DebugOut(L"[MARIO] SET STATE {FYING LEFT}\n");
+				StartFlying();
+				isFlying = true;
+			}
+		}			
+		break;
+	case MARIO_STATE_FLYABLE_FALLING_IDLE:
+		if (!isOnPlatform)
+		{
+			maxVy = MARIO_FLYING_SPEED_Y;
+			ay = MARIO_GRAVITY;
+			ax = 0.0f;
+			vx = 0.0f;
+			if (isFlying == false)
+			{
+				//DebugOut(L"[MARIO] SET STATE {FYING FAST LEFT}\n");
+				StartFlying();
+				isFlying = true;
+			}
+		}	
+		break;
+
+	// FALLING //
+	case MARIO_STATE_FALLING_SLOW_RIGHT:
+		maxVx = MARIO_FLYING_SPEED_X;
+		maxVy = MARIO_FLYING_SPEED_Y / 2;
+		ax = MARIO_ACCEL_FLY_X;
+		ay = MARIO_GRAVITY / 3;
+		nx = 1;
+		if (isCountingFalling == false)
+		{
+			//DebugOut(L"[MARIO] Start counting falling\n");
+			StartFalling();
+			isCountingFalling = true;
+		}
+		break;
+	case MARIO_STATE_FALLING_SLOW_LEFT:
+		maxVx = -MARIO_FLYING_SPEED_X;
+		maxVy = MARIO_FLYING_SPEED_Y / 2;
+		ax = -MARIO_ACCEL_FLY_X;
+		ay = MARIO_GRAVITY / 3;
+		nx = -1;
+		if (isCountingFalling == false)
+		{
+			//DebugOut(L"[MARIO] Start counting falling\n");
+			StartFalling();
+			isCountingFalling = true;
+		}
+		break;
+	case MARIO_STATE_FALLING_FAST_RIGHT:
+		maxVx = MARIO_FLYING_FAST_SPEED_X;
+		maxVy = MARIO_FLYING_SPEED_Y;
+		ax = MARIO_ACCEL_FLY_FAST_X;
+		ay = MARIO_GRAVITY;
+		nx = 1;
+		if (isCountingFalling == false)
+		{
+			//DebugOut(L"[MARIO] Start counting falling\n");
+			StartFalling();
+			isCountingFalling = true;
+		}
+		break;
+	case MARIO_STATE_FALLING_FAST_LEFT:
+		maxVx = -MARIO_FLYING_FAST_SPEED_X;
+		maxVy = MARIO_FLYING_SPEED_Y;
+		ax = -MARIO_ACCEL_FLY_FAST_X;
+		ay = MARIO_GRAVITY;
+		nx = -1;
+		if (isCountingFalling == false)
+		{
+			//DebugOut(L"[MARIO] Start counting falling\n");
+			StartFalling();
+			isCountingFalling = true;
+		}
+		break;
+	case MARIO_STATE_FALLING_SLOW_IDLE:
+		maxVy = MARIO_FLYING_SPEED_Y / 2;
+		ay = MARIO_GRAVITY / 3;
+		ax = 0.0f;
+		vx = 0.0f;
+		if (isCountingFalling == false)
+		{
+			//DebugOut(L"[MARIO] Start counting falling\n");
+			StartFalling();
+			isCountingFalling = true;
+		}
+		break;
+	case MARIO_STATE_FALLING_FAST_IDLE:
+		maxVy = MARIO_FLYING_SPEED_Y;
+		ay = MARIO_GRAVITY;
+		ax = 0.0f;
+		vx = 0.0f;
+		if (isCountingFalling == false)
+		{
+			//DebugOut(L"[MARIO] Start counting falling\n");
+			StartFalling();
+			isCountingFalling = true;
+		}
+		break;
+
 	}
+
+
 
 	CGameObject::SetState(state);
 }

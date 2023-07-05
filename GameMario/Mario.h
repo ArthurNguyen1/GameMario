@@ -7,17 +7,27 @@
 #include "debug.h"
 
 #define MARIO_WALKING_SPEED		0.1f
-#define MARIO_RUNNING_SPEED		0.2f
+#define MARIO_RUNNING_SPEED		0.22f
 
-#define MARIO_ACCEL_WALK_X	0.0005f
-#define MARIO_ACCEL_RUN_X	0.0007f
+#define MARIO_ACCEL_WALK_X	0.0002f
+#define MARIO_ACCEL_RUN_X	0.00022f
 
-#define MARIO_JUMP_SPEED_Y		0.5f
-#define MARIO_JUMP_RUN_SPEED_Y	0.6f
+#define MARIO_JUMP_SPEED_Y		0.3f
+#define MARIO_JUMP_RUN_SPEED_Y	0.32f
 
-#define MARIO_GRAVITY			0.002f
+#define MARIO_GRAVITY			0.0006f
 
-#define MARIO_JUMP_DEFLECT_SPEED  0.4f
+
+#define MARIO_FLYING_SPEED_X		0.12f
+#define MARIO_FLYING_FAST_SPEED_X	0.2f
+#define MARIO_FLYING_SPEED_Y		0.2f
+
+#define MARIO_ACCEL_FLY_X		0.0002f
+#define MARIO_ACCEL_FLY_FAST_X	0.00022f
+#define MARIO_ACCEL_FLY_Y	0.0002f
+
+
+#define MARIO_JUMP_DEFLECT_SPEED  0.2f
 
 #define MARIO_STATE_DIE				-10
 #define MARIO_STATE_IDLE			0
@@ -38,6 +48,23 @@
 
 #define MARIO_STATE_HOLDING			800
 #define MARIO_STATE_HOLDING_RELEASE	801
+
+#define MARIO_STATE_FLYING_RIGHT	900
+#define MARIO_STATE_FLYING_LEFT		901
+#define MARIO_STATE_FLYING_FAST_RIGHT	902
+#define MARIO_STATE_FLYING_FAST_LEFT	903
+#define MARIO_STATE_FLYING_IDLE		904
+#define MARIO_STATE_FLYABLE_FALLING_RIGHT	905
+#define MARIO_STATE_FLYABLE_FALLING_LEFT	906
+#define MARIO_STATE_FLYABLE_FALLING_IDLE	907
+
+#define MARIO_STATE_FALLING_SLOW_RIGHT	910
+#define MARIO_STATE_FALLING_SLOW_LEFT	911
+#define MARIO_STATE_FALLING_FAST_RIGHT	912
+#define MARIO_STATE_FALLING_FAST_LEFT	913
+#define MARIO_STATE_FALLING_SLOW_IDLE	914
+#define MARIO_STATE_FALLING_FAST_IDLE	915
+
 
 #pragma region ANIMATION_ID
 
@@ -132,6 +159,18 @@
 #define ID_ANI_MARIO_HAVE_TAIL_HOLDING_SHELL_WALKING_RIGHT 3200
 #define ID_ANI_MARIO_HAVE_TAIL_HOLDING_SHELL_WALKING_LEFT 3201
 
+#define ID_ANI_MARIO_HAVE_TAIL_FLYING_RIGHT 3300
+#define ID_ANI_MARIO_HAVE_TAIL_FLYING_LEFT 3301
+
+#define ID_ANI_MARIO_HAVE_TAIL_FLYABLE_FALLING_RIGHT 3400
+#define ID_ANI_MARIO_HAVE_TAIL_FLYABLE_FALLING_LEFT 3401
+
+#define ID_ANI_MARIO_HAVE_TAIL_FALLING_SLOW_RIGHT 3500
+#define ID_ANI_MARIO_HAVE_TAIL_FALLING_SLOW_LEFT 3501
+
+#define ID_ANI_MARIO_HAVE_TAIL_FALLING_FAST_RIGHT 3600
+#define ID_ANI_MARIO_HAVE_TAIL_FALLING_FAST_LEFT 3601
+
 #pragma endregion
 
 #define GROUND_Y 160.0f
@@ -151,7 +190,7 @@
 #define MARIO_SMALL_BBOX_WIDTH  13
 #define MARIO_SMALL_BBOX_HEIGHT 14
 
-#define MARIO_HAVE_TAIL_BBOX_WIDTH  14
+#define MARIO_HAVE_TAIL_BBOX_WIDTH  19
 #define MARIO_HAVE_TAIL_BBOX_HEIGHT 26
 #define MARIO_HAVE_TAIL_SITTING_BBOX_WIDTH  15
 #define MARIO_HAVE_TAIL_SITTING_BBOX_HEIGHT 18
@@ -159,11 +198,17 @@
 #define MARIO_UNTOUCHABLE_TIME 2500
 #define MARIO_KICKING_TIME 250
 
+#define MARIO_FLYABLE_TIME 27500
+#define MARIO_SET_FLY_STATE_TIME 58500
+
+#define MARIO_SET_FALL_STATE_TIME 200000
+
 
 class CMario : public CGameObject
 {
 	BOOLEAN isSitting;
 	float maxVx;
+	float maxVy;
 	float ax;				// acceleration on x 
 	float ay;				// acceleration on y 
 
@@ -178,6 +223,24 @@ class CMario : public CGameObject
 
 	BOOLEAN isPressKeyA;
 	BOOLEAN isHolding;
+
+	ULONGLONG press_key_A_running_start; //Counting time that set state as running
+	ULONGLONG release_key_A_stop_running_start; //Counting time when release state running
+
+	LONGLONG total_time_press_key_A_running; //total time when set and release state running, this use to identify fly condition
+
+	BOOLEAN isCountingTimeToFly; //is it start counting to fly or not
+
+	BOOLEAN canFly;
+
+	BOOLEAN isFlying;
+	ULONGLONG flying_start;
+	LONGLONG total_time_to_fly;
+
+	BOOLEAN isFalling; //this variable used to know when the time flying is over
+	BOOLEAN isCountingFalling; //this variable use to set the falling_start once
+	ULONGLONG falling_start;
+	LONGLONG total_time_to_fall;
 
 	void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
 	void OnCollisionWithKoopas(LPCOLLISIONEVENT e);
@@ -199,6 +262,7 @@ public:
 	{
 		isSitting = false;
 		maxVx = 0.0f;
+		maxVy = 0.0f;
 		ax = 0.0f;
 		ay = MARIO_GRAVITY;
 
@@ -213,6 +277,24 @@ public:
 
 		isPressKeyA = false;
 		isHolding = false;
+
+		press_key_A_running_start = -1;
+		release_key_A_stop_running_start = -1;
+
+		total_time_press_key_A_running = 0;
+
+		isCountingTimeToFly = false;
+
+		canFly = false;
+
+		isFlying = false;
+		flying_start = -1;
+		total_time_to_fly = 0;
+
+		isFalling = false;
+		isCountingFalling = false;
+		falling_start = -1;
+		total_time_to_fall = 0;
 	}
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();
@@ -239,6 +321,17 @@ public:
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 
 	BOOLEAN IsPressKeyA() { return this->isPressKeyA; }
+	void StartPressingKeyA() { press_key_A_running_start = GetTickCount64(); }
+	void StopPressingKeyA() { release_key_A_stop_running_start = GetTickCount64(); }
+
+	BOOLEAN GetFlyableState() { return canFly; }
+	void StartFlying() { total_time_to_fly = MARIO_SET_FLY_STATE_TIME ; flying_start = GetTickCount64(); }
+
+	BOOLEAN IsFlying() { return isFlying; }
+	BOOLEAN IsFalling() { return isFalling; }
+	void StartFalling() { total_time_to_fall = MARIO_SET_FALL_STATE_TIME; falling_start = GetTickCount64(); }
+	void StopFalling() { total_time_to_fall = 0; falling_start = -1; }
+
 
 	BOOLEAN GetHoldingState() { return this->isHolding; }
 	void IsNoLongerActuallyHolding() { this->isHolding = false; }
