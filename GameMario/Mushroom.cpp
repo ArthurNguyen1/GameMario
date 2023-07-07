@@ -2,6 +2,7 @@
 
 #include "Goomba.h"
 #include "QuestionBlock.h"
+#include "Point.h"
 #include "PlayScene.h"
 
 #include "debug.h"
@@ -10,9 +11,29 @@ void CMushroom::OnCollisionWithMario(LPCOLLISIONEVENT e)
 {
 	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 
-	mario->SetLevel(MARIO_LEVEL_BIG);
+	float xx = 0, yy = 0;
+	mario->GetPosition(xx, yy);
 
 	e->src_obj->Delete();
+
+	if (type == MUSHROOM_TYPE_NORMAL)
+	{
+		mario->SetLevel(MARIO_LEVEL_BIG);
+
+		CGameObject* obj = NULL;
+		obj = new CPoint(xx, yy - 16, POINT_TYPE_1000);
+
+		obj->SetPosition(xx, yy - 16);
+		((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+	}
+	else
+	{
+		CGameObject* obj = NULL;
+		obj = new CPoint(xx, yy - 16, POINT_TYPE_1UP);
+
+		obj->SetPosition(xx, yy - 16);
+		((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+	}
 }
 
 void CMushroom::OnNoCollision(DWORD dt)
@@ -53,7 +74,7 @@ void CMushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			isAlreadyMovedOutOfBlock = 1;
 			vy = 0;
 
-			srand(time(NULL));
+			srand((uint32_t)time(NULL));
 			int rd = rand() % (1 - 0 + 1) + 0;
 			if(rd == 0)
 				vx = MUSHROOM_SPEED_X;
@@ -71,7 +92,10 @@ void CMushroom::Render()
 {
 	CAnimations* animations = CAnimations::GetInstance();
 
-	animations->Get(ID_ANI_MUSHROOM)->Render(x, y);
+	if(type == MUSHROOM_TYPE_NORMAL)
+		animations->Get(ID_ANI_MUSHROOM)->Render(x, y);
+	else
+		animations->Get(ID_ANI_MUSHROOM_UP_HEART)->Render(x, y);
 	
 	RenderBoundingBox();
 }

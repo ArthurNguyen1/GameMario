@@ -14,6 +14,7 @@
 #include "Bullet.h"
 #include "Leaf.h"
 #include "InvinsibleBlock.h"
+#include "Point.h"
 
 #include "Collision.h"
 
@@ -34,7 +35,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 
 	//reset kick action
-	if (isKicking == true)
+	if (isKicking == 1)
 	{
 		if (GetTickCount64() - kicking_start > MARIO_KICKING_TIME)
 		{
@@ -56,7 +57,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	isOnPlatform = false;
 
 	//Loop to get total time that pressing key A
-	if (isCountingTimeToFly == true)
+	if (isCountingTimeToFly == 1)
 	{
 		//DebugOut(L"[MARIO UPDATE] time increase\n");
 
@@ -91,7 +92,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 
 	//Decrease flying time
-	if (isFlying == true)
+	if (isFlying == 1)
 	{
 		if (vy < maxVy) vy = maxVy;
 		total_time_to_fly -= (GetTickCount64() - flying_start);
@@ -108,7 +109,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 
 	//Falling time decrease
-	if (isFalling == true && isCountingFalling == true)
+	if (isFalling == 1 && isCountingFalling == 1)
 	{
 		if (vy > maxVy) vy = maxVy;
 		total_time_to_fall -= (GetTickCount64() - falling_start);
@@ -181,6 +182,12 @@ void CMario::OnCollisionWithLeaf(LPCOLLISIONEVENT e)
 
 	e->obj->Delete();
 
+	CGameObject* obj = NULL;
+	obj = new CPoint(x, y - 16, POINT_TYPE_1000);
+
+	obj->SetPosition(x, y - 16);
+	((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+
 }
 
 void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
@@ -190,6 +197,12 @@ void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 	// jump on top >> kill Goomba and deflect a bit 
 	if (e->ny < 0)
 	{
+		CGameObject* obj = NULL;
+		obj = new CPoint(x, y - 16, POINT_TYPE_100);
+
+		obj->SetPosition(x, y - 16);
+		((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+
 		if (goomba->GetLevel() == GOOMBA_LEVEL_JUMP)
 		{
 			goomba->SetLevel(GOOMBA_LEVEL_WALK);
@@ -236,6 +249,12 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 
 	if (e->ny < 0) // jump on top, only case that mario can hit koopas walking >> turn koopas into shell and deflect a bit 
 	{
+		CGameObject* obj = NULL;
+		obj = new CPoint(x, y - 16, POINT_TYPE_100);
+
+		obj->SetPosition(x, y - 16);
+		((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+
 		if (koopas->GetState() == KOOPAS_STATE_WALKING_LEFT || koopas->GetState() == KOOPAS_STATE_WALKING_RIGHT)
 		{
 			koopas->SetState(KOOPAS_STATE_SHELL_IDLE);
@@ -318,7 +337,7 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 	{
 		if (koopas->GetState() == KOOPAS_STATE_SHELL_IDLE)
 		{
-			if (isPressKeyA == true)
+			if (isPressKeyA == 1)
 			{
 				koopas->IsHeld();
 				isHolding = true;
@@ -361,7 +380,7 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 	{
 		if (koopas->GetState() == KOOPAS_STATE_SHELL_IDLE)
 		{
-			if (isPressKeyA == true)
+			if (isPressKeyA == 1)
 			{
 				koopas->IsHeld();
 				isHolding = true;
@@ -471,7 +490,7 @@ void CMario::OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e)
 		questionblock->GetPosition(x, y);
 		CGameObject* obj = NULL;
 
-		if (questionblock->GetType() == 0)
+		if (questionblock->GetType() == QUESTION_BLOCK_TYPE_COIN)
 		{
 			obj = new CCoin(x, y - 24, 0);
 
@@ -873,7 +892,7 @@ void CMario::SetState(int state)
 		maxVx = MARIO_WALKING_SPEED;
 		ax = MARIO_ACCEL_WALK_X;
 		nx = 1;
-		if (isCountingTimeToFly == true)
+		if (isCountingTimeToFly == 1)
 		{
 			//DebugOut(L"[MARIO] SET STATE {WALKING RIGHT} Counting time decrease\n");
 			StopPressingKeyA();
@@ -886,7 +905,7 @@ void CMario::SetState(int state)
 		maxVx = -MARIO_WALKING_SPEED;
 		ax = -MARIO_ACCEL_WALK_X;
 		nx = -1;
-		if (isCountingTimeToFly == true)
+		if (isCountingTimeToFly == 1)
 		{
 			//DebugOut(L"[MARIO] SET STATE {WALKING LEFT} Counting time decrease\n");
 			StopPressingKeyA();
@@ -903,7 +922,7 @@ void CMario::SetState(int state)
 			else
 				vy = -MARIO_JUMP_SPEED_Y;
 
-			if (isCountingTimeToFly == true)
+			if (isCountingTimeToFly == 1)
 			{
 				//DebugOut(L"[MARIO] SET STATE {JUMPING} Counting time decrease\n");
 				StopPressingKeyA();
@@ -939,7 +958,7 @@ void CMario::SetState(int state)
 	case MARIO_STATE_IDLE:
 		ax = 0.0f;
 		vx = 0.0f;
-		if (isCountingTimeToFly == true)
+		if (isCountingTimeToFly == 1)
 		{
 			//DebugOut(L"[MARIO] SET STATE {IDLE} Counting time decrease\n");
 			StopPressingKeyA();
@@ -967,7 +986,7 @@ void CMario::SetState(int state)
 		break;
 	case MARIO_STATE_HOLDING_RELEASE:
 		isPressKeyA = false;		
-		if (isCountingTimeToFly == true)
+		if (isCountingTimeToFly == 1)
 		{
 			//DebugOut(L"[MARIO] SET STATE {RELEASE HOLDING} Counting time decrease\n");
 			StopPressingKeyA();

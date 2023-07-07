@@ -71,9 +71,9 @@ void CSampleKeyHandler::KeyState(BYTE* states)
 	{
 		if (game->IsKeyDown(DIK_RIGHT))
 		{
-			if (mario->IsFalling() == true && level == MARIO_LEVEL_HAVE_TAIL)
+			if (mario->IsFalling() == 1 && level == MARIO_LEVEL_HAVE_TAIL)
 				mario->SetState(MARIO_STATE_FALLING_SLOW_RIGHT);
-			else if (mario->GetFlyableState() == true && level == MARIO_LEVEL_HAVE_TAIL)
+			else if (mario->GetFlyableState() == 1 && level == MARIO_LEVEL_HAVE_TAIL)
 			{
 				if (game->IsKeyDown(DIK_A))
 					mario->SetState(MARIO_STATE_FLYING_FAST_RIGHT);
@@ -85,9 +85,9 @@ void CSampleKeyHandler::KeyState(BYTE* states)
 		}
 		else if (game->IsKeyDown(DIK_LEFT))
 		{
-			if (mario->IsFalling() == true && level == MARIO_LEVEL_HAVE_TAIL)
+			if (mario->IsFalling() == 1 && level == MARIO_LEVEL_HAVE_TAIL)
 				mario->SetState(MARIO_STATE_FALLING_SLOW_LEFT);
-			else if (mario->GetFlyableState() == true && level == MARIO_LEVEL_HAVE_TAIL)
+			else if (mario->GetFlyableState() == 1 && level == MARIO_LEVEL_HAVE_TAIL)
 			{
 				if (game->IsKeyDown(DIK_A))
 					mario->SetState(MARIO_STATE_FLYING_FAST_LEFT);
@@ -99,9 +99,9 @@ void CSampleKeyHandler::KeyState(BYTE* states)
 		}
 		else
 		{
-			if (mario->IsFalling() == true && level == MARIO_LEVEL_HAVE_TAIL)
+			if (mario->IsFalling() == 1 && level == MARIO_LEVEL_HAVE_TAIL)
 				mario->SetState(MARIO_STATE_FALLING_SLOW_IDLE);
-			else if (mario->GetFlyableState() == true && level == MARIO_LEVEL_HAVE_TAIL)
+			else if (mario->GetFlyableState() == 1 && level == MARIO_LEVEL_HAVE_TAIL)
 				mario->SetState(MARIO_STATE_FLYING_IDLE);
 			else
 				mario->SetState(MARIO_STATE_IDLE);
@@ -111,9 +111,9 @@ void CSampleKeyHandler::KeyState(BYTE* states)
 	{
 		if (game->IsKeyDown(DIK_RIGHT))
 		{
-			if (mario->IsFalling() == true && level == MARIO_LEVEL_HAVE_TAIL)
+			if (mario->IsFalling() == 1 && level == MARIO_LEVEL_HAVE_TAIL)
 				mario->SetState(MARIO_STATE_FALLING_FAST_RIGHT);
-			else if (mario->IsFlying() == true && level == MARIO_LEVEL_HAVE_TAIL)
+			else if (mario->IsFlying() == 1 && level == MARIO_LEVEL_HAVE_TAIL)
 				mario->SetState(MARIO_STATE_FLYABLE_FALLING_RIGHT);
 			else if (game->IsKeyDown(DIK_A))
 				mario->SetState(MARIO_STATE_RUNNING_RIGHT);
@@ -122,9 +122,9 @@ void CSampleKeyHandler::KeyState(BYTE* states)
 		}
 		else if (game->IsKeyDown(DIK_LEFT))
 		{
-			if (mario->IsFalling() == true && level == MARIO_LEVEL_HAVE_TAIL)
+			if (mario->IsFalling() == 1 && level == MARIO_LEVEL_HAVE_TAIL)
 				mario->SetState(MARIO_STATE_FALLING_FAST_LEFT);
-			else if (mario->IsFlying() == true && level == MARIO_LEVEL_HAVE_TAIL)
+			else if (mario->IsFlying() == 1 && level == MARIO_LEVEL_HAVE_TAIL)
 				mario->SetState(MARIO_STATE_FLYABLE_FALLING_LEFT);
 			else if (game->IsKeyDown(DIK_A))
 				mario->SetState(MARIO_STATE_RUNNING_LEFT);
@@ -133,9 +133,9 @@ void CSampleKeyHandler::KeyState(BYTE* states)
 		}
 		else
 		{
-			if (mario->IsFalling() == true && level == MARIO_LEVEL_HAVE_TAIL)
+			if (mario->IsFalling() == 1 && level == MARIO_LEVEL_HAVE_TAIL)
 				mario->SetState(MARIO_STATE_FALLING_FAST_IDLE);
-			else if (mario->IsFlying() == true && level == MARIO_LEVEL_HAVE_TAIL)
+			else if (mario->IsFlying() == 1 && level == MARIO_LEVEL_HAVE_TAIL)
 				mario->SetState(MARIO_STATE_FLYABLE_FALLING_IDLE);
 			else
 				mario->SetState(MARIO_STATE_IDLE);

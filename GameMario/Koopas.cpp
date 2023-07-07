@@ -157,16 +157,16 @@ void CKoopas::OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e)
 		mario->GetLevel(mario_level);
 
 
-		if (mario_level == MARIO_LEVEL_SMALL && questionblock->GetType() == 1)
+		if (mario_level == MARIO_LEVEL_SMALL && questionblock->GetType() == QUESTION_BLOCK_TYPE_SPECIAL_ITEM)
 		{
 			CGameObject* obj = NULL;
 
-			obj = new CMushroom(xx, yy - 1);
+			obj = new CMushroom(xx, yy - 1, MUSHROOM_TYPE_NORMAL);
 
 			obj->SetPosition(xx, yy - 1);
 			((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->InsertObject(obj);
 		}
-		else if (mario_level >= MARIO_LEVEL_BIG && questionblock->GetType() == 1)
+		else if (mario_level >= MARIO_LEVEL_BIG && questionblock->GetType() == QUESTION_BLOCK_TYPE_SPECIAL_ITEM)
 		{
 			CGameObject* obj = NULL;
 

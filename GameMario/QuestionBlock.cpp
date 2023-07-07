@@ -31,16 +31,16 @@ void CQuestionBlock::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				isMoving = 0;
 				y = y_start;
 
-				if (mario_level == MARIO_LEVEL_SMALL && type == 1)
+				if (mario_level == MARIO_LEVEL_SMALL && type == QUESTION_BLOCK_TYPE_SPECIAL_ITEM)
 				{
 					CGameObject* obj = NULL;
 
-					obj = new CMushroom(x, y - 1);
+					obj = new CMushroom(x, y - 1, MUSHROOM_TYPE_NORMAL);
 
 					obj->SetPosition(x, y - 1);
 					((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->InsertObject(obj);
 				}
-				else if (mario_level >= MARIO_LEVEL_BIG && type == 1)
+				else if (mario_level >= MARIO_LEVEL_BIG && type == QUESTION_BLOCK_TYPE_SPECIAL_ITEM)
 				{
 					CGameObject* obj = NULL;
 
@@ -48,6 +48,15 @@ void CQuestionBlock::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 					obj->SetPosition(x, y - 8);
 					((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+				}
+				else if (type == QUESTION_BLOCK_TYPE_UP_HEART)
+				{
+					CGameObject* obj = NULL;
+
+					obj = new CMushroom(x, y - 1, MUSHROOM_TYPE_UP_HEART);
+
+					obj->SetPosition(x, y - 1);
+					((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->InsertObject(obj);
 				}
 			}
 		}
@@ -68,7 +77,12 @@ void CQuestionBlock::Render()
 
 	if (isMoving == false && state == QUESTION_BLOCK_STATE_WITH_ITEM)
 	{
-		animations->Get(ID_ANI_QUESTION_BLOCK_WITH_ITEM)->Render(x, y);
+		if (type == QUESTION_BLOCK_TYPE_UP_HEART)
+		{
+			animations->Get(ID_ANI_QUESTION_BLOCK_WITH_ITEM_SHINE)->Render(x, y);
+		}
+		else
+			animations->Get(ID_ANI_QUESTION_BLOCK_WITH_ITEM)->Render(x, y);
 	}
 	else
 	{

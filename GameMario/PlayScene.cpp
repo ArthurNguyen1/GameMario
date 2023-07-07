@@ -18,6 +18,8 @@
 #include "Mushroom.h"
 #include "Koopas.h"
 #include "InvinsibleBlock.h"
+#include "ItemBackground.h"
+#include "GoalRoulette.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -288,6 +290,26 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 		obj = new CGrass(
 			x, y, 
+			sprite_id
+		);
+
+		break;
+	}
+
+	case OBJECT_TYPE_GOAL_ROULETTE:
+	{
+		int type = atoi(tokens[3].c_str());
+
+		obj = new CGoalRoulette(x, y, type);
+		break;
+	}
+
+	case OBJECT_TYPE_ITEM_BACKGROUND:
+	{
+		int sprite_id = atoi(tokens[3].c_str());
+
+		obj = new CItemBackground(
+			x, y,
 			sprite_id
 		);
 

@@ -34,36 +34,36 @@ void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	float mario_x, mario_y;
 	mario->GetPosition(mario_x, mario_y);
 
-	if (abs(this->x - mario_x) <= 120)
+	if (CanShootFire == 1)
 	{
-		if (abs(this->x - mario_x) < 120 && abs(this->x - mario_x) >= 84)
+		if (abs(this->x - mario_x) <= 120)
 		{
-			if (this->x + PIRANHA_PLANT_BBOX_WIDTH / 2 >= mario_x)
+			if (abs(this->x - mario_x) <= 120 && abs(this->x - mario_x) >= 84)
 			{
-				state = PIRANHA_PLANT_STATE_LEFT;
-			}
-			else
-			{
-				state = PIRANHA_PLANT_STATE_RIGHT;
-			}
-
-			y += vy * dt;
-			isActivate = 1;
-
-			if (y <= y_end)
-			{
-				y = y_end;
-
-				if (isTickingAtTop == 0 && isTickingToShoot == 0)
+				if (this->x + PIRANHA_PLANT_BBOX_WIDTH / 2 >= mario_x)
 				{
-					time_at_top_start = time_shooting_start = GetTickCount64();
-					isTickingAtTop = 1;
-					isTickingToShoot = 1;
+					state = PIRANHA_PLANT_STATE_LEFT;
+				}
+				else
+				{
+					state = PIRANHA_PLANT_STATE_RIGHT;
 				}
 
-				if (GetTickCount64() - time_shooting_start > PIRANHA_SHOOTING_TIME && isTickingToShoot == 1)
+				y += vy * dt;
+				isActivate = 1;
+
+				if (y <= y_end)
 				{
-					if (this->CanShootFire == 1)
+					y = y_end;
+
+					if (isTickingAtTop == 0 && isTickingToShoot == 0)
+					{
+						time_at_top_start = time_shooting_start = GetTickCount64();
+						isTickingAtTop = 1;
+						isTickingToShoot = 1;
+					}
+
+					if (GetTickCount64() - time_shooting_start > PIRANHA_SHOOTING_TIME && isTickingToShoot == 1)
 					{
 						if (this->state == PIRANHA_PLANT_STATE_LEFT)
 						{
@@ -103,71 +103,67 @@ void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 							time_shooting_start = -1;
 							isTickingToShoot = 0;
 						}
+					}
 
+					if (GetTickCount64() - time_at_top_start > PIRANHA_AT_TOP_TIME && isTickingAtTop == 1)
+					{
+						vy = PIRANHA_PLANT_SPEED_Y;
+						time_at_top_start = time_shooting_start = -1;
+						isTickingAtTop = 0;
+					}
+					else
+					{
+						vy = 0.0f;
 					}
 				}
-
-				if (GetTickCount64() - time_at_top_start > PIRANHA_AT_TOP_TIME && isTickingAtTop == 1)
+				if (y >= y_start)
 				{
-					vy = PIRANHA_PLANT_SPEED_Y;
-					time_at_top_start = time_shooting_start = -1;
-					isTickingAtTop = 0;
+					y = y_start;
+
+					if (isTickingAtBot == 0)
+					{
+						time_at_bot_start = GetTickCount64();
+						isTickingAtBot = 1;
+					}
+
+					if (GetTickCount64() - time_at_bot_start > PIRANHA_AT_BOT_TIME && isTickingAtBot == 1)
+					{
+						vy = -PIRANHA_PLANT_SPEED_Y;
+						time_at_bot_start = -1;
+						isTickingAtBot = 0;
+					}
+					else
+					{
+						vy = 0.0f;
+					}
+				}
+			}
+			else if (abs(this->x - mario_x) < 84 && abs(this->x - mario_x) >= 30)
+			{
+				if (this->x + PIRANHA_PLANT_BBOX_WIDTH / 2 >= mario_x)
+				{
+					state = PIRANHA_PLANT_STATE_LEFT;
 				}
 				else
 				{
-					vy = 0.0f;
-				}
-			}
-			if (y >= y_start)
-			{
-				y = y_start;
-
-				if (isTickingAtBot == 0)
-				{
-					time_at_bot_start = GetTickCount64();
-					isTickingAtBot = 1;
+					state = PIRANHA_PLANT_STATE_RIGHT;
 				}
 
-				if (GetTickCount64() - time_at_bot_start > PIRANHA_AT_BOT_TIME && isTickingAtBot == 1)
-				{
-					vy = -PIRANHA_PLANT_SPEED_Y;
-					time_at_bot_start = -1;
-					isTickingAtBot = 0;
-				}
-				else
-				{
-					vy = 0.0f;
-				}
-			}
-		}
-		else if (abs(this->x - mario_x) < 84 && abs(this->x - mario_x) >= 30)
-		{
-			if (this->x + PIRANHA_PLANT_BBOX_WIDTH / 2 >= mario_x)
-			{
-				state = PIRANHA_PLANT_STATE_LEFT;
-			}
-			else
-			{
-				state = PIRANHA_PLANT_STATE_RIGHT;
-			}
+				y += vy * dt;
+				isActivate = 1;
 
-			y += vy * dt;
-			isActivate = 1;
-
-			if (y <= y_end)
-			{
-				y = y_end;
-
-				if (isTickingAtTop == 0 && isTickingToShoot == 0)
+				if (y <= y_end)
 				{
-					time_at_top_start = time_shooting_start = GetTickCount64();
-					isTickingAtTop = 1;
-					isTickingToShoot = 1;
-				}
+					y = y_end;
 
-				if (GetTickCount64() - time_shooting_start > PIRANHA_SHOOTING_TIME && isTickingToShoot == 1)
-				{
-					if (this->CanShootFire == 1)
+					if (isTickingAtTop == 0 && isTickingToShoot == 0)
+					{
+						time_at_top_start = time_shooting_start = GetTickCount64();
+						isTickingAtTop = 1;
+						isTickingToShoot = 1;
+					}
+
+					if (GetTickCount64() - time_shooting_start > PIRANHA_SHOOTING_TIME && isTickingToShoot == 1)
 					{
 						if (this->state == PIRANHA_PLANT_STATE_LEFT)
 						{
@@ -223,74 +219,70 @@ void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 							time_shooting_start = -1;
 							isTickingToShoot = 0;
 						}
-
-					}
-				}
-
-				if (GetTickCount64() - time_at_top_start > PIRANHA_AT_TOP_TIME && isTickingAtTop == 1)
-				{
-					vy = PIRANHA_PLANT_SPEED_Y;
-					time_at_top_start = time_shooting_start = -1;
-					isTickingAtTop = 0;
-				}
-				else
-				{
-					vy = 0.0f;
-				}
-			}
-			if (y >= y_start)
-			{
-				y = y_start;
-
-				if (isTickingAtBot == 0)
-				{
-					time_at_bot_start = GetTickCount64();
-					isTickingAtBot = 1;
-				}
-
-				if (GetTickCount64() - time_at_bot_start > PIRANHA_AT_BOT_TIME && isTickingAtBot == 1)
-				{
-					vy = -PIRANHA_PLANT_SPEED_Y;
-					time_at_bot_start = -1;
-					isTickingAtBot = 0;
-				}
-				else
-				{
-					vy = 0.0f;
-				}
-			}
-		}
-
-		else if (abs(this->x - mario_x) < 30) //this condition prevents the plant moving out of the pipe when mario is standing above it
-		{
-			if (this->GetActivateState() == 1 && y < y_start)
-			{
-				if (this->x + PIRANHA_PLANT_BBOX_WIDTH / 2 >= mario_x)
-				{
-					state = PIRANHA_PLANT_STATE_LEFT;
-				}
-				else
-				{
-					state = PIRANHA_PLANT_STATE_RIGHT;
-				}
-
-				y += vy * dt;
-				isActivate = 1;
-
-				if (y <= y_end)
-				{
-					y = y_end;
-
-					if (isTickingToShoot == 0 && isTickingAtTop == 0)
-					{
-						time_shooting_start = time_at_top_start = GetTickCount64();
-						isTickingAtTop = 1;
-						isTickingToShoot = 1;
 					}
 
-					if (GetTickCount64() - time_shooting_start > PIRANHA_SHOOTING_TIME && isTickingToShoot == 1)
+					if (GetTickCount64() - time_at_top_start > PIRANHA_AT_TOP_TIME && isTickingAtTop == 1)
 					{
-						if (this->CanShootFire == 1)
+						vy = PIRANHA_PLANT_SPEED_Y;
+						time_at_top_start = time_shooting_start = -1;
+						isTickingAtTop = 0;
+					}
+					else
+					{
+						vy = 0.0f;
+					}
+				}
+				if (y >= y_start)
+				{
+					y = y_start;
+
+					if (isTickingAtBot == 0)
+					{
+						time_at_bot_start = GetTickCount64();
+						isTickingAtBot = 1;
+					}
+
+					if (GetTickCount64() - time_at_bot_start > PIRANHA_AT_BOT_TIME && isTickingAtBot == 1)
+					{
+						vy = -PIRANHA_PLANT_SPEED_Y;
+						time_at_bot_start = -1;
+						isTickingAtBot = 0;
+					}
+					else
+					{
+						vy = 0.0f;
+					}
+				}
+			}
+
+			else if (abs(this->x - mario_x) < 30) //this condition prevents the plant moving out of the pipe when mario is standing above it
+			{
+				if (this->GetActivateState() == 1 && y < y_start)
+				{
+					if (this->x + PIRANHA_PLANT_BBOX_WIDTH / 2 >= mario_x)
+					{
+						state = PIRANHA_PLANT_STATE_LEFT;
+					}
+					else
+					{
+						state = PIRANHA_PLANT_STATE_RIGHT;
+					}
+
+					y += vy * dt;
+					isActivate = 1;
+
+					if (y <= y_end)
+					{
+						y = y_end;
+
+						if (isTickingToShoot == 0 && isTickingAtTop == 0)
+						{
+							time_shooting_start = time_at_top_start = GetTickCount64();
+							isTickingAtTop = 1;
+							isTickingToShoot = 1;
+						}
+
+						if (GetTickCount64() - time_shooting_start > PIRANHA_SHOOTING_TIME && isTickingToShoot == 1)
 						{
 							if (this->state == PIRANHA_PLANT_STATE_LEFT)
 							{
@@ -331,8 +323,53 @@ void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 								time_shooting_start = -1;
 								isTickingToShoot = 0;
 							}
-
 						}
+
+						if (GetTickCount64() - time_at_top_start > PIRANHA_AT_TOP_TIME && isTickingAtTop == 1)
+						{
+							vy = PIRANHA_PLANT_SPEED_Y;
+							time_at_top_start = -1;
+							isTickingAtTop = 0;
+						}
+						else
+						{
+							vy = 0.0f;
+						}
+					}
+				}
+				else
+				{
+					y = y_start;
+					isActivate = 0;
+					this->vy = -PIRANHA_PLANT_SPEED_Y;
+				}
+
+			}
+		}
+		else
+		{
+			if (y < y_start)
+			{
+				if (this->x + PIRANHA_PLANT_BBOX_WIDTH / 2 >= mario_x)
+				{
+					state = PIRANHA_PLANT_STATE_LEFT;
+				}
+				else
+				{
+					state = PIRANHA_PLANT_STATE_RIGHT;
+				}
+
+				y += vy * dt;
+				isActivate = 1;
+
+				if (y <= y_end)
+				{
+					y = y_end;
+
+					if (isTickingAtTop == 0)
+					{
+						time_at_top_start = GetTickCount64();
+						isTickingAtTop = 1;
 					}
 
 					if (GetTickCount64() - time_at_top_start > PIRANHA_AT_TOP_TIME && isTickingAtTop == 1)
@@ -352,56 +389,225 @@ void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				y = y_start;
 				isActivate = 0;
 				this->vy = -PIRANHA_PLANT_SPEED_Y;
+				time_at_bot_start = -1;
 			}
-
-		}		
+		}
 	}
-	else
+	else //if can not shoot //
 	{
-		if (y < y_start)
+		if (abs(this->x - mario_x) <= 120)
 		{
-			if (this->x + PIRANHA_PLANT_BBOX_WIDTH / 2 >= mario_x)
+			if (abs(this->x - mario_x) < 120 && abs(this->x - mario_x) >= 84)
 			{
-				state = PIRANHA_PLANT_STATE_LEFT;
-			}
-			else
-			{
-				state = PIRANHA_PLANT_STATE_RIGHT;
-			}
-
-			y += vy * dt;
-			isActivate = 1;
-
-			if (y <= y_end)
-			{
-				y = y_end;
-
-				if (isTickingAtTop == 0)
+				if (this->x + PIRANHA_PLANT_BBOX_WIDTH / 2 >= mario_x)
 				{
-					time_at_top_start = GetTickCount64();
-					isTickingAtTop = 1;
-				}
-
-				if (GetTickCount64() - time_at_top_start > PIRANHA_AT_TOP_TIME && isTickingAtTop == 1)
-				{
-					vy = PIRANHA_PLANT_SPEED_Y;
-					time_at_top_start = -1;
-					isTickingAtTop = 0;
+					state = PIRANHA_PLANT_STATE_LEFT;
 				}
 				else
 				{
-					vy = 0.0f;
+					state = PIRANHA_PLANT_STATE_RIGHT;
 				}
+	
+				y += vy * dt;
+				isActivate = 1;
+				
+				if (y <= y_end)
+				{
+					y = y_end;
+					
+					if (isTickingAtTop == 0)
+					{
+						time_at_top_start = GetTickCount64();
+						isTickingAtTop = 1;
+					}					
+
+					if (GetTickCount64() - time_at_top_start > PIRANHA_AT_TOP_TIME && isTickingAtTop == 1)
+					{
+						vy = PIRANHA_PLANT_SPEED_Y;
+						time_at_top_start = -1;
+						isTickingAtTop = 0;
+					}
+					else
+					{
+						vy = 0.0f;
+					}
+				}
+				if (y >= y_start)
+				{
+					y = y_start;
+	
+					if (isTickingAtBot == 0)
+					{
+						time_at_bot_start = GetTickCount64();
+						isTickingAtBot = 1;
+					}
+
+					if (GetTickCount64() - time_at_bot_start > PIRANHA_AT_BOT_TIME && isTickingAtBot == 1)
+					{
+						vy = -PIRANHA_PLANT_SPEED_Y;
+						time_at_bot_start = -1;
+						isTickingAtBot = 0;
+					}
+					else
+					{
+						vy = 0.0f;
+					}
+				}
+			}
+			else if (abs(this->x - mario_x) < 84 && abs(this->x - mario_x) >= 30)
+			{
+				if (this->x + PIRANHA_PLANT_BBOX_WIDTH / 2 >= mario_x)
+				{
+					state = PIRANHA_PLANT_STATE_LEFT;
+				}
+				else
+				{
+					state = PIRANHA_PLANT_STATE_RIGHT;
+				}
+
+				y += vy * dt;
+				isActivate = 1;
+	
+				if (y <= y_end)
+				{
+					y = y_end;
+
+					if (isTickingAtTop == 0)
+					{
+						time_at_top_start = GetTickCount64();
+						isTickingAtTop = 1;
+					}
+						
+					if (GetTickCount64() - time_at_top_start > PIRANHA_AT_TOP_TIME && isTickingAtTop == 1)
+					{
+						vy = PIRANHA_PLANT_SPEED_Y;
+						time_at_top_start = -1;
+						isTickingAtTop = 0;
+					}
+					else
+					{
+						vy = 0.0f;
+					}
+				}
+				if (y >= y_start)
+				{
+					y = y_start;
+
+					if (isTickingAtBot == 0)
+					{
+						time_at_bot_start = GetTickCount64();
+						isTickingAtBot = 1;
+					}
+					
+					if (GetTickCount64() - time_at_bot_start > PIRANHA_AT_BOT_TIME && isTickingAtBot == 1)
+					{
+						vy = -PIRANHA_PLANT_SPEED_Y;
+						time_at_bot_start = -1;
+						isTickingAtBot = 0;
+					}
+					else
+					{
+						vy = 0.0f;
+					}
+				}
+			}
+
+			else if (abs(this->x - mario_x) < 30) //this condition prevents the plant moving out of the pipe when mario is standing above it
+			{
+				if (this->GetActivateState() == 1 && y < y_start)
+				{
+					if (this->x + PIRANHA_PLANT_BBOX_WIDTH / 2 >= mario_x)
+					{
+						state = PIRANHA_PLANT_STATE_LEFT;
+					}
+					else
+					{
+						state = PIRANHA_PLANT_STATE_RIGHT;
+					}
+
+					y += vy * dt;
+					isActivate = 1;
+
+					if (y <= y_end)
+					{
+						y = y_end;
+
+						if (isTickingAtTop == 0)
+						{
+							time_at_top_start = GetTickCount64();
+							isTickingAtTop = 1;
+						}
+
+						if (GetTickCount64() - time_at_top_start > PIRANHA_AT_TOP_TIME && isTickingAtTop == 1)
+						{
+							vy = PIRANHA_PLANT_SPEED_Y;
+							time_at_top_start = -1;
+							isTickingAtTop = 0;
+						}
+						else
+						{
+							vy = 0.0f;
+						}
+					}
+				}
+				else
+				{
+					y = y_start;
+					isActivate = 0;
+					this->vy = -PIRANHA_PLANT_SPEED_Y;
+				}
+
 			}
 		}
 		else
 		{
-			y = y_start;
-			isActivate = 0;
-			this->vy = -PIRANHA_PLANT_SPEED_Y;
-			time_at_bot_start = -1;
+			if (y < y_start)
+			{
+				if (this->x + PIRANHA_PLANT_BBOX_WIDTH / 2 >= mario_x)
+				{
+					state = PIRANHA_PLANT_STATE_LEFT;
+				}
+				else
+				{
+					state = PIRANHA_PLANT_STATE_RIGHT;
+				}
+
+				y += vy * dt;
+				isActivate = 1;
+
+				if (y <= y_end)
+				{
+					y = y_end;
+
+					if (isTickingAtTop == 0)
+					{
+						time_at_top_start = GetTickCount64();
+						isTickingAtTop = 1;
+					}
+
+					if (GetTickCount64() - time_at_top_start > PIRANHA_AT_TOP_TIME && isTickingAtTop == 1)
+					{
+						vy = PIRANHA_PLANT_SPEED_Y;
+						time_at_top_start = -1;
+						isTickingAtTop = 0;
+					}
+					else
+					{
+						vy = 0.0f;
+					}
+				}
+			}
+			else
+			{
+				y = y_start;
+				isActivate = 0;
+				this->vy = -PIRANHA_PLANT_SPEED_Y;
+				time_at_bot_start = -1;
+			}
 		}
+
 	}
+	
 
 
 	CGameObject::Update(dt, coObjects);

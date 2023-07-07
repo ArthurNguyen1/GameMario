@@ -37,7 +37,7 @@ public:
 	LPGAMEOBJECT GetPlayer() { return player; }
 	
 	void AddObject(LPGAMEOBJECT obj) { objects.push_back(obj); }
-	void InsertObject(LPGAMEOBJECT obj) { objects.insert(objects.begin() + 141, obj); } //Insert right after mario
+	void InsertObject(LPGAMEOBJECT obj) { objects.insert(objects.begin() + 198, obj); } //Insert right after mario
 
 
 	void Clear();
