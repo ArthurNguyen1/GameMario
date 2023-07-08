@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject.h"
+#include "KoopasDirectionalHead.h"
 
 #define KOOPAS_GRAVITY 0.002f
 #define KOOPAS_WALKING_SPEED 0.05f
@@ -50,9 +51,11 @@ protected:
 
 	BOOLEAN isHeld;
 
-	void OnCollisionWithInvinsibleBlock(LPCOLLISIONEVENT e);
 	void OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e);
 
+	CKoopasDirectionalHead* _directionalHead;
+
+	void ChangeDirection();
 
 public:
 	CKoopas(float x, float y);

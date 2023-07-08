@@ -3,7 +3,6 @@
 #include "GameObject.h"
 
 #define INVINSIBLE_BLOCK_TYPE_BLOCK_MARIO 0
-#define INVINSIBLE_BLOCK_TYPE_BLOCK_KOOPAS_NORMAL_FORM 1
 #define INVINSIBLE_BLOCK_TYPE_CREATE_GOOMBA 2
 
 class CInvinsibleBlock : public CGameObject

@@ -129,6 +129,9 @@
     <ClInclude Include="GoalRoulette.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="KoopasDirectionalHead.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp">
@@ -228,6 +231,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GoalRoulette.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="KoopasDirectionalHead.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -3,9 +3,6 @@
 #include "PlayScene.h"
 #include "Mushroom.h"
 #include "Leaf.h"
-#include "PlayScene.h"
-
-#include "InvinsibleBlock.h"
 
 CKoopas::CKoopas(float x, float y) : CGameObject(x, y)
 {
@@ -16,6 +13,30 @@ CKoopas::CKoopas(float x, float y) : CGameObject(x, y)
 	shell_start_timeout = -1;
 	SetState(KOOPAS_STATE_WALKING_LEFT);
 	isHeld = 0;
+
+	if (_directionalHead == NULL)
+	{
+		if (nx >= 0)
+		{
+			_directionalHead = new CKoopasDirectionalHead(this->x + KOOPAS_BBOX_WIDTH, this->y, KOOPAS_DIRECTIONAL_HEAD_STATE_WALKING_RIGHT);
+
+			CGameObject* obj = NULL;
+
+			obj = _directionalHead;
+
+			((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+		}
+		else
+		{
+			_directionalHead = new CKoopasDirectionalHead(this->x - KOOPAS_BBOX_WIDTH, this->y, KOOPAS_DIRECTIONAL_HEAD_STATE_WALKING_LEFT);
+
+			CGameObject* obj = NULL;
+
+			obj = _directionalHead;
+
+			((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+		}
+	}
 }
 
 void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& bottom)
@@ -36,11 +57,41 @@ void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& botto
 	}
 }
 
+void CKoopas::ChangeDirection()
+{
+	if (state == KOOPAS_STATE_WALKING_LEFT)
+	{
+		SetState(KOOPAS_STATE_WALKING_RIGHT);
+		_directionalHead->SetPosition(this->x + KOOPAS_BBOX_WIDTH, this->y);
+		_directionalHead->SetState(KOOPAS_DIRECTIONAL_HEAD_STATE_WALKING_RIGHT);
+	}
+	else if (state == KOOPAS_STATE_WALKING_RIGHT)
+	{
+		SetState(KOOPAS_STATE_WALKING_LEFT);
+		_directionalHead->SetPosition(this->x - KOOPAS_BBOX_WIDTH, this->y);
+		_directionalHead->SetState(KOOPAS_DIRECTIONAL_HEAD_STATE_WALKING_LEFT);
+	}
+}
+
 void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	vy += ay * dt;
 	vx += ax * dt;
 
+	//Directional head
+	if (form == KOOPAS_NORMAL_FORM)
+	{
+		float directionalHead_x = 0, directionalHead_y = 0;
+		_directionalHead->GetPosition(directionalHead_x, directionalHead_y);
+
+		if (abs(this->y - directionalHead_y) >= KOOPAS_FALLEN_DISTANCE)
+		{
+			ChangeDirection();
+		}
+	}
+
+	
+	//koopas is hold and kicked
 	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 
 	if (isTimeout == 1)
@@ -55,11 +106,15 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			{
 				SetState(KOOPAS_STATE_WALKING_LEFT);
 				SetFormation(KOOPAS_NORMAL_FORM);
+				_directionalHead->SetPosition(this->x - KOOPAS_BBOX_WIDTH, this->y);
+				_directionalHead->SetState(KOOPAS_DIRECTIONAL_HEAD_STATE_WALKING_LEFT);
 			}
 			else if (nx > 0)
 			{
 				SetState(KOOPAS_STATE_WALKING_RIGHT);
 				SetFormation(KOOPAS_NORMAL_FORM);
+				_directionalHead->SetPosition(this->x + KOOPAS_BBOX_WIDTH, this->y);
+				_directionalHead->SetState(KOOPAS_DIRECTIONAL_HEAD_STATE_WALKING_RIGHT);
 			}
 
 			mario->StopUntouchable();
@@ -136,8 +191,6 @@ void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 		}
 	if (dynamic_cast<CGoomba*>(e->obj) && form == KOOPAS_SHELL_FORM) 
 		e->obj->SetState(GOOMBA_STATE_DIE);
-	else if (dynamic_cast<CInvinsibleBlock*>(e->obj) && form == KOOPAS_NORMAL_FORM)
-		OnCollisionWithInvinsibleBlock(e);
 	else if (dynamic_cast<CQuestionBlock*>(e->obj) && form == KOOPAS_SHELL_FORM)
 		OnCollisionWithQuestionBlock(e);
 }
@@ -177,19 +230,6 @@ void CKoopas::OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e)
 		}
 	}
 
-}
-
-void CKoopas::OnCollisionWithInvinsibleBlock(LPCOLLISIONEVENT e)
-{
-	if (e->nx != 0)
-	{
-		vx = -vx;
-		nx = -nx;
-		if (state == KOOPAS_STATE_WALKING_LEFT)
-			SetState(KOOPAS_STATE_WALKING_RIGHT);
-		else if (state == KOOPAS_STATE_WALKING_RIGHT)
-			SetState(KOOPAS_STATE_WALKING_LEFT);
-	}
 }
 
 
