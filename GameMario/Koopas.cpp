@@ -86,12 +86,12 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		if (mario_nx >= 0)
 		{
 			x = mario_x + 10;
-			y = mario_y;
+			y = mario_y + 3;
 		}
 		else
 		{
 			x = mario_x - 10;
-			y = mario_y;
+			y = mario_y + 3;
 		}
 	}
 	else if (isHeld == 1 && mario->IsPressKeyA() == 0)

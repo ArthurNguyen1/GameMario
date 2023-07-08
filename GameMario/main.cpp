@@ -33,8 +33,8 @@
 
 #define BACKGROUND_COLOR D3DXCOLOR(175.0f/255, 249.0f/255, 240.0f/255, 1.0f/255)
 
-#define SCREEN_WIDTH 260
-#define SCREEN_HEIGHT 420
+#define SCREEN_WIDTH 350
+#define SCREEN_HEIGHT 400
 
 LRESULT CALLBACK WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -108,8 +108,8 @@ HWND CreateGameWindow(HINSTANCE hInstance, int nCmdShow, int ScreenWidth, int Sc
 			WINDOW_CLASS_NAME,
 			MAIN_WINDOW_TITLE,
 			WS_OVERLAPPEDWINDOW, // WS_EX_TOPMOST | WS_VISIBLE | WS_POPUP,
-			CW_USEDEFAULT,
-			CW_USEDEFAULT,
+			0,
+			0,
 			ScreenWidth,
 			ScreenHeight,
 			NULL,

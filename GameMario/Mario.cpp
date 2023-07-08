@@ -516,16 +516,16 @@ void CMario::OnCollisionWithInvinsibleBlock(LPCOLLISIONEVENT e)
 	{
 		CGameObject* obj = NULL;
 
-		obj = new CGoomba(840, 288, 0, 1);
-		obj->SetPosition(840, 288);
+		obj = new CGoomba(840, 232, 0, 1);
+		obj->SetPosition(840, 232);
 		((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
 
-		obj = new CGoomba(890, 288, 0, 1);
-		obj->SetPosition(890, 288);
+		obj = new CGoomba(890, 232, 0, 1);
+		obj->SetPosition(890, 232);
 		((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
 
-		obj = new CGoomba(940, 288, 1, 2);
-		obj->SetPosition(940, 288);
+		obj = new CGoomba(940, 232, 1, 2);
+		obj->SetPosition(940, 232);
 		((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
 
 		invinsibleblock->IsAlreadyCreated();
