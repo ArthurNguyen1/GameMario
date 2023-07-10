@@ -19,6 +19,7 @@ void CMushroom::OnCollisionWithMario(LPCOLLISIONEVENT e)
 	if (type == MUSHROOM_TYPE_NORMAL)
 	{
 		mario->SetLevel(MARIO_LEVEL_BIG);
+		mario->StartTransformationToBig();
 
 		CGameObject* obj = NULL;
 		obj = new CPoint(xx, yy - 16, POINT_TYPE_1000);

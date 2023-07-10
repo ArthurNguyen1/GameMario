@@ -65,6 +65,9 @@
 #define MARIO_STATE_FALLING_SLOW_IDLE	914
 #define MARIO_STATE_FALLING_FAST_IDLE	915
 
+#define MARIO_STATE_TRANSFORMATION_SMALL_TO_BIG		916
+#define MARIO_STATE_TRANSFORMATION_BIG_TO_SMALL		917
+#define MARIO_STATE_TRANSFORMATION_TO_HAS_WINGS		918
 
 #pragma region ANIMATION_ID
 
@@ -99,6 +102,12 @@
 #define ID_ANI_MARIO_HOLDING_SHELL_WALKING_LEFT 2801
 
 #define ID_ANI_MARIO_DIE 999
+
+#define ID_ANI_MARIO_TRANSFORMATION_FROM_SMALL_TO_BIG_RIGHT	951
+#define ID_ANI_MARIO_TRANSFORMATION_FROM_SMALL_TO_BIG_LEFT	952
+#define ID_ANI_MARIO_TRANSFORMATION_FROM_BIG_TO_SMALL_RIGHT	953
+#define ID_ANI_MARIO_TRANSFORMATION_FROM_BIG_TO_SMALL_LEFT	954
+#define ID_ANI_MARIO_TRANSFORMATION_TO_HAS_WINGS	950
 
 // SMALL MARIO
 #define ID_ANI_MARIO_SMALL_IDLE_RIGHT 1100
@@ -197,6 +206,7 @@
 
 #define MARIO_UNTOUCHABLE_TIME 2500
 #define MARIO_KICKING_TIME 250
+#define MARIO_TRANSFORMATION_TIME 600
 
 #define MARIO_FLYABLE_TIME 27500
 #define MARIO_SET_FLY_STATE_TIME 58500
@@ -241,6 +251,15 @@ class CMario : public CGameObject
 	BOOLEAN isCountingFalling; //this variable use to set the falling_start once
 	ULONGLONG falling_start;
 	LONGLONG total_time_to_fall;
+
+	BOOLEAN isTransformationToBig;
+	ULONGLONG transformation_to_big_start;
+
+	BOOLEAN isTransformationToSmall;
+	ULONGLONG transformation_to_small_start;
+
+	BOOLEAN isTransformationToHasWings;
+	ULONGLONG transformation_to_has_wings_start;
 
 	void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
 	void OnCollisionWithKoopas(LPCOLLISIONEVENT e);
@@ -295,6 +314,15 @@ public:
 		isCountingFalling = false;
 		falling_start = -1;
 		total_time_to_fall = 0;
+
+		isTransformationToBig = false;
+		transformation_to_big_start = -1;
+
+		isTransformationToSmall = false;
+		transformation_to_small_start = -1;
+
+		isTransformationToHasWings = false;
+		transformation_to_has_wings_start = -1;
 	}
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();
@@ -311,12 +339,21 @@ public:
 	void OnCollisionWith(LPCOLLISIONEVENT e);
 
 	void GetLevel(int& level) { level = this->level; }
-	void SetLevel(int l);
+	void SetLevel(int next_level);
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount64(); }
 	void StopUntouchable() { untouchable = 0; untouchable_start = -1; }
 	
 	void StartKicking() { isKicking = true; kicking_start = GetTickCount64(); }
 	void StopKicking() { isKicking = false; kicking_start = -1; }
+
+	void StartTransformationToBig() { isTransformationToBig = true; transformation_to_big_start = GetTickCount64(); }
+	void StopTransformationToBig() { isTransformationToBig = false; transformation_to_big_start = -1; }
+
+	void StartTransformationToSmall() { isTransformationToSmall = true; transformation_to_small_start = GetTickCount64(); }
+	void StopTransformationToSmall() { isTransformationToSmall = false; transformation_to_small_start = -1; }
+
+	void StartTransformationToHasWings() { isTransformationToHasWings = true; transformation_to_has_wings_start = GetTickCount64(); }
+	void StopTransformationToHasWings() { isTransformationToHasWings = false; transformation_to_has_wings_start = -1; }
 
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 
@@ -331,7 +368,6 @@ public:
 	BOOLEAN IsFalling() { return isFalling; }
 	void StartFalling() { total_time_to_fall = MARIO_SET_FALL_STATE_TIME; falling_start = GetTickCount64(); }
 	void StopFalling() { total_time_to_fall = 0; falling_start = -1; }
-
 
 	BOOLEAN GetHoldingState() { return this->isHolding; }
 	void IsNoLongerActuallyHolding() { this->isHolding = false; }

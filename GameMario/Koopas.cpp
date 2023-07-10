@@ -4,44 +4,79 @@
 #include "Mushroom.h"
 #include "Leaf.h"
 
-CKoopas::CKoopas(float x, float y) : CGameObject(x, y)
+#include "ColorBox.h"
+#include "Platform.h"
+
+CKoopas::CKoopas(float x, float y, int color, int form) : CGameObject(x, y)
 {
 	this->ax = 0;
 	this->ay = KOOPAS_GRAVITY;
-	form = KOOPAS_NORMAL_FORM;
+	this->color = color;
+	this->form = form;
 	isTimeout = 0;
 	shell_start_timeout = -1;
 	SetState(KOOPAS_STATE_WALKING_LEFT);
 	isHeld = 0;
 
-	if (_directionalHead == NULL)
+
+	if (this->color == 0) //only RED koopas has directional head
 	{
-		if (nx >= 0)
+		if (_directionalHead == NULL)
 		{
-			_directionalHead = new CKoopasDirectionalHead(this->x + KOOPAS_BBOX_WIDTH, this->y, KOOPAS_DIRECTIONAL_HEAD_STATE_WALKING_RIGHT);
+			if (nx >= 0)
+			{
+				_directionalHead = new CKoopasDirectionalHead(this->x + KOOPAS_BBOX_WIDTH, this->y, KOOPAS_DIRECTIONAL_HEAD_STATE_WALKING_RIGHT);
 
-			CGameObject* obj = NULL;
+				CGameObject* obj = NULL;
 
-			obj = _directionalHead;
+				obj = _directionalHead;
 
-			((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+				((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+			}
+			else
+			{
+				_directionalHead = new CKoopasDirectionalHead(this->x - KOOPAS_BBOX_WIDTH, this->y, KOOPAS_DIRECTIONAL_HEAD_STATE_WALKING_LEFT);
+
+				CGameObject* obj = NULL;
+
+				obj = _directionalHead;
+
+				((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+			}
 		}
+
+		if (this->form == KOOPAS_NORMAL_FORM)
+			_directionalHead->IsActivate();
 		else
+			_directionalHead->IsNoActivate();
+	}
+	else //GREEN
+	{
+		if (_directionalHead == NULL)
 		{
-			_directionalHead = new CKoopasDirectionalHead(this->x - KOOPAS_BBOX_WIDTH, this->y, KOOPAS_DIRECTIONAL_HEAD_STATE_WALKING_LEFT);
-
-			CGameObject* obj = NULL;
-
-			obj = _directionalHead;
-
-			((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+			if (nx >= 0)
+			{
+				_directionalHead = new CKoopasDirectionalHead(this->x + KOOPAS_BBOX_WIDTH, this->y, KOOPAS_DIRECTIONAL_HEAD_STATE_WALKING_RIGHT);
+			}
+			else
+			{
+				_directionalHead = new CKoopasDirectionalHead(this->x - KOOPAS_BBOX_WIDTH, this->y, KOOPAS_DIRECTIONAL_HEAD_STATE_WALKING_LEFT);
+			}
 		}
+		_directionalHead->IsNoActivate();
 	}
 }
 
 void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
-	if (form == KOOPAS_SHELL_FORM)
+	if (form == KOOPAS_HAS_WINGS_FORM)
+	{
+		left = x - KOOPAS_HAS_WINGS_BBOX_WIDTH / 2;
+		top = y - KOOPAS_HAS_WINGS_BBOX_HEIGHT / 2;
+		right = left + KOOPAS_HAS_WINGS_BBOX_WIDTH;
+		bottom = top + KOOPAS_HAS_WINGS_BBOX_HEIGHT;
+	}
+	else if (form == KOOPAS_SHELL_FORM)
 	{
 		left = x - KOOPAS_SHELL_BBOX_WIDTH / 2;
 		top = y - KOOPAS_SHELL_BBOX_HEIGHT / 2;
@@ -73,24 +108,30 @@ void CKoopas::ChangeDirection()
 	}
 }
 
+void CKoopas::ResetDirectionalHead()
+{
+	if (nx < 0)
+	{
+		SetState(KOOPAS_STATE_WALKING_LEFT);
+		_directionalHead->SetPosition(this->x - KOOPAS_BBOX_WIDTH, this->y);
+		_directionalHead->SetState(KOOPAS_DIRECTIONAL_HEAD_STATE_WALKING_LEFT);
+	}
+	else //if (nx > 0)
+	{
+		SetState(KOOPAS_STATE_WALKING_RIGHT);
+		_directionalHead->SetPosition(this->x + KOOPAS_BBOX_WIDTH, this->y);
+		_directionalHead->SetState(KOOPAS_DIRECTIONAL_HEAD_STATE_WALKING_RIGHT);
+	}
+
+	_directionalHead->IsActivate();
+
+}
+
 void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	vy += ay * dt;
 	vx += ax * dt;
 
-	//Directional head
-	if (form == KOOPAS_NORMAL_FORM)
-	{
-		float directionalHead_x = 0, directionalHead_y = 0;
-		_directionalHead->GetPosition(directionalHead_x, directionalHead_y);
-
-		if (abs(this->y - directionalHead_y) >= KOOPAS_FALLEN_DISTANCE)
-		{
-			ChangeDirection();
-		}
-	}
-
-	
 	//koopas is hold and kicked
 	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 
@@ -102,27 +143,59 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 		else if (GetTickCount64() - shell_start_timeout > KOOPAS_SHELL_TIMEOUT)
 		{
-			if (nx < 0)
+			if (color == 0) //RED
 			{
-				SetState(KOOPAS_STATE_WALKING_LEFT);
-				SetFormation(KOOPAS_NORMAL_FORM);
-				_directionalHead->SetPosition(this->x - KOOPAS_BBOX_WIDTH, this->y);
-				_directionalHead->SetState(KOOPAS_DIRECTIONAL_HEAD_STATE_WALKING_LEFT);
+				if (nx < 0)
+				{
+					SetState(KOOPAS_STATE_WALKING_LEFT);
+					SetFormation(KOOPAS_NORMAL_FORM);
+					_directionalHead->SetPosition(this->x - KOOPAS_BBOX_WIDTH, this->y);
+					_directionalHead->SetState(KOOPAS_DIRECTIONAL_HEAD_STATE_WALKING_LEFT);
+				}
+				else if (nx > 0)
+				{
+					SetState(KOOPAS_STATE_WALKING_RIGHT);
+					SetFormation(KOOPAS_NORMAL_FORM);
+					_directionalHead->SetPosition(this->x + KOOPAS_BBOX_WIDTH, this->y);
+					_directionalHead->SetState(KOOPAS_DIRECTIONAL_HEAD_STATE_WALKING_RIGHT);
+				}
 			}
-			else if (nx > 0)
+			else //GREEN
 			{
-				SetState(KOOPAS_STATE_WALKING_RIGHT);
-				SetFormation(KOOPAS_NORMAL_FORM);
-				_directionalHead->SetPosition(this->x + KOOPAS_BBOX_WIDTH, this->y);
-				_directionalHead->SetState(KOOPAS_DIRECTIONAL_HEAD_STATE_WALKING_RIGHT);
+				if (nx < 0)
+				{
+					SetState(KOOPAS_STATE_WALKING_LEFT);
+					SetFormation(KOOPAS_NORMAL_FORM);
+				}
+				else if (nx > 0)
+				{
+					SetState(KOOPAS_STATE_WALKING_RIGHT);
+					SetFormation(KOOPAS_NORMAL_FORM);
+				}
 			}
 
-			mario->StopUntouchable();
+			//mario->StopUntouchable();
 			if (isHeld == 1 && mario->IsPressKeyA() == 1 && mario->GetHoldingState() == 1)
 			{
 				int level;
 				mario->GetLevel(level);
-				mario->SetLevel(--level);
+				if (level == MARIO_LEVEL_HAVE_TAIL)
+				{
+					mario->SetLevel(MARIO_LEVEL_BIG);
+					mario->StartUntouchable();
+					mario->StartTransformationToHasWings();
+				}
+				else if (level == MARIO_LEVEL_BIG)
+				{
+					mario->SetLevel(MARIO_LEVEL_SMALL);
+					mario->StartUntouchable();
+					mario->StartTransformationToSmall();
+				}
+				else
+				{
+					DebugOut(L">>> Mario DIE >>> \n");
+					mario->SetState(MARIO_STATE_DIE);
+				}
 			}
 
 			StopTickingTimeout();
@@ -138,15 +211,34 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		float mario_x = 0, mario_y = 0;
 		mario->GetPosition(mario_x, mario_y);
 
-		if (mario_nx >= 0)
+		int mario_level = 0;
+		mario->GetLevel(mario_level);
+
+		if (mario_level == MARIO_LEVEL_SMALL)
 		{
-			x = mario_x + 10;
-			y = mario_y + 3;
+			if (mario_nx >= 0)
+			{
+				x = mario_x + 10;
+				y = mario_y - 2;
+			}
+			else
+			{
+				x = mario_x - 10;
+				y = mario_y - 2;
+			}
 		}
 		else
 		{
-			x = mario_x - 10;
-			y = mario_y + 3;
+			if (mario_nx >= 0)
+			{
+				x = mario_x + 10;
+				y = mario_y + 3;
+			}
+			else
+			{
+				x = mario_x - 10;
+				y = mario_y + 3;
+			}
 		}
 	}
 	else if (isHeld == 1 && mario->IsPressKeyA() == 0)
@@ -156,12 +248,32 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		mario->StartUntouchable();
 		mario->IsNoLongerActuallyHolding();
 		mario->StartKicking();
-		if(mario_nx >= 0)
+		if (mario_nx >= 0)
 			SetState(KOOPAS_STATE_SHELL_ROLL_RIGHT);
 		else
 			SetState(KOOPAS_STATE_SHELL_ROLL_LEFT);
 	}
 
+	if (color == 0) //RED
+	{
+		//Directional head
+		if (form == KOOPAS_NORMAL_FORM)
+		{
+			float directionalHead_x = 0, directionalHead_y = 0;
+			_directionalHead->GetPosition(directionalHead_x, directionalHead_y);
+
+			if (directionalHead_y - this->y >= KOOPAS_FALLEN_DISTANCE)
+			{
+				ChangeDirection();
+			}
+		}
+
+		//Check activate of directional head
+		if (form == KOOPAS_NORMAL_FORM)
+			_directionalHead->IsActivate();
+		else
+			_directionalHead->IsNoActivate();
+	}
 
 	CGameObject::Update(dt, coObjects);
 	CCollision::GetInstance()->Process(this, dt, coObjects);
@@ -189,10 +301,27 @@ void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 			else if (state == KOOPAS_STATE_WALKING_RIGHT)
 				SetState(KOOPAS_STATE_WALKING_LEFT);
 		}
+
 	if (dynamic_cast<CGoomba*>(e->obj) && form == KOOPAS_SHELL_FORM) 
 		e->obj->SetState(GOOMBA_STATE_DIE);
 	else if (dynamic_cast<CQuestionBlock*>(e->obj) && form == KOOPAS_SHELL_FORM)
 		OnCollisionWithQuestionBlock(e);
+	else if (dynamic_cast<CColorBox*>(e->obj) && form == KOOPAS_HAS_WINGS_FORM)
+		OnCollisionWithColorBox(e);
+	else if (dynamic_cast<CPlatform*>(e->obj) && form == KOOPAS_HAS_WINGS_FORM)
+		OnCollisionWithPlatform(e);
+}
+
+void CKoopas::OnCollisionWithColorBox(LPCOLLISIONEVENT e)
+{
+	if (e->ny < 0)
+		vy = -KOOPAS_DEFLECT_SPEED;
+}
+
+void CKoopas::OnCollisionWithPlatform(LPCOLLISIONEVENT e)
+{
+	if (e->ny < 0)
+		vy = -KOOPAS_DEFLECT_SPEED;
 }
 
 void CKoopas::OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e)
@@ -236,37 +365,90 @@ void CKoopas::OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e)
 void CKoopas::Render()
 {
 	int aniId = -1;
-	if (state == KOOPAS_STATE_WALKING_LEFT)
+
+	if (form == KOOPAS_HAS_WINGS_FORM)
 	{
-		aniId = ID_ANI_KOOPAS_WALKING_LEFT;
+		if (state == KOOPAS_STATE_WALKING_LEFT)
+		{
+			aniId = ID_ANI_KOOPAS_GREEN_HAS_WINGS_WALKING_LEFT;
+		}
+		else if (state == KOOPAS_STATE_WALKING_RIGHT)
+		{
+			aniId = ID_ANI_KOOPAS_GREEN_HAS_WINGS_WALKING_RIGHT;
+		}
 	}
-	else if(state == KOOPAS_STATE_WALKING_RIGHT)
+	else
 	{
-		aniId = ID_ANI_KOOPAS_WALKING_RIGHT;
-	}
-	else if (state == KOOPAS_STATE_SHELL_IDLE)
-	{
-		aniId = ID_ANI_KOOPAS_SHELL_IDLE;
-	}
-	else if (state == KOOPAS_STATE_SHELL_ROLL_LEFT || state == KOOPAS_STATE_SHELL_ROLL_RIGHT)
-	{
-		aniId = ID_ANI_KOOPAS_SHELL_ROLL;
-	}
-	else if (state == KOOPAS_STATE_SHELL_TIMEOUT)
-	{
-		aniId = ID_ANI_KOOPAS_SHELL_TIMEOUT;
-	}
-	else if (state == KOOPAS_STATE_SHELL_REVERSE_IDLE)
-	{
-		aniId = ID_ANI_KOOPAS_SHELL_REVERSE_IDLE;
-	}
-	else if (state == KOOPAS_STATE_SHELL_REVERSE_ROLL_LEFT || state == KOOPAS_STATE_SHELL_REVERSE_ROLL_RIGHT)
-	{
-		aniId = ID_ANI_KOOPAS_SHELL_REVERSE_ROLL;
-	}
-	else if (state == KOOPAS_STATE_SHELL_REVERSE_TIMEOUT)
-	{
-		aniId = ID_ANI_KOOPAS_SHELL_REVERSE_TIMEOUT;
+		if (color == 0) //RED
+		{
+			if (state == KOOPAS_STATE_WALKING_LEFT)
+			{
+				aniId = ID_ANI_KOOPAS_RED_WALKING_LEFT;
+			}
+			else if (state == KOOPAS_STATE_WALKING_RIGHT)
+			{
+				aniId = ID_ANI_KOOPAS_RED_WALKING_RIGHT;
+			}
+			else if (state == KOOPAS_STATE_SHELL_IDLE)
+			{
+				aniId = ID_ANI_KOOPAS_RED_SHELL_IDLE;
+			}
+			else if (state == KOOPAS_STATE_SHELL_ROLL_LEFT || state == KOOPAS_STATE_SHELL_ROLL_RIGHT)
+			{
+				aniId = ID_ANI_KOOPAS_RED_SHELL_ROLL;
+			}
+			else if (state == KOOPAS_STATE_SHELL_TIMEOUT)
+			{
+				aniId = ID_ANI_KOOPAS_RED_SHELL_TIMEOUT;
+			}
+			else if (state == KOOPAS_STATE_SHELL_REVERSE_IDLE)
+			{
+				aniId = ID_ANI_KOOPAS_RED_SHELL_REVERSE_IDLE;
+			}
+			else if (state == KOOPAS_STATE_SHELL_REVERSE_ROLL_LEFT || state == KOOPAS_STATE_SHELL_REVERSE_ROLL_RIGHT)
+			{
+				aniId = ID_ANI_KOOPAS_RED_SHELL_REVERSE_ROLL;
+			}
+			else if (state == KOOPAS_STATE_SHELL_REVERSE_TIMEOUT)
+			{
+				aniId = ID_ANI_KOOPAS_RED_SHELL_REVERSE_TIMEOUT;
+			}
+		}
+		else if (color == 1) //GREEN
+		{
+			if (state == KOOPAS_STATE_WALKING_LEFT)
+			{
+				aniId = ID_ANI_KOOPAS_GREEN_WALKING_LEFT;
+			}
+			else if (state == KOOPAS_STATE_WALKING_RIGHT)
+			{
+				aniId = ID_ANI_KOOPAS_GREEN_WALKING_RIGHT;
+			}
+			else if (state == KOOPAS_STATE_SHELL_IDLE)
+			{
+				aniId = ID_ANI_KOOPAS_GREEN_SHELL_IDLE;
+			}
+			else if (state == KOOPAS_STATE_SHELL_ROLL_LEFT || state == KOOPAS_STATE_SHELL_ROLL_RIGHT)
+			{
+				aniId = ID_ANI_KOOPAS_GREEN_SHELL_ROLL;
+			}
+			else if (state == KOOPAS_STATE_SHELL_TIMEOUT)
+			{
+				aniId = ID_ANI_KOOPAS_GREEN_SHELL_TIMEOUT;
+			}
+			else if (state == KOOPAS_STATE_SHELL_REVERSE_IDLE)
+			{
+				aniId = ID_ANI_KOOPAS_GREEN_SHELL_REVERSE_IDLE;
+			}
+			else if (state == KOOPAS_STATE_SHELL_REVERSE_ROLL_LEFT || state == KOOPAS_STATE_SHELL_REVERSE_ROLL_RIGHT)
+			{
+				aniId = ID_ANI_KOOPAS_GREEN_SHELL_REVERSE_ROLL;
+			}
+			else if (state == KOOPAS_STATE_SHELL_REVERSE_TIMEOUT)
+			{
+				aniId = ID_ANI_KOOPAS_GREEN_SHELL_REVERSE_TIMEOUT;
+			}
+		}
 	}
 
 	CAnimations::GetInstance()->Get(aniId)->Render(x, y);
@@ -309,11 +491,11 @@ void CKoopas::SetFormation(int f)
 	// Adjust position to avoid falling off platform
 	if (this->form == KOOPAS_SHELL_FORM)
 	{
-		y -= (KOOPAS_BBOX_HEIGHT - KOOPAS_SHELL_BBOX_HEIGHT) / 2;
+		y -= (KOOPAS_BBOX_HEIGHT - KOOPAS_SHELL_BBOX_HEIGHT) / 2 + 1;
 	}
 	else if (this->form == KOOPAS_NORMAL_FORM)
 	{
-		y += (KOOPAS_BBOX_HEIGHT - KOOPAS_SHELL_BBOX_HEIGHT) / 2;
+		y += (KOOPAS_BBOX_HEIGHT - KOOPAS_SHELL_BBOX_HEIGHT) / 2 - 1;
 	}
 
 	form = f;

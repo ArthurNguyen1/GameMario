@@ -2,16 +2,24 @@
 
 void CKoopasDirectionalHead::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
-	left = x - KOOPAS_BBOX_WIDTH / 2;
-	top = y - KOOPAS_BBOX_HEIGHT / 2;
-	right = left + KOOPAS_BBOX_WIDTH;
-	bottom = top + KOOPAS_BBOX_HEIGHT;
+	left = x - KOOPAS_DIRECTIONAL_HEAD_BBOX_WIDTH / 2;
+	top = y - KOOPAS_DIRECTIONAL_HEAD_BBOX_HEIGHT / 2;
+	right = left + KOOPAS_DIRECTIONAL_HEAD_BBOX_WIDTH;
+	bottom = top + KOOPAS_DIRECTIONAL_HEAD_BBOX_HEIGHT;
 }
 
 void CKoopasDirectionalHead::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	vy += ay * dt;
-	vx += ax * dt;
+	if (isActivate == 1)
+	{
+		vy += ay * dt;
+		vx += ax * dt;
+	}
+	else
+	{
+		vy = 0;
+		vx = 0;
+	}
 
 	CGameObject::Update(dt, coObjects);
 	CCollision::GetInstance()->Process(this, dt, coObjects);
@@ -29,6 +37,7 @@ void CKoopasDirectionalHead::OnCollisionWith(LPCOLLISIONEVENT e)
 	{
 		vy = 0;
 	}
+
 }
 
 void CKoopasDirectionalHead::Render()
@@ -41,11 +50,11 @@ void CKoopasDirectionalHead::SetState(int state)
 	switch (state)
 	{
 	case KOOPAS_DIRECTIONAL_HEAD_STATE_WALKING_LEFT:
-		vx = -KOOPAS_WALKING_SPEED;
+		vx = -KOOPAS_DIRECTIONAL_HEAD_WALKING_SPEED;
 		nx = -1;
 		break;
 	case KOOPAS_DIRECTIONAL_HEAD_STATE_WALKING_RIGHT:
-		vx = KOOPAS_WALKING_SPEED;
+		vx = KOOPAS_DIRECTIONAL_HEAD_WALKING_SPEED;
 		nx = 1;
 		break;
 	}

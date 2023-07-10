@@ -56,7 +56,48 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	isOnPlatform = false;
 
-	//Loop to get total time that pressing key A
+
+
+	//Transformation to big
+	if (isTransformationToBig == 1)
+	{
+		if (GetTickCount64() - transformation_to_big_start > MARIO_TRANSFORMATION_TIME)
+		{
+			StopTransformationToBig();
+		}
+		else
+		{
+			this->SetState(MARIO_STATE_TRANSFORMATION_SMALL_TO_BIG);
+		}
+	}
+	//Transformation to small
+	if (isTransformationToSmall == 1)
+	{
+		if (GetTickCount64() - transformation_to_small_start > MARIO_TRANSFORMATION_TIME)
+		{
+			StopTransformationToSmall();
+		}
+		else
+		{
+			this->SetState(MARIO_STATE_TRANSFORMATION_BIG_TO_SMALL);
+		}
+	}
+	//Transformation to has wings
+	if (isTransformationToHasWings == 1)
+	{
+		if (GetTickCount64() - transformation_to_has_wings_start > MARIO_TRANSFORMATION_TIME)
+		{
+			StopTransformationToHasWings();
+		}
+		else
+		{
+			this->SetState(MARIO_STATE_TRANSFORMATION_TO_HAS_WINGS);
+		}
+	}
+
+
+
+	// Loop to get total time that pressing key A //
 	if (isCountingTimeToFly == 1)
 	{
 		//DebugOut(L"[MARIO UPDATE] time increase\n");
@@ -182,6 +223,8 @@ void CMario::OnCollisionWithLeaf(LPCOLLISIONEVENT e)
 
 	e->obj->Delete();
 
+	StartTransformationToHasWings();
+
 	CGameObject* obj = NULL;
 	obj = new CPoint(x, y - 16, POINT_TYPE_1000);
 
@@ -225,13 +268,15 @@ void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
 			{
 				if (level == MARIO_LEVEL_HAVE_TAIL)
 				{
-					level = MARIO_LEVEL_BIG;
+					SetLevel(MARIO_LEVEL_BIG);
 					StartUntouchable();
+					StartTransformationToHasWings();
 				}
 				else if (level == MARIO_LEVEL_BIG)
 				{
-					level = MARIO_LEVEL_SMALL;
+					SetLevel(MARIO_LEVEL_SMALL);
 					StartUntouchable();
+					StartTransformationToSmall();
 				}
 				else
 				{
@@ -247,83 +292,34 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 {
 	CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
 
-	if (e->ny < 0) // jump on top, only case that mario can hit koopas walking >> turn koopas into shell and deflect a bit 
+	if (koopas->GetFormation() == KOOPAS_HAS_WINGS_FORM)
 	{
-		CGameObject* obj = NULL;
-		obj = new CPoint(x, y - 16, POINT_TYPE_100);
+		if (e->ny < 0) // jump on top, only case that mario can hit koopas walking >> turn koopas into shell and deflect a bit 
+		{
+			CGameObject* obj = NULL;
+			obj = new CPoint(x, y - 16, POINT_TYPE_100);
 
-		obj->SetPosition(x, y - 16);
-		((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+			obj->SetPosition(x, y - 16);
+			((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
 
-		if (koopas->GetState() == KOOPAS_STATE_WALKING_LEFT || koopas->GetState() == KOOPAS_STATE_WALKING_RIGHT)
-		{
-			koopas->SetState(KOOPAS_STATE_SHELL_IDLE);
-			koopas->SetFormation(KOOPAS_SHELL_FORM);
+			koopas->SetFormation(KOOPAS_NORMAL_FORM);
 			vy = -MARIO_JUMP_DEFLECT_SPEED;
-			koopas->StartTickingTimeout();
-			DebugOut(L"[KOOPAS] HIT FROM {TOP} -> turn NORMAL into SHELL IDLE\n");
-		}
-		else if (koopas->GetState() == KOOPAS_STATE_SHELL_IDLE)
-		{
-			koopas->StopTickingTimeout();
-			int _nx;
-			koopas->GetDirection(_nx);
-			if (_nx < 0)
-			{
-				koopas->SetState(KOOPAS_STATE_SHELL_ROLL_LEFT);
-			}
-			else if (_nx > 0)
-			{
-				koopas->SetState(KOOPAS_STATE_SHELL_ROLL_RIGHT);
-			}
-			vy = -MARIO_JUMP_DEFLECT_SPEED;
-			StartUntouchable();
-			StartKicking();
-			DebugOut(L"[KOOPAS] HIT FROM {TOP ONLY} -> turn SHELL IDLE into SHELL ROLLING random side\n");
-
-		}
-		else if (koopas->GetState() == KOOPAS_STATE_SHELL_ROLL_LEFT || koopas->GetState() == KOOPAS_STATE_SHELL_ROLL_RIGHT)
-		{
-			koopas->SetState(KOOPAS_STATE_SHELL_IDLE);
-			vy = -MARIO_JUMP_DEFLECT_SPEED;
-			koopas->StartTickingTimeout();
-			DebugOut(L"[KOOPAS] HIT FROM {TOP OF ROLLING SHELL} -> turn SHELL ROLLING into SHELL IDLE\n");
-		}	
-	}
-	else if (e->ny > 0) // jump from bot >> can only turn koopas from shell idle into shell rolling and not deflect 
-	{
-		if (koopas->GetState() == KOOPAS_STATE_SHELL_IDLE)
-		{
-			koopas->StopTickingTimeout();
-			int _nx;
-			koopas->GetDirection(_nx);
-			if (_nx < 0)
-			{
-				koopas->SetState(KOOPAS_STATE_SHELL_ROLL_LEFT);
-			}
-			else if (_nx > 0)
-			{
-				koopas->SetState(KOOPAS_STATE_SHELL_ROLL_RIGHT);
-			}
-			vy = -MARIO_JUMP_DEFLECT_SPEED;
-			StartUntouchable();
-			StartKicking();
-			DebugOut(L"[KOOPAS] HIT FROM {BOT ONLY} -> turn SHELL IDLE into SHELL ROLLING random side\n");
 		}
 		else // hit mario
 		{
 			if (untouchable == 0)
 			{
-				DebugOut(L"[KOOPAS] HIT MARIO FROM BOT\n");
 				if (level == MARIO_LEVEL_HAVE_TAIL)
 				{
-					level = MARIO_LEVEL_BIG;
+					SetLevel(MARIO_LEVEL_BIG);
 					StartUntouchable();
+					StartTransformationToHasWings();
 				}
 				else if (level == MARIO_LEVEL_BIG)
 				{
-					level = MARIO_LEVEL_SMALL;
+					SetLevel(MARIO_LEVEL_SMALL);
 					StartUntouchable();
+					StartTransformationToSmall();
 				}
 				else
 				{
@@ -333,87 +329,182 @@ void CMario::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 			}
 		}
 	}
-	else if (e->nx < 0) 
+	else
 	{
-		if (koopas->GetState() == KOOPAS_STATE_SHELL_IDLE)
+		if (e->ny < 0) // jump on top, only case that mario can hit koopas walking >> turn koopas into shell and deflect a bit 
 		{
-			if (isPressKeyA == 1)
+			CGameObject* obj = NULL;
+			obj = new CPoint(x, y - 16, POINT_TYPE_100);
+
+			obj->SetPosition(x, y - 16);
+			((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+
+			if (koopas->GetState() == KOOPAS_STATE_WALKING_LEFT || koopas->GetState() == KOOPAS_STATE_WALKING_RIGHT)
 			{
-				koopas->IsHeld();
-				isHolding = true;
-				DebugOut(L"[MARIO] Holding shell RIGHT\n");
+				koopas->SetState(KOOPAS_STATE_SHELL_IDLE);
+				koopas->SetFormation(KOOPAS_SHELL_FORM);
+				vy = -MARIO_JUMP_DEFLECT_SPEED;
+				koopas->StartTickingTimeout();
+				DebugOut(L"[KOOPAS] HIT FROM {TOP} -> turn NORMAL into SHELL IDLE\n");
 			}
-			else
+			else if (koopas->GetState() == KOOPAS_STATE_SHELL_IDLE)
 			{
 				koopas->StopTickingTimeout();
-				koopas->SetState(KOOPAS_STATE_SHELL_ROLL_RIGHT);
+				int _nx;
+				koopas->GetDirection(_nx);
+				if (_nx < 0)
+				{
+					koopas->SetState(KOOPAS_STATE_SHELL_ROLL_LEFT);
+				}
+				else if (_nx > 0)
+				{
+					koopas->SetState(KOOPAS_STATE_SHELL_ROLL_RIGHT);
+				}
+				vy = -MARIO_JUMP_DEFLECT_SPEED;
 				StartUntouchable();
 				StartKicking();
-				DebugOut(L"[KOOPAS] HIT FROM {LEFT} -> turn SHELL IDLE into SHELL IDLE ROLLING ... LEFT TO RIGHT\n");
-			}
-		}
-		else // hit mario
-		{
-			DebugOut(L"[KOOPAS] HIT MARIO FROM LEFT\n");
+				DebugOut(L"[KOOPAS] HIT FROM {TOP ONLY} -> turn SHELL IDLE into SHELL ROLLING random side\n");
 
-			if (untouchable == 0)
+			}
+			else if (koopas->GetState() == KOOPAS_STATE_SHELL_ROLL_LEFT || koopas->GetState() == KOOPAS_STATE_SHELL_ROLL_RIGHT)
 			{
-				if (level == MARIO_LEVEL_HAVE_TAIL)
-				{
-					level = MARIO_LEVEL_BIG;
-					StartUntouchable();
-				}
-				else if (level == MARIO_LEVEL_BIG)
-				{
-					level = MARIO_LEVEL_SMALL;
-					StartUntouchable();
-				}
-				else
-				{
-					DebugOut(L">>> Mario DIE >>> \n");
-					SetState(MARIO_STATE_DIE);
-				}
+				koopas->SetState(KOOPAS_STATE_SHELL_IDLE);
+				vy = -MARIO_JUMP_DEFLECT_SPEED;
+				koopas->StartTickingTimeout();
+				DebugOut(L"[KOOPAS] HIT FROM {TOP OF ROLLING SHELL} -> turn SHELL ROLLING into SHELL IDLE\n");
 			}
 		}
-	}
-	else if (e->nx > 0)
-	{
-		if (koopas->GetState() == KOOPAS_STATE_SHELL_IDLE)
+		else if (e->ny > 0) // jump from bot >> can only turn koopas from shell idle into shell rolling and not deflect 
 		{
-			if (isPressKeyA == 1)
-			{
-				koopas->IsHeld();
-				isHolding = true;
-				DebugOut(L"[MARIO] Holding shell LEFT\n");
-			}
-			else
+			if (koopas->GetState() == KOOPAS_STATE_SHELL_IDLE)
 			{
 				koopas->StopTickingTimeout();
-				koopas->SetState(KOOPAS_STATE_SHELL_ROLL_LEFT);
+				int _nx;
+				koopas->GetDirection(_nx);
+				if (_nx < 0)
+				{
+					koopas->SetState(KOOPAS_STATE_SHELL_ROLL_LEFT);
+				}
+				else if (_nx > 0)
+				{
+					koopas->SetState(KOOPAS_STATE_SHELL_ROLL_RIGHT);
+				}
+				vy = -MARIO_JUMP_DEFLECT_SPEED;
 				StartUntouchable();
 				StartKicking();
-				DebugOut(L"[KOOPAS] HIT FROM {RIGHT} -> turn SHELL IDLE into SHELL IDLE ROLLING ... LEFT TO RIGHT\n");
+				DebugOut(L"[KOOPAS] HIT FROM {BOT ONLY} -> turn SHELL IDLE into SHELL ROLLING random side\n");
+			}
+			else // hit mario
+			{
+				if (untouchable == 0)
+				{
+					DebugOut(L"[KOOPAS] HIT MARIO FROM BOT\n");
+					if (level == MARIO_LEVEL_HAVE_TAIL)
+					{
+						SetLevel(MARIO_LEVEL_BIG);
+						StartUntouchable();
+						StartTransformationToHasWings();
+					}
+					else if (level == MARIO_LEVEL_BIG)
+					{
+						SetLevel(MARIO_LEVEL_SMALL);
+						StartUntouchable();
+						StartTransformationToSmall();
+					}
+					else
+					{
+						DebugOut(L">>> Mario DIE >>> \n");
+						SetState(MARIO_STATE_DIE);
+					}
+				}
 			}
 		}
-		else // hit mario
+		else if (e->nx < 0)
 		{
-			DebugOut(L"[KOOPAS] HIT MARIO FROM RIGHT\n");
-			if (untouchable == 0)
+			if (koopas->GetState() == KOOPAS_STATE_SHELL_IDLE)
 			{
-				if (level == MARIO_LEVEL_HAVE_TAIL)
+				if (isPressKeyA == 1)
 				{
-					level = MARIO_LEVEL_BIG;
-					StartUntouchable();
-				}
-				else if (level == MARIO_LEVEL_BIG)
-				{
-					level = MARIO_LEVEL_SMALL;
-					StartUntouchable();
+					koopas->IsHeld();
+					isHolding = true;
+					DebugOut(L"[MARIO] Holding shell RIGHT\n");
 				}
 				else
 				{
-					DebugOut(L">>> Mario DIE >>> \n");
-					SetState(MARIO_STATE_DIE);
+					koopas->StopTickingTimeout();
+					koopas->SetState(KOOPAS_STATE_SHELL_ROLL_RIGHT);
+					StartUntouchable();
+					StartKicking();
+					DebugOut(L"[KOOPAS] HIT FROM {LEFT} -> turn SHELL IDLE into SHELL IDLE ROLLING ... LEFT TO RIGHT\n");
+				}
+			}
+			else // hit mario
+			{
+				DebugOut(L"[KOOPAS] HIT MARIO FROM LEFT\n");
+
+				if (untouchable == 0)
+				{
+					if (level == MARIO_LEVEL_HAVE_TAIL)
+					{
+						SetLevel(MARIO_LEVEL_BIG);
+						StartUntouchable();
+						StartTransformationToHasWings();
+					}
+					else if (level == MARIO_LEVEL_BIG)
+					{
+						SetLevel(MARIO_LEVEL_SMALL);
+						StartUntouchable();
+						StartTransformationToSmall();
+					}
+					else
+					{
+						DebugOut(L">>> Mario DIE >>> \n");
+						SetState(MARIO_STATE_DIE);
+					}
+				}
+			}
+		}
+		else if (e->nx > 0)
+		{
+			if (koopas->GetState() == KOOPAS_STATE_SHELL_IDLE)
+			{
+				if (isPressKeyA == 1)
+				{
+					koopas->IsHeld();
+					isHolding = true;
+					DebugOut(L"[MARIO] Holding shell LEFT\n");
+				}
+				else
+				{
+					koopas->StopTickingTimeout();
+					koopas->SetState(KOOPAS_STATE_SHELL_ROLL_LEFT);
+					StartUntouchable();
+					StartKicking();
+					DebugOut(L"[KOOPAS] HIT FROM {RIGHT} -> turn SHELL IDLE into SHELL IDLE ROLLING ... LEFT TO RIGHT\n");
+				}
+			}
+			else // hit mario
+			{
+				DebugOut(L"[KOOPAS] HIT MARIO FROM RIGHT\n");
+				if (untouchable == 0)
+				{
+					if (level == MARIO_LEVEL_HAVE_TAIL)
+					{
+						SetLevel(MARIO_LEVEL_BIG);
+						StartUntouchable();
+						StartTransformationToHasWings();
+					}
+					else if (level == MARIO_LEVEL_BIG)
+					{
+						SetLevel(MARIO_LEVEL_SMALL);
+						StartUntouchable();
+						StartTransformationToSmall();
+					}
+					else
+					{
+						DebugOut(L">>> Mario DIE >>> \n");
+						SetState(MARIO_STATE_DIE);
+					}
 				}
 			}
 		}
@@ -428,13 +519,15 @@ void CMario::OnCollisionWithPiranhaPlant(LPCOLLISIONEVENT e)
 	{
 		if (level == MARIO_LEVEL_HAVE_TAIL)
 		{
-			level = MARIO_LEVEL_BIG;
+			SetLevel(MARIO_LEVEL_BIG);
 			StartUntouchable();
+			StartTransformationToHasWings();
 		}
 		else if (level == MARIO_LEVEL_BIG)
 		{
-			level = MARIO_LEVEL_SMALL;
+			SetLevel(MARIO_LEVEL_SMALL);
 			StartUntouchable();
+			StartTransformationToSmall();
 		}
 		else
 		{
@@ -450,13 +543,15 @@ void CMario::OnCollisionWithBullet(LPCOLLISIONEVENT e)
 	{
 		if (level == MARIO_LEVEL_HAVE_TAIL)
 		{
-			level = MARIO_LEVEL_BIG;
+			SetLevel(MARIO_LEVEL_BIG);
 			StartUntouchable();
+			StartTransformationToHasWings();
 		}
 		else if (level == MARIO_LEVEL_BIG)
 		{
-			level = MARIO_LEVEL_SMALL;
+			SetLevel(MARIO_LEVEL_SMALL);
 			StartUntouchable();
+			StartTransformationToSmall();
 		}
 		else
 		{
@@ -530,6 +625,34 @@ void CMario::OnCollisionWithInvinsibleBlock(LPCOLLISIONEVENT e)
 
 		invinsibleblock->IsAlreadyCreated();
 	}
+
+	//Create koopas
+	if (e->nx < 0 && invinsibleblock->GetType() == INVINSIBLE_BLOCK_TYPE_CREATE_KOOPAS_HAS_WINGS)
+	{
+		CGameObject* obj = NULL;
+
+		obj = new CKoopas(1350, 100, 1, 2);
+		obj->SetPosition(1350, 100);
+		((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+
+		obj = new CKoopas(1382, 100, 1, 2);
+		obj->SetPosition(1382, 100);
+		((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+
+		obj = new CKoopas(1414, 100, 1, 2);
+		obj->SetPosition(1414, 100);
+		((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+	}
+
+	if (e->nx < 0 && invinsibleblock->GetType() == INVINSIBLE_BLOCK_TYPE_CREATE_KOOPAS_NORMAL)
+	{
+		CGameObject* obj = NULL;
+
+		obj = new CKoopas(1460, 240, 1, 1);
+		obj->SetPosition(1460, 240);
+		((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+	}
+
 }
 
 void CMario::OnCollisionWithPortal(LPCOLLISIONEVENT e)
@@ -704,6 +827,7 @@ int CMario::GetAniIdBig()
 int CMario::GetAniIdHaveTail()
 {
 	int aniId = -1;
+
 	if (isFlying)
 	{
 		if (state == MARIO_STATE_FLYING_RIGHT || state == MARIO_STATE_FLYING_FAST_RIGHT)
@@ -838,6 +962,24 @@ void CMario::Render()
 
 	if (state == MARIO_STATE_DIE)
 		aniId = ID_ANI_MARIO_DIE;
+	else if (isTransformationToHasWings)
+	{
+		aniId = ID_ANI_MARIO_TRANSFORMATION_TO_HAS_WINGS;
+	}
+	else if (isTransformationToBig)
+	{
+		if (nx >= 0)
+			aniId = ID_ANI_MARIO_TRANSFORMATION_FROM_SMALL_TO_BIG_RIGHT;
+		else
+			aniId = ID_ANI_MARIO_TRANSFORMATION_FROM_SMALL_TO_BIG_LEFT;
+	}
+	else if (isTransformationToSmall)
+	{
+		if (nx >= 0)
+			aniId = ID_ANI_MARIO_TRANSFORMATION_FROM_BIG_TO_SMALL_RIGHT;
+		else
+			aniId = ID_ANI_MARIO_TRANSFORMATION_FROM_BIG_TO_SMALL_LEFT;
+	}
 	else if (level == MARIO_LEVEL_BIG)
 		aniId = GetAniIdBig();
 	else if (level == MARIO_LEVEL_SMALL)
@@ -978,6 +1120,13 @@ void CMario::SetState(int state)
 		break;
 	case MARIO_STATE_KICKING_RIGHT:
 		if (isSitting) break;
+		break;
+
+	case MARIO_STATE_TRANSFORMATION_SMALL_TO_BIG:
+		break;
+	case MARIO_STATE_TRANSFORMATION_BIG_TO_SMALL:
+		break;
+	case MARIO_STATE_TRANSFORMATION_TO_HAS_WINGS:
 		break;
 
 	case MARIO_STATE_HOLDING:
@@ -1193,8 +1342,6 @@ void CMario::SetState(int state)
 
 	}
 
-
-
 	CGameObject::SetState(state);
 }
 
@@ -1243,17 +1390,26 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 	}
 }
 
-void CMario::SetLevel(int l)
+void CMario::SetLevel(int next_level)
 {
+	//if (next_level < MARIO_LEVEL_SMALL)
+	//{
+	//	level = MARIO_LEVEL_SMALL;
+	//	SetState(MARIO_STATE_DIE);
+	//	return;
+	//}
+
 	// Adjust position to avoid falling off platform
 	if (this->level == MARIO_LEVEL_SMALL)
 	{
 		y -= (MARIO_BIG_BBOX_HEIGHT - MARIO_SMALL_BBOX_HEIGHT) / 2;
+
 	}
 	else if (this->level == MARIO_LEVEL_BIG)
 	{
 		y -= (MARIO_HAVE_TAIL_BBOX_HEIGHT - MARIO_BIG_BBOX_HEIGHT) / 2;
 	}
-	level = l;
+
+	level = next_level;
 }
 

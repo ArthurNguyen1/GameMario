@@ -137,7 +137,13 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		break;
 	}
 
-	case OBJECT_TYPE_KOOPAS: obj = new CKoopas(x, y); break;
+	case OBJECT_TYPE_KOOPAS: 
+	{
+		int color = atoi(tokens[3].c_str());
+		int form = atoi(tokens[4].c_str());
+		obj = new CKoopas(x, y, color, form); 
+		break;
+	}
 
 	case OBJECT_TYPE_QUESTION_BLOCK: 
 	{

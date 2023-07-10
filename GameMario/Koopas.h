@@ -2,15 +2,18 @@
 #include "GameObject.h"
 #include "KoopasDirectionalHead.h"
 
-#define KOOPAS_GRAVITY 0.002f
+#define KOOPAS_GRAVITY 0.0006f
 #define KOOPAS_WALKING_SPEED 0.05f
 #define KOOPAS_ROLLING_SPEED 0.07f
+#define KOOPAS_DEFLECT_SPEED  0.2f
 
 
 #define KOOPAS_BBOX_WIDTH 16
 #define KOOPAS_BBOX_HEIGHT 26
 #define KOOPAS_SHELL_BBOX_WIDTH 16
 #define KOOPAS_SHELL_BBOX_HEIGHT 16
+#define KOOPAS_HAS_WINGS_BBOX_WIDTH 16
+#define KOOPAS_HAS_WINGS_BBOX_HEIGHT 27
 
 #define KOOPAS_SHELL_START_TIMEOUT 4500
 #define KOOPAS_SHELL_TIMEOUT 5000
@@ -26,25 +29,41 @@
 #define KOOPAS_STATE_WALKING_LEFT	1420
 #define KOOPAS_STATE_WALKING_RIGHT	1430
 
-#define ID_ANI_KOOPAS_WALKING_LEFT	17001
-#define ID_ANI_KOOPAS_WALKING_RIGHT	17000
-#define ID_ANI_KOOPAS_SHELL_IDLE	17002
-#define ID_ANI_KOOPAS_SHELL_ROLL	17003
-#define ID_ANI_KOOPAS_SHELL_TIMEOUT	17004
-#define ID_ANI_KOOPAS_SHELL_REVERSE_IDLE	17012
-#define ID_ANI_KOOPAS_SHELL_REVERSE_ROLL	17013
-#define ID_ANI_KOOPAS_SHELL_REVERSE_TIMEOUT	17014
+#define ID_ANI_KOOPAS_RED_WALKING_LEFT	17001
+#define ID_ANI_KOOPAS_RED_WALKING_RIGHT	17000
+#define ID_ANI_KOOPAS_RED_SHELL_IDLE	17002
+#define ID_ANI_KOOPAS_RED_SHELL_ROLL	17003
+#define ID_ANI_KOOPAS_RED_SHELL_TIMEOUT	17004
+#define ID_ANI_KOOPAS_RED_SHELL_REVERSE_IDLE	17012
+#define ID_ANI_KOOPAS_RED_SHELL_REVERSE_ROLL	17013
+#define ID_ANI_KOOPAS_RED_SHELL_REVERSE_TIMEOUT	17014
+
+#define ID_ANI_KOOPAS_GREEN_WALKING_LEFT	17021
+#define ID_ANI_KOOPAS_GREEN_WALKING_RIGHT	17020
+#define ID_ANI_KOOPAS_GREEN_SHELL_IDLE		17022
+#define ID_ANI_KOOPAS_GREEN_SHELL_ROLL		17023
+#define ID_ANI_KOOPAS_GREEN_SHELL_TIMEOUT	17024
+#define ID_ANI_KOOPAS_GREEN_SHELL_REVERSE_IDLE		17042
+#define ID_ANI_KOOPAS_GREEN_SHELL_REVERSE_ROLL		17043
+#define ID_ANI_KOOPAS_GREEN_SHELL_REVERSE_TIMEOUT	17044
+
+#define ID_ANI_KOOPAS_GREEN_HAS_WINGS_WALKING_LEFT	17031
+#define ID_ANI_KOOPAS_GREEN_HAS_WINGS_WALKING_RIGHT	17030
 
 #define KOOPAS_SHELL_FORM	0
 #define KOOPAS_NORMAL_FORM	1
+#define KOOPAS_HAS_WINGS_FORM	2
+
 
 class CKoopas : public CGameObject
 {
 protected:
 	float ax;
 	float ay;
+	
+	int color; //0:red; 1:green
 
-	int form; //0: shell; 1: normal
+	int form; //0: shell; 1: normal; 2: has wings
 
 	BOOLEAN isTimeout;
 	ULONGLONG shell_start_timeout;
@@ -52,13 +71,15 @@ protected:
 	BOOLEAN isHeld;
 
 	void OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e);
+	void OnCollisionWithColorBox(LPCOLLISIONEVENT e);
+	void OnCollisionWithPlatform(LPCOLLISIONEVENT e);
 
 	CKoopasDirectionalHead* _directionalHead;
 
 	void ChangeDirection();
 
 public:
-	CKoopas(float x, float y);
+	CKoopas(float x, float y, int color, int form);
 	void SetState(int state);
 	void SetFormation(int f);
 	int GetFormation() { return form; }
@@ -78,4 +99,6 @@ public:
 
 	void IsHeld() { this->isHeld = 1; }
 	void IsNotHeld() { this->isHeld = 0; }
+
+	void ResetDirectionalHead();
 };
