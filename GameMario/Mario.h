@@ -213,6 +213,10 @@
 
 #define MARIO_SET_FALL_STATE_TIME 200000
 
+#define MARIO_TYPE_INTRO -1
+#define MARIO_TYPE_WOLRDMAP 0
+#define MARIO_TYPE_PLAYSCENE 1
+
 
 class CMario : public CGameObject
 {
@@ -223,6 +227,8 @@ class CMario : public CGameObject
 	float ay;				// acceleration on y 
 
 	int level;
+	int type; //0:Mario in playscene, 1:Mario in WorldMap
+
 	int untouchable;
 	ULONGLONG untouchable_start;
 	BOOLEAN isOnPlatform;
@@ -277,7 +283,7 @@ class CMario : public CGameObject
 	int GetAniIdHaveTail();
 
 public:
-	CMario(float x, float y) : CGameObject(x, y)
+	CMario(float x, float y, int level, int type) : CGameObject(x, y)
 	{
 		isSitting = false;
 		maxVx = 0.0f;
@@ -285,7 +291,8 @@ public:
 		ax = 0.0f;
 		ay = MARIO_GRAVITY;
 
-		level = MARIO_LEVEL_SMALL;
+		this->level = level;
+		this->type = type;
 		untouchable = 0;
 		untouchable_start = -1;
 		isOnPlatform = false;

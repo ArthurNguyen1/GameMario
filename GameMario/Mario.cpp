@@ -658,6 +658,7 @@ void CMario::OnCollisionWithInvinsibleBlock(LPCOLLISIONEVENT e)
 void CMario::OnCollisionWithPortal(LPCOLLISIONEVENT e)
 {
 	CPortal* p = (CPortal*)e->obj;
+
 	CGame::GetInstance()->InitiateSwitchScene(p->GetSceneId());
 }
 

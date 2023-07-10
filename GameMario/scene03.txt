@@ -312,7 +312,7 @@ goalroulette.txt
 15	1260	-120	1	26	4
 
 # MARIO
-0	28	241	1	1
+0	2332	200	3	1
 
 #KOOPAS
 3	597	204	0	1
@@ -463,6 +463,3 @@ goalroulette.txt
 
 #PLATFORM 8 (IN THE SKY)
 5 	1489	24	16	15	13	57000	57000	57000
-
-#Portal
-50	2274	-40	2310	-16	2
