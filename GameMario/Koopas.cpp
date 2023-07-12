@@ -13,11 +13,12 @@ CKoopas::CKoopas(float x, float y, int color, int form) : CGameObject(x, y)
 	this->ay = KOOPAS_GRAVITY;
 	this->color = color;
 	this->form = form;
+	isOnPlatform = 0;
 	isTimeout = 0;
 	shell_start_timeout = -1;
 	SetState(KOOPAS_STATE_WALKING_LEFT);
 	isHeld = 0;
-
+	isReverse = 0;
 
 	if (this->color == 0) //only RED koopas has directional head
 	{
@@ -132,126 +133,253 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	vy += ay * dt;
 	vx += ax * dt;
 
+	isOnPlatform = 0;
+
 	//koopas is hold and kicked
 	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 
-	if (isTimeout == 1)
+	if (isReverse == 0) //Normal koopas shell held and roll
 	{
-		if (GetTickCount64() - shell_start_timeout > KOOPAS_SHELL_START_TIMEOUT && GetTickCount64() - shell_start_timeout <= KOOPAS_SHELL_TIMEOUT)
+		if (isTimeout == 1)
 		{
-			SetState(KOOPAS_STATE_SHELL_TIMEOUT);
-		}
-		else if (GetTickCount64() - shell_start_timeout > KOOPAS_SHELL_TIMEOUT)
-		{
-			if (color == 0) //RED
+			if (GetTickCount64() - shell_start_timeout > KOOPAS_SHELL_START_TIMEOUT && GetTickCount64() - shell_start_timeout <= KOOPAS_SHELL_TIMEOUT)
 			{
-				if (nx < 0)
-				{
-					SetState(KOOPAS_STATE_WALKING_LEFT);
-					SetFormation(KOOPAS_NORMAL_FORM);
-					_directionalHead->SetPosition(this->x - KOOPAS_BBOX_WIDTH, this->y);
-					_directionalHead->SetState(KOOPAS_DIRECTIONAL_HEAD_STATE_WALKING_LEFT);
-				}
-				else if (nx > 0)
-				{
-					SetState(KOOPAS_STATE_WALKING_RIGHT);
-					SetFormation(KOOPAS_NORMAL_FORM);
-					_directionalHead->SetPosition(this->x + KOOPAS_BBOX_WIDTH, this->y);
-					_directionalHead->SetState(KOOPAS_DIRECTIONAL_HEAD_STATE_WALKING_RIGHT);
-				}
+				SetState(KOOPAS_STATE_SHELL_TIMEOUT);
 			}
-			else //GREEN
+			else if (GetTickCount64() - shell_start_timeout > KOOPAS_SHELL_TIMEOUT)
 			{
-				if (nx < 0)
+				if (color == 0) //RED
 				{
-					SetState(KOOPAS_STATE_WALKING_LEFT);
-					SetFormation(KOOPAS_NORMAL_FORM);
+					if (nx < 0)
+					{
+						SetState(KOOPAS_STATE_WALKING_LEFT);
+						SetFormation(KOOPAS_NORMAL_FORM);
+						_directionalHead->SetPosition(this->x - KOOPAS_BBOX_WIDTH, this->y);
+						_directionalHead->SetState(KOOPAS_DIRECTIONAL_HEAD_STATE_WALKING_LEFT);
+					}
+					else if (nx > 0)
+					{
+						SetState(KOOPAS_STATE_WALKING_RIGHT);
+						SetFormation(KOOPAS_NORMAL_FORM);
+						_directionalHead->SetPosition(this->x + KOOPAS_BBOX_WIDTH, this->y);
+						_directionalHead->SetState(KOOPAS_DIRECTIONAL_HEAD_STATE_WALKING_RIGHT);
+					}
 				}
-				else if (nx > 0)
+				else //GREEN
 				{
-					SetState(KOOPAS_STATE_WALKING_RIGHT);
-					SetFormation(KOOPAS_NORMAL_FORM);
+					if (nx < 0)
+					{
+						SetState(KOOPAS_STATE_WALKING_LEFT);
+						SetFormation(KOOPAS_NORMAL_FORM);
+					}
+					else if (nx > 0)
+					{
+						SetState(KOOPAS_STATE_WALKING_RIGHT);
+						SetFormation(KOOPAS_NORMAL_FORM);
+					}
 				}
-			}
 
-			//mario->StopUntouchable();
-			if (isHeld == 1 && mario->IsPressKeyA() == 1 && mario->GetHoldingState() == 1)
-			{
-				int level;
-				mario->GetLevel(level);
-				if (level == MARIO_LEVEL_HAVE_TAIL)
+				//mario->StopUntouchable();
+				if (isHeld == 1 && mario->IsPressKeyA() == 1 && mario->GetHoldingState() == 1)
 				{
-					mario->SetLevel(MARIO_LEVEL_BIG);
-					mario->StartUntouchable();
-					mario->StartTransformationToHasWings();
+					int level;
+					mario->GetLevel(level);
+					if (level == MARIO_LEVEL_HAVE_TAIL)
+					{
+						mario->SetLevel(MARIO_LEVEL_BIG);
+						mario->StartUntouchable();
+						mario->StartTransformationToHasWings();
+					}
+					else if (level == MARIO_LEVEL_BIG)
+					{
+						mario->SetLevel(MARIO_LEVEL_SMALL);
+						mario->StartUntouchable();
+						mario->StartTransformationToSmall();
+					}
+					else
+					{
+						DebugOut(L">>> Mario DIE >>> \n");
+						mario->SetState(MARIO_STATE_DIE);
+					}
 				}
-				else if (level == MARIO_LEVEL_BIG)
+
+				StopTickingTimeout();
+				mario->IsNoLongerActuallyHolding();
+			}
+		}
+
+		int mario_nx = 0;
+		mario->GetDirection(mario_nx);
+
+		if (isHeld == 1 && mario->IsPressKeyA() == 1 && mario->GetHoldingState() == 1)
+		{
+			float mario_x = 0, mario_y = 0;
+			mario->GetPosition(mario_x, mario_y);
+
+			int mario_level = 0;
+			mario->GetLevel(mario_level);
+
+			if (mario_level == MARIO_LEVEL_SMALL)
+			{
+				if (mario_nx >= 0)
 				{
-					mario->SetLevel(MARIO_LEVEL_SMALL);
-					mario->StartUntouchable();
-					mario->StartTransformationToSmall();
+					x = mario_x + 10;
+					y = mario_y - 2;
 				}
 				else
 				{
-					DebugOut(L">>> Mario DIE >>> \n");
-					mario->SetState(MARIO_STATE_DIE);
+					x = mario_x - 10;
+					y = mario_y - 2;
 				}
 			}
-
+			else
+			{
+				if (mario_nx >= 0)
+				{
+					x = mario_x + 10;
+					y = mario_y + 3;
+				}
+				else
+				{
+					x = mario_x - 10;
+					y = mario_y + 3;
+				}
+			}
+		}
+		else if (isHeld == 1 && mario->IsPressKeyA() == 0)
+		{
 			StopTickingTimeout();
+
+			mario->StartUntouchable();
 			mario->IsNoLongerActuallyHolding();
+			mario->StartKicking();
+			if (mario_nx >= 0)
+				SetState(KOOPAS_STATE_SHELL_ROLL_RIGHT);
+			else
+				SetState(KOOPAS_STATE_SHELL_ROLL_LEFT);
 		}
 	}
-
-	int mario_nx = 0;
-	mario->GetDirection(mario_nx);
-
-	if (isHeld == 1 && mario->IsPressKeyA() == 1 && mario->GetHoldingState() == 1)
+	else //Reverse koopas shell
 	{
-		float mario_x = 0, mario_y = 0;
-		mario->GetPosition(mario_x, mario_y);
-
-		int mario_level = 0;
-		mario->GetLevel(mario_level);
-
-		if (mario_level == MARIO_LEVEL_SMALL)
+		if (isTimeout == 1)
 		{
-			if (mario_nx >= 0)
+			if (GetTickCount64() - shell_start_timeout > KOOPAS_SHELL_START_TIMEOUT && GetTickCount64() - shell_start_timeout <= KOOPAS_SHELL_TIMEOUT)
 			{
-				x = mario_x + 10;
-				y = mario_y - 2;
+				SetState(KOOPAS_STATE_SHELL_REVERSE_TIMEOUT);
+			}
+			else if (GetTickCount64() - shell_start_timeout > KOOPAS_SHELL_TIMEOUT)
+			{
+				isReverse = 0;
+				if (color == 0) //RED
+				{
+					if (nx < 0)
+					{
+						SetState(KOOPAS_STATE_WALKING_LEFT);
+						SetFormation(KOOPAS_NORMAL_FORM);
+						_directionalHead->SetPosition(this->x - KOOPAS_BBOX_WIDTH, this->y);
+						_directionalHead->SetState(KOOPAS_DIRECTIONAL_HEAD_STATE_WALKING_LEFT);
+					}
+					else if (nx > 0)
+					{
+						SetState(KOOPAS_STATE_WALKING_RIGHT);
+						SetFormation(KOOPAS_NORMAL_FORM);
+						_directionalHead->SetPosition(this->x + KOOPAS_BBOX_WIDTH, this->y);
+						_directionalHead->SetState(KOOPAS_DIRECTIONAL_HEAD_STATE_WALKING_RIGHT);
+					}
+				}
+				else //GREEN
+				{
+					if (nx < 0)
+					{
+						SetState(KOOPAS_STATE_WALKING_LEFT);
+						SetFormation(KOOPAS_NORMAL_FORM);
+					}
+					else if (nx > 0)
+					{
+						SetState(KOOPAS_STATE_WALKING_RIGHT);
+						SetFormation(KOOPAS_NORMAL_FORM);
+					}
+				}
+
+				//mario->StopUntouchable();
+				if (isHeld == 1 && mario->IsPressKeyA() == 1 && mario->GetHoldingState() == 1)
+				{
+					int level;
+					mario->GetLevel(level);
+					if (level == MARIO_LEVEL_HAVE_TAIL)
+					{
+						mario->SetLevel(MARIO_LEVEL_BIG);
+						mario->StartUntouchable();
+						mario->StartTransformationToHasWings();
+					}
+					else if (level == MARIO_LEVEL_BIG)
+					{
+						mario->SetLevel(MARIO_LEVEL_SMALL);
+						mario->StartUntouchable();
+						mario->StartTransformationToSmall();
+					}
+					else
+					{
+						DebugOut(L">>> Mario DIE >>> \n");
+						mario->SetState(MARIO_STATE_DIE);
+					}
+				}
+
+				StopTickingTimeout();
+				mario->IsNoLongerActuallyHolding();
+			}
+		}
+
+		int mario_nx = 0;
+		mario->GetDirection(mario_nx);
+
+		if (isHeld == 1 && mario->IsPressKeyA() == 1 && mario->GetHoldingState() == 1)
+		{
+			float mario_x = 0, mario_y = 0;
+			mario->GetPosition(mario_x, mario_y);
+
+			int mario_level = 0;
+			mario->GetLevel(mario_level);
+
+			if (mario_level == MARIO_LEVEL_SMALL)
+			{
+				if (mario_nx >= 0)
+				{
+					x = mario_x + 10;
+					y = mario_y - 2;
+				}
+				else
+				{
+					x = mario_x - 10;
+					y = mario_y - 2;
+				}
 			}
 			else
 			{
-				x = mario_x - 10;
-				y = mario_y - 2;
+				if (mario_nx >= 0)
+				{
+					x = mario_x + 10;
+					y = mario_y + 3;
+				}
+				else
+				{
+					x = mario_x - 10;
+					y = mario_y + 3;
+				}
 			}
 		}
-		else
+		else if (isHeld == 1 && mario->IsPressKeyA() == 0)
 		{
-			if (mario_nx >= 0)
-			{
-				x = mario_x + 10;
-				y = mario_y + 3;
-			}
-			else
-			{
-				x = mario_x - 10;
-				y = mario_y + 3;
-			}
-		}
-	}
-	else if (isHeld == 1 && mario->IsPressKeyA() == 0)
-	{
-		StopTickingTimeout();
+			StopTickingTimeout();
 
-		mario->StartUntouchable();
-		mario->IsNoLongerActuallyHolding();
-		mario->StartKicking();
-		if (mario_nx >= 0)
-			SetState(KOOPAS_STATE_SHELL_ROLL_RIGHT);
-		else
-			SetState(KOOPAS_STATE_SHELL_ROLL_LEFT);
+			mario->StartUntouchable();
+			mario->IsNoLongerActuallyHolding();
+			mario->StartKicking();
+			if (mario_nx >= 0)
+				SetState(KOOPAS_STATE_SHELL_REVERSE_ROLL_RIGHT);
+			else
+				SetState(KOOPAS_STATE_SHELL_REVERSE_ROLL_LEFT);
+		}
 	}
 
 	if (color == 0) //RED
@@ -277,6 +405,13 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	CGameObject::Update(dt, coObjects);
 	CCollision::GetInstance()->Process(this, dt, coObjects);
+
+	//Reset koopas shell reverse speed
+	if (state == KOOPAS_STATE_SHELL_REVERSE_IDLE_LEFT || state == KOOPAS_STATE_SHELL_REVERSE_IDLE_RIGHT)
+	{
+		if (isOnPlatform == 1)
+			SetState(KOOPAS_STATE_SHELL_REVERSE_IDLE);
+	}
 }
 
 void CKoopas::OnNoCollision(DWORD dt)
@@ -290,6 +425,7 @@ void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 	if (e->ny != 0 && e->obj->IsBlocking())
 	{
 		vy = 0;
+		if (e->ny < 0) isOnPlatform = true;
 	}
 	else
 		if (e->nx != 0 && e->obj->IsBlocking())
@@ -304,12 +440,66 @@ void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 
 	if (dynamic_cast<CGoomba*>(e->obj) && form == KOOPAS_SHELL_FORM) 
 		e->obj->SetState(GOOMBA_STATE_DIE);
+	else if (dynamic_cast<CKoopas*>(e->obj) && form == KOOPAS_SHELL_FORM)
+		OnCollisionWithKoopas(e);
 	else if (dynamic_cast<CQuestionBlock*>(e->obj) && form == KOOPAS_SHELL_FORM)
 		OnCollisionWithQuestionBlock(e);
 	else if (dynamic_cast<CColorBox*>(e->obj) && form == KOOPAS_HAS_WINGS_FORM)
 		OnCollisionWithColorBox(e);
 	else if (dynamic_cast<CPlatform*>(e->obj) && form == KOOPAS_HAS_WINGS_FORM)
 		OnCollisionWithPlatform(e);
+}
+
+void CKoopas::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
+{
+	CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
+
+	if (e->nx < 0)
+	{
+		koopas->IsReverse();
+
+		if (koopas->GetState() == KOOPAS_STATE_WALKING_LEFT || koopas->GetState() == KOOPAS_STATE_WALKING_RIGHT)
+		{
+			koopas->SetState(KOOPAS_STATE_SHELL_REVERSE_IDLE_RIGHT);
+			koopas->SetFormation(KOOPAS_SHELL_FORM);
+			koopas->StartTickingReverseTimeout();
+		}
+		else if (koopas->GetState() == KOOPAS_STATE_SHELL_REVERSE_IDLE_LEFT || koopas->GetState() == KOOPAS_STATE_SHELL_REVERSE_IDLE_RIGHT || koopas->GetState() == KOOPAS_STATE_SHELL_REVERSE_IDLE || koopas->GetState() == KOOPAS_STATE_SHELL_IDLE)
+		{
+			koopas->SetState(KOOPAS_STATE_SHELL_REVERSE_IDLE_RIGHT);
+			koopas->SetFormation(KOOPAS_SHELL_FORM);
+			koopas->StartTickingReverseTimeout();
+		}
+		else if (koopas->GetState() == KOOPAS_STATE_SHELL_ROLL_LEFT || koopas->GetState() == KOOPAS_STATE_SHELL_ROLL_RIGHT || koopas->GetState() == KOOPAS_STATE_SHELL_REVERSE_ROLL_LEFT || koopas->GetState() == KOOPAS_STATE_SHELL_REVERSE_ROLL_RIGHT)
+		{
+			koopas->SetState(KOOPAS_STATE_SHELL_REVERSE_IDLE_RIGHT);
+			koopas->SetFormation(KOOPAS_SHELL_FORM);
+			koopas->StartTickingReverseTimeout();
+		}
+	}
+	else
+	{
+		koopas->IsReverse();
+
+		if (koopas->GetState() == KOOPAS_STATE_WALKING_LEFT || koopas->GetState() == KOOPAS_STATE_WALKING_RIGHT)
+		{
+			koopas->SetState(KOOPAS_STATE_SHELL_REVERSE_IDLE_LEFT);
+			koopas->SetFormation(KOOPAS_SHELL_FORM);
+			koopas->StartTickingReverseTimeout();
+		}
+		else if (koopas->GetState() == KOOPAS_STATE_SHELL_REVERSE_IDLE_LEFT || koopas->GetState() == KOOPAS_STATE_SHELL_REVERSE_IDLE_RIGHT || koopas->GetState() == KOOPAS_STATE_SHELL_REVERSE_IDLE || koopas->GetState() == KOOPAS_STATE_SHELL_IDLE)
+		{
+			koopas->SetState(KOOPAS_STATE_SHELL_REVERSE_IDLE_LEFT);
+			koopas->SetFormation(KOOPAS_SHELL_FORM);
+			koopas->StartTickingReverseTimeout();
+		}
+		else if (koopas->GetState() == KOOPAS_STATE_SHELL_ROLL_LEFT || koopas->GetState() == KOOPAS_STATE_SHELL_ROLL_RIGHT || koopas->GetState() == KOOPAS_STATE_SHELL_REVERSE_ROLL_LEFT || koopas->GetState() == KOOPAS_STATE_SHELL_REVERSE_ROLL_RIGHT)
+		{
+			koopas->SetState(KOOPAS_STATE_SHELL_REVERSE_IDLE_LEFT);
+			koopas->SetFormation(KOOPAS_SHELL_FORM);
+			koopas->StartTickingReverseTimeout();
+		}
+	}
 }
 
 void CKoopas::OnCollisionWithColorBox(LPCOLLISIONEVENT e)
@@ -401,7 +591,7 @@ void CKoopas::Render()
 			{
 				aniId = ID_ANI_KOOPAS_RED_SHELL_TIMEOUT;
 			}
-			else if (state == KOOPAS_STATE_SHELL_REVERSE_IDLE)
+			else if (state == KOOPAS_STATE_SHELL_REVERSE_IDLE_RIGHT || state == KOOPAS_STATE_SHELL_REVERSE_IDLE_LEFT ||  state == KOOPAS_STATE_SHELL_REVERSE_IDLE)
 			{
 				aniId = ID_ANI_KOOPAS_RED_SHELL_REVERSE_IDLE;
 			}
@@ -436,7 +626,7 @@ void CKoopas::Render()
 			{
 				aniId = ID_ANI_KOOPAS_GREEN_SHELL_TIMEOUT;
 			}
-			else if (state == KOOPAS_STATE_SHELL_REVERSE_IDLE)
+			else if (state == KOOPAS_STATE_SHELL_REVERSE_IDLE_RIGHT || state == KOOPAS_STATE_SHELL_REVERSE_IDLE_LEFT || state == KOOPAS_STATE_SHELL_REVERSE_IDLE)
 			{
 				aniId = ID_ANI_KOOPAS_GREEN_SHELL_REVERSE_IDLE;
 			}
@@ -478,7 +668,31 @@ void CKoopas::SetState(int state)
 		vx = KOOPAS_ROLLING_SPEED;
 		nx = 1;
 		break;
+	case KOOPAS_STATE_SHELL_REVERSE_IDLE:
+		ay = 0;
+		vy = 0;
+		vx = 0;
+		break;
+	case KOOPAS_STATE_SHELL_REVERSE_IDLE_RIGHT:
+		vx = KOOPAS_BOUNCING_SPEED_X;
+		vy = -KOOPAS_BOUNCING_SPEED_Y;
+		break;
+	case KOOPAS_STATE_SHELL_REVERSE_IDLE_LEFT:
+		vx = -KOOPAS_BOUNCING_SPEED_X;
+		vy = -KOOPAS_BOUNCING_SPEED_Y;
+		break;
+	case KOOPAS_STATE_SHELL_REVERSE_ROLL_LEFT:
+		vx = -KOOPAS_ROLLING_SPEED;
+		nx = -1;
+		break;
+	case KOOPAS_STATE_SHELL_REVERSE_ROLL_RIGHT:
+		vx = KOOPAS_ROLLING_SPEED;
+		nx = 1;
+		break;
 	case KOOPAS_STATE_SHELL_TIMEOUT:
+		vx = 0;
+		break;
+	case KOOPAS_STATE_SHELL_REVERSE_TIMEOUT:
 		vx = 0;
 		break;
 	}

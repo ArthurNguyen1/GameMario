@@ -4,6 +4,7 @@
 #include "Animation.h"
 #include "Animations.h"
 
+#include "Tail.h"
 #include "debug.h"
 
 #define MARIO_WALKING_SPEED		0.1f
@@ -33,6 +34,8 @@
 #define MARIO_STATE_IDLE			0
 #define MARIO_STATE_WALKING_RIGHT	100
 #define MARIO_STATE_WALKING_LEFT	200
+
+#define MARIO_STATE_HITTING			20
 
 #define MARIO_STATE_JUMP			300
 #define MARIO_STATE_RELEASE_JUMP    301
@@ -180,6 +183,8 @@
 #define ID_ANI_MARIO_HAVE_TAIL_FALLING_FAST_RIGHT 3600
 #define ID_ANI_MARIO_HAVE_TAIL_FALLING_FAST_LEFT 3601
 
+#define ID_ANI_MARIO_HAVE_TAIL_HITTING_RIGHT 3700
+#define ID_ANI_MARIO_HAVE_TAIL_HITTING_LEFT 3701
 #pragma endregion
 
 #define GROUND_Y 160.0f
@@ -206,6 +211,7 @@
 
 #define MARIO_UNTOUCHABLE_TIME 2500
 #define MARIO_KICKING_TIME 250
+#define MARIO_HITTING_TIME 200
 #define MARIO_TRANSFORMATION_TIME 600
 
 #define MARIO_FLYABLE_TIME 27500
@@ -226,6 +232,8 @@ class CMario : public CGameObject
 	float ax;				// acceleration on x 
 	float ay;				// acceleration on y 
 
+	CTail* _tail;
+
 	int level;
 	int type; //0:Mario in playscene, 1:Mario in WorldMap
 
@@ -239,6 +247,9 @@ class CMario : public CGameObject
 
 	BOOLEAN isPressKeyA;
 	BOOLEAN isHolding;
+
+	BOOLEAN isHitting;
+	ULONGLONG hitting_start;
 
 	ULONGLONG press_key_A_running_start; //Counting time that set state as running
 	ULONGLONG release_key_A_stop_running_start; //Counting time when release state running
@@ -283,54 +294,7 @@ class CMario : public CGameObject
 	int GetAniIdHaveTail();
 
 public:
-	CMario(float x, float y, int level, int type) : CGameObject(x, y)
-	{
-		isSitting = false;
-		maxVx = 0.0f;
-		maxVy = 0.0f;
-		ax = 0.0f;
-		ay = MARIO_GRAVITY;
-
-		this->level = level;
-		this->type = type;
-		untouchable = 0;
-		untouchable_start = -1;
-		isOnPlatform = false;
-		coin = 0;
-
-		isKicking = false;
-		kicking_start = -1;
-
-		isPressKeyA = false;
-		isHolding = false;
-
-		press_key_A_running_start = -1;
-		release_key_A_stop_running_start = -1;
-
-		total_time_press_key_A_running = 0;
-
-		isCountingTimeToFly = false;
-
-		canFly = false;
-
-		isFlying = false;
-		flying_start = -1;
-		total_time_to_fly = 0;
-
-		isFalling = false;
-		isCountingFalling = false;
-		falling_start = -1;
-		total_time_to_fall = 0;
-
-		isTransformationToBig = false;
-		transformation_to_big_start = -1;
-
-		isTransformationToSmall = false;
-		transformation_to_small_start = -1;
-
-		isTransformationToHasWings = false;
-		transformation_to_has_wings_start = -1;
-	}
+	CMario(float x, float y, int level, int type);
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	void Render();
 	void SetState(int state);
@@ -352,6 +316,10 @@ public:
 	
 	void StartKicking() { isKicking = true; kicking_start = GetTickCount64(); }
 	void StopKicking() { isKicking = false; kicking_start = -1; }
+
+	void StartHitting() {  hitting_start = GetTickCount64(); }
+	void StopHitting() { hitting_start = -1; }
+
 
 	void StartTransformationToBig() { isTransformationToBig = true; transformation_to_big_start = GetTickCount64(); }
 	void StopTransformationToBig() { isTransformationToBig = false; transformation_to_big_start = -1; }

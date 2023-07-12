@@ -66,7 +66,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	vy += ay * dt;
 	vx += ax * dt;
 
-	if ((state == GOOMBA_STATE_DIE) && (GetTickCount64() - die_start > GOOMBA_DIE_TIMEOUT))
+	if ((state == GOOMBA_STATE_DIE || state == GOOMBA_STATE_DIE_REVERSE) && (GetTickCount64() - die_start > GOOMBA_DIE_TIMEOUT))
 	{
 		isDeleted = true;
 		return;
@@ -139,36 +139,50 @@ void CGoomba::Render()
 {
 	int aniId = -1;
 
-	if (level == GOOMBA_LEVEL_JUMP)
+	if (state == GOOMBA_STATE_DIE_REVERSE)
 	{
-		if (state == GOOMBA_STATE_WALKING)
-			aniId = ID_ANI_GOOMBA_RED_HAS_WINGS_WALKING;
-		else if (state == GOOMBA_STATE_READY_TO_JUMP)
-			aniId = ID_ANI_GOOMBA_RED_HAS_WINGS_JUMPING;
-		else
-			aniId = ID_ANI_GOOMBA_RED_HAS_WINGS_FLYING;
-	}
-	else if (level == GOOMBA_LEVEL_WALK)
-	{
+		level == GOOMBA_LEVEL_WALK;
+
 		if (color == 0)
-		{
-			if (state == GOOMBA_STATE_DIE)
-			{
-				aniId = ID_ANI_GOOMBA_DIE;
-			}
-			else
-				aniId = ID_ANI_GOOMBA_WALKING;
-		}
+			aniId = ID_ANI_GOOMBA_DIE_REVERSE;
 		else
+			aniId = ID_ANI_GOOMBA_RED_DIE_REVERSE;
+	}
+	else
+	{
+		if (level == GOOMBA_LEVEL_JUMP)
 		{
-			if (state == GOOMBA_STATE_DIE)
+			if (state == GOOMBA_STATE_WALKING)
+				aniId = ID_ANI_GOOMBA_RED_HAS_WINGS_WALKING;
+			else if (state == GOOMBA_STATE_READY_TO_JUMP)
+				aniId = ID_ANI_GOOMBA_RED_HAS_WINGS_JUMPING;
+			else
+				aniId = ID_ANI_GOOMBA_RED_HAS_WINGS_FLYING;
+		}
+		else if (level == GOOMBA_LEVEL_WALK)
+		{
+			if (color == 0)
 			{
-				aniId = ID_ANI_GOOMBA_RED_DIE;
+				if (state == GOOMBA_STATE_DIE)
+				{
+					aniId = ID_ANI_GOOMBA_DIE;
+				}
+				else
+					aniId = ID_ANI_GOOMBA_WALKING;
 			}
 			else
-				aniId = ID_ANI_GOOMBA_RED_HAS_NO_WINGS_WALKING;
+			{
+				if (state == GOOMBA_STATE_DIE)
+				{
+					aniId = ID_ANI_GOOMBA_RED_DIE;
+				}
+				else
+					aniId = ID_ANI_GOOMBA_RED_HAS_NO_WINGS_WALKING;
+			}
 		}
 	}
+
+	
 
 	//DebugOut(L"[GOOMBA] RENDER-> ID: %d\n", aniId);
 
@@ -197,6 +211,13 @@ void CGoomba::SetState(int state)
 		ay = GOOMBA_GRAVITY;
 		break;
 	case GOOMBA_STATE_JUMPING:
+		vy = -GOOMBA_JUMPING_SPEED_Y;
+		ay = GOOMBA_GRAVITY;
+		break;
+	case GOOMBA_STATE_DIE_REVERSE:
+		die_start = GetTickCount64();
+		y += (GOOMBA_BBOX_HEIGHT - GOOMBA_BBOX_HEIGHT_DIE) / 2;
+		vx = 0;
 		vy = -GOOMBA_JUMPING_SPEED_Y;
 		ay = GOOMBA_GRAVITY;
 		break;
