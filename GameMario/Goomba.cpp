@@ -2,6 +2,8 @@
 
 #include "debug.h"
 
+#include "AssetIDs.h"
+
 CGoomba::CGoomba(float x, float y, BOOLEAN color, int level) :CGameObject(x, y)
 {
 	this->vx = -GOOMBA_WALKING_SPEED;
@@ -13,6 +15,8 @@ CGoomba::CGoomba(float x, float y, BOOLEAN color, int level) :CGameObject(x, y)
 	walking_start = ready_to_jump_start1 = ready_to_jump_start2 = ready_to_jump_start3 = jumping_start = -1;
 	SetState(GOOMBA_STATE_WALKING);
 	SetLevel(level);
+
+	ObjectType = OBJECT_TYPE_GOOMBA;
 }
 
 void CGoomba::GetBoundingBox(float& left, float& top, float& right, float& bottom)
@@ -141,7 +145,7 @@ void CGoomba::Render()
 
 	if (state == GOOMBA_STATE_DIE_REVERSE)
 	{
-		level == GOOMBA_LEVEL_WALK;
+		level = GOOMBA_LEVEL_WALK;
 
 		if (color == 0)
 			aniId = ID_ANI_GOOMBA_DIE_REVERSE;

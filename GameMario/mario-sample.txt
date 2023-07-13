@@ -28,3 +28,4 @@ height	240
 100	textures\EnemyHasWingsRightToLeft.png
 110	textures\EnemyHasWingsLeftToRight.png
 120	textures\GoalRoulette.png
+130	textures\ui.png

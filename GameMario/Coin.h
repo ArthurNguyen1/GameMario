@@ -4,6 +4,8 @@
 #include "Animation.h"
 #include "Animations.h"
 
+#include "AssetIDs.h"
+
 //#define ID_ANI_COIN 11000
 #define ID_ANI_COIN_SMALL	14000
 #define ID_ANI_COIN_BIG		14001
@@ -27,6 +29,8 @@ public:
 		y_end = y - 40;
 
 		vy = -COIN_SPEED_Y;
+
+		ObjectType = OBJECT_TYPE_COIN;
 	}
 	void Render();
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);

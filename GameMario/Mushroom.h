@@ -4,6 +4,8 @@
 #include "Animation.h"
 #include "Animations.h"
 
+#include "AssetIDs.h"
+
 #define ID_ANI_MUSHROOM 15000
 #define ID_ANI_MUSHROOM_UP_HEART 15001
 
@@ -43,6 +45,8 @@ public:
 		this->ax = 0;
 		this->ay = MUSHROOM_GRAVITY;
 		this->type = type;
+
+		ObjectType = OBJECT_TYPE_MUSHROOM;
 	}
 	void Render();
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);

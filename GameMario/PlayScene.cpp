@@ -20,6 +20,10 @@
 #include "InvinsibleBlock.h"
 #include "ItemBackground.h"
 #include "GoalRoulette.h"
+#include "Hud.h"
+#include "Hud_RewardBox.h"
+#include "Hud_Background.h"
+
 
 #include "SampleKeyEventHandler.h"
 
@@ -147,6 +151,26 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		int color = atoi(tokens[3].c_str());
 		int form = atoi(tokens[4].c_str());
 		obj = new CKoopas(x, y, color, form); 
+		break;
+	}
+
+	case OBJECT_TYPE_HUD:
+	{
+		obj = new CHud(x, y);
+		break;
+	}
+	case OBJECT_TYPE_HUD_REWARDBOX:
+	{
+		int numberbox = atoi(tokens[3].c_str());
+
+		obj = new CHud_RewardBox(x, y, numberbox);
+		break;
+	}
+	case OBJECT_TYPE_HUD_BACKGROUND:
+	{
+		int number = atoi(tokens[3].c_str());
+
+		obj = new CHud_Background(x, y, number);
 		break;
 	}
 

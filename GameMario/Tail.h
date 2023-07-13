@@ -1,6 +1,8 @@
 #pragma once
 #include "GameObject.h"
 
+#include "AssetIDs.h"
+
 #define MARIO_TAIL_BBOX_WIDTH 28
 #define MARIO_TAIL_BBOX_HEIGHT 6
 
@@ -16,6 +18,8 @@ public:
 	CTail(float x, float y) : CGameObject(x, y)
 	{
 		isActivate = 0;
+
+		ObjectType = OBJECT_TYPE_TAIL;
 	}
 	int IsCollidable() { return 1; };
 	int IsBlocking() { return 0; }

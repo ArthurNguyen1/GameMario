@@ -2,6 +2,8 @@
 
 #include "GameObject.h"
 
+#include "AssetIDs.h"
+
 #define INVINSIBLE_BLOCK_TYPE_BLOCK_MARIO 0
 #define INVINSIBLE_BLOCK_TYPE_CREATE_GOOMBA 2
 #define INVINSIBLE_BLOCK_TYPE_CREATE_KOOPAS_HAS_WINGS 3
@@ -28,6 +30,8 @@ public:
 		this->cellHeight = 16;
 		this->type = type;
 		isCreated = 0;
+
+		ObjectType = OBJECT_TYPE_INVINSIBLE_BLOCK;
 	}
 
 	void Render();

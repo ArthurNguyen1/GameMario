@@ -3,6 +3,7 @@
 #include "PlayScene.h"
 #include "Mushroom.h"
 #include "Leaf.h"
+#include "Button.h"
 #include "debug.h"
 
 void CQuestionBlock::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -64,6 +65,16 @@ void CQuestionBlock::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		{
 			y = y_start;
 			vy = 0;
+
+			if(type == QUESTION_BLOCK_TYPE_BUTTON)
+			{
+				CGameObject* obj = NULL;
+
+				obj = new CButton(x, y - 16);
+
+				obj->SetPosition(x, y - 16);
+				((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->AddObject(obj);
+			}
 		}
 		
 	}
@@ -77,7 +88,7 @@ void CQuestionBlock::Render()
 
 	if (isMoving == false && state == QUESTION_BLOCK_STATE_WITH_ITEM)
 	{
-		if (type == QUESTION_BLOCK_TYPE_UP_HEART)
+		if (type == QUESTION_BLOCK_TYPE_UP_HEART || type == QUESTION_BLOCK_TYPE_BUTTON)
 		{
 			animations->Get(ID_ANI_QUESTION_BLOCK_WITH_ITEM_SHINE)->Render(x, y);
 		}

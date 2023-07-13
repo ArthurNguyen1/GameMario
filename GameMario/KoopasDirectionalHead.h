@@ -1,6 +1,8 @@
 #pragma once
 #include "GameObject.h"
 
+#include "AssetIDs.h"
+
 #define KOOPAS_DIRECTIONAL_HEAD_GRAVITY 0.002f
 #define KOOPAS_DIRECTIONAL_HEAD_WALKING_SPEED 0.05f
 
@@ -27,6 +29,8 @@ public:
 		this->ay = KOOPAS_DIRECTIONAL_HEAD_GRAVITY;
 		SetState(state);
 		isActivate = 0;
+
+		ObjectType = OBJECT_TYPE_OTHERS;
 	}
 	void SetState(int state);
 

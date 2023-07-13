@@ -4,6 +4,7 @@
 #include "Animation.h"
 #include "Animations.h"
 
+#include "AssetIDs.h"
 
 class CGrass : public CGameObject {
 private:
@@ -12,6 +13,7 @@ public:
 	CGrass(float x, float y, int sprite_id) : CGameObject(x, y) 
 	{
 		this->spriteId = sprite_id;
+		ObjectType = OBJECT_TYPE_GRASS;
 	}
 	void Render();
 	void Update(DWORD dt) {}

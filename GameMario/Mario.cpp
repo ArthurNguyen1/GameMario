@@ -15,6 +15,7 @@
 #include "Leaf.h"
 #include "InvinsibleBlock.h"
 #include "Point.h"
+#include "Button.h"
 
 #include "Collision.h"
 
@@ -27,6 +28,8 @@ CMario::CMario(float x, float y, int level, int type) : CGameObject(x, y)
 	maxVy = 0.0f;
 	ax = 0.0f;
 	ay = MARIO_GRAVITY;
+
+	ObjectType = OBJECT_TYPE_MARIO;
 
 	if (_tail == NULL)
 	{
@@ -282,8 +285,21 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithBullet(e);
 	else if (dynamic_cast<CLeaf*>(e->obj))
 		OnCollisionWithLeaf(e);
+	else if (dynamic_cast<CButton*>(e->obj))
+		OnCollisionWithButton(e);
 	else if (dynamic_cast<CInvinsibleBlock*>(e->obj))
 		OnCollisionWithInvinsibleBlock(e);
+}
+
+void CMario::OnCollisionWithButton(LPCOLLISIONEVENT e)
+{
+	CButton* button = dynamic_cast<CButton*>(e->obj);
+
+	if (e->ny < 0 && button->GetActivateState() == 0)
+	{
+		button->IsActivate();
+		((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->ActivateButton();
+	}
 }
 
 void CMario::OnCollisionWithLeaf(LPCOLLISIONEVENT e)
@@ -843,7 +859,9 @@ void CMario::OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e)
 			
 		}
 
-		questionblock->SetMovingState(true);
+		if(questionblock->GetType() != QUESTION_BLOCK_TYPE_BUTTON)
+			questionblock->SetMovingState(true);
+
 		questionblock->SetState(QUESTION_BLOCK_STATE_EMPTY);
 		//DebugOut(L"%d\n", questionblock->GetState());
 	}

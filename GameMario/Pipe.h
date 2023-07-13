@@ -2,6 +2,8 @@
 
 #include "GameObject.h"
 
+#include "AssetIDs.h"
+
 class CPipe : public CGameObject
 {
 protected:
@@ -23,6 +25,8 @@ public:
 		this->spriteIdTopRight = sprite_id_top_right;
 		this->spriteIdBodyLeft = sprite_id_body_left;
 		this->spriteIdBodyRight = sprite_id_body_right;
+
+		ObjectType = OBJECT_TYPE_PIPE;
 	}
 
 	void Render();

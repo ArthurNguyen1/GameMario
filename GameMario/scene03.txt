@@ -19,6 +19,7 @@ itembackground.txt
 point.txt
 button.txt
 goalroulette.txt
+hud.txt
 
 #
 [OBJECTS]
@@ -374,6 +375,8 @@ goalroulette.txt
 
 1	1439	-24	2
 
+1	2038	216	3
+
 #BRICK
 10	1510	184	18000
 10	1526	184	18000
@@ -406,7 +409,6 @@ goalroulette.txt
 10	2022	216	18001
 10	2038	248	18001
 10	2038	232	18001
-10	2038	216	18001
 10	2054	248	18001
 
 10	2102	248	18001
@@ -463,3 +465,17 @@ goalroulette.txt
 
 #PLATFORM 8 (IN THE SKY)
 5 	1489	24	16	15	13	57000	57000	57000
+
+#Portal
+50	2274	-40	2310	-16	2
+
+#HUD
+24	0	0	5
+24	0	0	4
+24	0	0	3
+24	0	0	2
+24	0	0	1
+22	0	0
+23	0	0	1
+23	0	0	2
+23	0	0	3

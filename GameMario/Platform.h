@@ -2,6 +2,8 @@
 
 #include "GameObject.h"
 
+#include "AssetIDs.h"
+
 // 
 // The most popular type of object in Mario! 
 // 
@@ -24,6 +26,8 @@ public:
 		this->spriteIdBegin = sprite_id_begin;
 		this->spriteIdMiddle = sprite_id_middle;
 		this->spriteIdEnd = sprite_id_end;
+
+		ObjectType = OBJECT_TYPE_PLATFORM;
 	}
 
 	void Render();

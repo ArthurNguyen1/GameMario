@@ -2,6 +2,8 @@
 
 #include "GameObject.h"
 
+#include "AssetIDs.h"
+
 class CCloudBackground : public CGameObject
 {
 protected:
@@ -26,6 +28,8 @@ public:
 		this->spriteIdMiddleBot = sprite_id_middle_bot;
 		this->spriteIdEndTop = sprite_id_end_top;
 		this->spriteIdEndBot = sprite_id_end_bot;
+
+		ObjectType = OBJECT_TYPE_CLOUD_BACKGROUND;
 	}
 
 	void Render();

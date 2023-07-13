@@ -4,6 +4,8 @@
 #include "Animation.h"
 #include "Animations.h"
 
+#include "AssetIDs.h"
+
 #define ID_ANI_POINT_100	19001
 #define ID_ANI_POINT_1000	19002
 #define ID_ANI_POINT_1UP	19003
@@ -26,6 +28,8 @@ public:
 		y_end = y - 32;
 
 		vy = -POINT_SPEED_Y;
+
+		ObjectType = OBJECT_TYPE_POINT;
 	}
 	void Render();
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);

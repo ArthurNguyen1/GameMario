@@ -4,6 +4,8 @@
 #include "Animation.h"
 #include "Animations.h"
 
+#include "AssetIDs.h"
+
 #define ID_ANI_GOAL_ROULETTE_BACKGROUND			21000
 #define ID_ANI_GOAL_ROULETTE_ITEM_BACKGROUND	21001
 #define ID_ANI_GOAL_REWARD	21002
@@ -30,6 +32,8 @@ public:
 		y_end = y - 40;*/
 
 		//vy = -COIN_SPEED_Y;
+
+		ObjectType = OBJECT_TYPE_GOAL_ROULETTE;
 	}
 	void Render();
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);

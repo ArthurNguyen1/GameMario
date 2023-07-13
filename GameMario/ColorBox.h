@@ -2,6 +2,7 @@
 
 #include "GameObject.h"
 
+#include "AssetIDs.h"
 
 class CColorBox : public CGameObject
 {
@@ -37,6 +38,8 @@ public:
 		this->spriteIdRightTop = sprite_id_right_top;
 		this->spriteIdRightMid = sprite_id_right_mid;
 		this->spriteIdRightBot = sprite_id_right_bot;
+
+		ObjectType = OBJECT_TYPE_COLORBOX;
 	}
 
 	void Render();

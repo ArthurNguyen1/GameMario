@@ -33,6 +33,8 @@ protected:
 
 	bool isDeleted;
 
+	int ObjectType;
+
 public:
 	void SetPosition(float x, float y) { this->x = x, this->y = y; }
 	void SetSpeed(float vx, float vy) { this->vx = vx, this->vy = vy; }
@@ -41,6 +43,7 @@ public:
 	void GetSpeed(float& vx, float& vy) { vx = this->vx; vy = this->vy; }
 	void GetDirection(int& nx) { nx = this->nx; }
 
+	int GetObjectType() { return this->ObjectType; }
 
 	int GetState() { return this->state; }
 	virtual void Delete() { isDeleted = true; }

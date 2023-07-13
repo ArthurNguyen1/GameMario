@@ -4,6 +4,8 @@
 #include "Animation.h"
 #include "Animations.h"
 
+#include "AssetIDs.h"
+
 #define ID_ANI_LEAF_RIGHT_TO_LEFT 16000
 #define ID_ANI_LEAF_LEFT_TO_RIGHT 16001
 
@@ -37,6 +39,8 @@ public:
 		isStartFalling = 0;
 		this->ay = 0;
 		this->ax = 0;
+
+		ObjectType = OBJECT_TYPE_LEAF;
 	}
 	void Render();
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);

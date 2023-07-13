@@ -16,6 +16,8 @@ CPiranhaPlant::CPiranhaPlant(float x, float y, BOOLEAN PlantColor, BOOLEAN CanSh
 	this->vy = -PIRANHA_PLANT_SPEED_Y;
 	isTickingAtTop = isTickingToShoot = isTickingAtBot = 0;
 	time_at_top_start = time_at_bot_start = time_shooting_start = -1;
+
+	ObjectType = OBJECT_TYPE_PIRANHA_PLANT;
 }
 
 void CPiranhaPlant::GetBoundingBox(float& left, float& top, float& right, float& bottom)

@@ -1,5 +1,7 @@
 #include "Bullet.h"
 
+#include "AssetIDs.h"
+
 CBullet::CBullet(float x, float y, int state) : CGameObject(x,y)
 {
 	this->state = state;
@@ -43,6 +45,8 @@ CBullet::CBullet(float x, float y, int state) : CGameObject(x,y)
 		vx = BULLET_SPEED_X;
 		vy = BULLET_SPEED_Y * 3;
 	}
+
+	ObjectType = OBJECT_TYPE_BULLET;
 }
 
 void CBullet::GetBoundingBox(float& left, float& top, float& right, float& bottom)

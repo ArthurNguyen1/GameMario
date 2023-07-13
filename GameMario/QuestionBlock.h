@@ -4,6 +4,8 @@
 #include "Animation.h"
 #include "Animations.h"
 
+#include "AssetIDs.h"
+
 #define ID_ANI_QUESTION_BLOCK_WITH_ITEM 10000
 #define ID_ANI_QUESTION_BLOCK_EMPTY 10001
 #define ID_ANI_QUESTION_BLOCK_WITH_ITEM_SHINE 18001
@@ -20,13 +22,15 @@
 #define QUESTION_BLOCK_TYPE_COIN 0
 #define QUESTION_BLOCK_TYPE_SPECIAL_ITEM 1
 #define QUESTION_BLOCK_TYPE_UP_HEART 2
+#define QUESTION_BLOCK_TYPE_BUTTON 3
+
 
 class CQuestionBlock : public CGameObject {
 private:
 	BOOLEAN isMoving;
 	float y_start;
 	float y_end;
-	int type; //0: coin; 1: special item (mushroom/leaf); 2: mushroom up heart
+	int type; //0: coin; 1: special item (mushroom/leaf); 2: mushroom up heart; 3: button
 public:
 	CQuestionBlock(float x, float y, int type) : CGameObject(x, y) 
 	{ 
@@ -36,6 +40,8 @@ public:
 		y_end = y - 10;
 		vy = -QUESTION_BLOCK_SPEED_Y;
 		this->type = type;
+
+		ObjectType = OBJECT_TYPE_QUESTION_BLOCK;
 	}
 	void Render();
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);

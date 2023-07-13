@@ -3,6 +3,7 @@
 #include "PlayScene.h"
 #include "Mushroom.h"
 #include "Leaf.h"
+#include "Brick.h"
 
 #include "ColorBox.h"
 #include "Platform.h"
@@ -19,6 +20,8 @@ CKoopas::CKoopas(float x, float y, int color, int form) : CGameObject(x, y)
 	SetState(KOOPAS_STATE_WALKING_LEFT);
 	isHeld = 0;
 	isReverse = 0;
+
+	ObjectType = OBJECT_TYPE_KOOPAS;
 
 	if (this->color == 0) //only RED koopas has directional head
 	{
@@ -442,6 +445,8 @@ void CKoopas::OnCollisionWith(LPCOLLISIONEVENT e)
 		e->obj->SetState(GOOMBA_STATE_DIE);
 	else if (dynamic_cast<CKoopas*>(e->obj) && form == KOOPAS_SHELL_FORM)
 		OnCollisionWithKoopas(e);
+	else if (dynamic_cast<CBrick*>(e->obj) && form == KOOPAS_SHELL_FORM)
+		OnCollisionWithBrick(e);
 	else if (dynamic_cast<CQuestionBlock*>(e->obj) && form == KOOPAS_SHELL_FORM)
 		OnCollisionWithQuestionBlock(e);
 	else if (dynamic_cast<CColorBox*>(e->obj) && form == KOOPAS_HAS_WINGS_FORM)
@@ -500,6 +505,12 @@ void CKoopas::OnCollisionWithKoopas(LPCOLLISIONEVENT e)
 			koopas->StartTickingReverseTimeout();
 		}
 	}
+}
+
+void CKoopas::OnCollisionWithBrick(LPCOLLISIONEVENT e)
+{
+	if(nx != 0)
+		e->obj->Delete();
 }
 
 void CKoopas::OnCollisionWithColorBox(LPCOLLISIONEVENT e)

@@ -8,7 +8,7 @@
 #include "Mario.h"
 #include "Goomba.h"
 #include "Koopas.h"
-
+#include "Coin.h"
 
 class CPlayScene : public CScene
 {
@@ -38,7 +38,25 @@ public:
 	
 	void AddObject(LPGAMEOBJECT obj) { objects.push_back(obj); }
 	void InsertObject(LPGAMEOBJECT obj) { objects.insert(objects.begin() + 198, obj); } //Insert right after mario
+	void ActivateButton()
+	{
+		for (int i = 0; i < objects.size(); i++)
+		{
+			if (objects[i]->GetObjectType() == OBJECT_TYPE_BRICK_SHINE)
+			{
+				float xx = 0, yy = 0;
+				objects[i]->GetPosition(xx, yy);
 
+				CGameObject* obj = NULL;
+
+				obj = new CCoin(xx, yy, 1);
+
+				objects.push_back(obj);
+
+				objects.erase(objects.begin() + i);
+			}
+		}
+	}
 
 	void Clear();
 	void PurgeDeletedObjects();

@@ -4,7 +4,7 @@
 
 #define KOOPAS_GRAVITY 0.0006f
 #define KOOPAS_WALKING_SPEED 0.05f
-#define KOOPAS_ROLLING_SPEED 0.07f
+#define KOOPAS_ROLLING_SPEED 0.2f
 #define KOOPAS_DEFLECT_SPEED  0.2f
 #define KOOPAS_JUMPING_SPEED_Y 0.6f
 
@@ -81,6 +81,7 @@ protected:
 	BOOLEAN isReverse;
 
 	void OnCollisionWithKoopas(LPCOLLISIONEVENT e);
+	void OnCollisionWithBrick(LPCOLLISIONEVENT e);
 	void OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e);
 	void OnCollisionWithColorBox(LPCOLLISIONEVENT e);
 	void OnCollisionWithPlatform(LPCOLLISIONEVENT e);
