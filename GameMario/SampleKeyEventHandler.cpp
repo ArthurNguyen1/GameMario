@@ -11,33 +11,55 @@ void CSampleKeyHandler::OnKeyDown(int KeyCode)
 	//DebugOut(L"[INFO] KeyDown: %d\n", KeyCode);
 	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
 
-	switch (KeyCode)
+	if (mario->GetMarioType() == MARIO_TYPE_PLAYSCENE)
 	{
-	case DIK_DOWN:
-		mario->SetState(MARIO_STATE_SIT);
-		break;
-	case DIK_S:
-		mario->SetState(MARIO_STATE_JUMP);
-		break;
-	case DIK_A:
-		mario->SetState(MARIO_STATE_HOLDING);
-		break;
-	case DIK_1:
-		mario->SetLevel(MARIO_LEVEL_SMALL);
-		break;
-	case DIK_2:
-		mario->SetLevel(MARIO_LEVEL_BIG);
-		break;
-	case DIK_3:
-		mario->SetLevel(MARIO_LEVEL_HAVE_TAIL);
-		break;
-	case DIK_0:
-		mario->SetState(MARIO_STATE_DIE);
-		break;
-	case DIK_R: // reset
-		//Reload();
-		break;
+		switch (KeyCode)
+		{
+		case DIK_DOWN:
+			mario->SetState(MARIO_STATE_SIT);
+			break;
+		case DIK_S:
+			mario->SetState(MARIO_STATE_JUMP);
+			break;
+		case DIK_A:
+			mario->SetState(MARIO_STATE_HOLDING);
+			break;
+		case DIK_1:
+			mario->SetLevel(MARIO_LEVEL_SMALL);
+			break;
+		case DIK_2:
+			mario->SetLevel(MARIO_LEVEL_BIG);
+			break;
+		case DIK_3:
+			mario->SetLevel(MARIO_LEVEL_HAVE_TAIL);
+			break;
+		case DIK_0:
+			mario->SetState(MARIO_STATE_DIE);
+			break;
+		case DIK_R: // reset
+			//Reload();
+			break;
+		}
 	}
+	else if (mario->GetMarioType() == MARIO_TYPE_WOLRDMAP)
+	{
+		switch (KeyCode)
+		{
+		case DIK_DOWN:
+			mario->SetState(MARIO_STATE_WORLDMAP_GO_DOWN);
+			break;
+		case DIK_UP:
+			mario->SetState(MARIO_STATE_WORLDMAP_GO_UP);
+			break;
+		case DIK_RIGHT:
+			mario->SetState(MARIO_STATE_WORLDMAP_GO_RIGHT);
+			break;
+		case DIK_LEFT:
+			mario->SetState(MARIO_STATE_WORLDMAP_GO_LEFT);
+			break;
+		}
+
+	}	
 }
 
 void CSampleKeyHandler::OnKeyUp(int KeyCode)
@@ -45,18 +67,43 @@ void CSampleKeyHandler::OnKeyUp(int KeyCode)
 	//DebugOut(L"[INFO] KeyUp: %d\n", KeyCode);
 
 	CMario* mario = (CMario*)((LPPLAYSCENE)CGame::GetInstance()->GetCurrentScene())->GetPlayer();
-	switch (KeyCode)
+
+	if (mario->GetMarioType() == MARIO_TYPE_PLAYSCENE)
 	{
-	case DIK_S:
-		mario->SetState(MARIO_STATE_RELEASE_JUMP);
-		break;
-	case DIK_DOWN:
-		mario->SetState(MARIO_STATE_SIT_RELEASE);
-		break;
-	case DIK_A:
-		mario->SetState(MARIO_STATE_HOLDING_RELEASE);
-		break;
+		switch (KeyCode)
+		{
+		case DIK_S:
+			mario->SetState(MARIO_STATE_RELEASE_JUMP);
+			break;
+		case DIK_DOWN:
+			mario->SetState(MARIO_STATE_SIT_RELEASE);
+			break;
+		case DIK_A:
+			mario->SetState(MARIO_STATE_HOLDING_RELEASE);
+			break;
+		}
 	}
+	else if (mario->GetMarioType() == MARIO_TYPE_WOLRDMAP)
+	{
+		switch (KeyCode)
+		{
+		case DIK_DOWN:
+			mario->SetState(MARIO_STATE_WORLDMAP_IDLE);
+			break;
+		case DIK_UP:
+			mario->SetState(MARIO_STATE_WORLDMAP_IDLE);
+			break;
+		case DIK_RIGHT:
+			mario->SetState(MARIO_STATE_WORLDMAP_IDLE);
+			break;
+		case DIK_LEFT:
+			mario->SetState(MARIO_STATE_WORLDMAP_IDLE);
+			break;
+
+		}
+	}
+
+	
 }
 
 void CSampleKeyHandler::KeyState(BYTE* states)

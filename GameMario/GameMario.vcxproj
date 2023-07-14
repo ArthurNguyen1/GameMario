@@ -162,6 +162,7 @@
     <ClInclude Include="Grass.h" />
     <ClInclude Include="Hud.h" />
     <ClInclude Include="Hud_Background.h" />
+    <ClInclude Include="Hud_Number.h" />
     <ClInclude Include="Hud_RewardBox.h" />
     <ClInclude Include="InvinsibleBlock.h" />
     <ClInclude Include="ItemBackground.h" />
@@ -186,6 +187,9 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Textures.h" />
     <ClInclude Include="Utils.h" />
+    <ClInclude Include="Worldmap1_Background.h" />
+    <ClInclude Include="Worldmap1_Slime.h" />
+    <ClInclude Include="Worldmap1_Turtle.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
@@ -205,6 +209,7 @@
     <ClCompile Include="Grass.cpp" />
     <ClCompile Include="Hud.cpp" />
     <ClCompile Include="Hud_Background.cpp" />
+    <ClCompile Include="Hud_Number.cpp" />
     <ClCompile Include="Hud_RewardBox.cpp" />
     <ClCompile Include="InvinsibleBlock.cpp" />
     <ClCompile Include="ItemBackground.cpp" />
@@ -227,6 +232,9 @@
     <ClCompile Include="Tail.cpp" />
     <ClCompile Include="Textures.cpp" />
     <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="Worldmap1_Background.cpp" />
+    <ClCompile Include="Worldmap1_Slime.cpp" />
+    <ClCompile Include="Worldmap1_Turtle.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

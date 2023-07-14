@@ -147,6 +147,18 @@
     <ClInclude Include="Hud_Background.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Hud_Number.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Worldmap1_Background.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Worldmap1_Slime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Worldmap1_Turtle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp">
@@ -264,6 +276,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hud_Background.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hud_Number.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Worldmap1_Background.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Worldmap1_Slime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Worldmap1_Turtle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

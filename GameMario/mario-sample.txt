@@ -1,5 +1,5 @@
 [SETTINGS]
-start	1
+start	10
 width	320
 height	240
 
@@ -10,6 +10,7 @@ height	240
 1	scene01.txt
 2	scene02.txt
 3	scene03.txt
+10	worldmap.txt
 5	scene0005.txt
 
 # id	file 
@@ -29,3 +30,6 @@ height	240
 110	textures\EnemyHasWingsLeftToRight.png
 120	textures\GoalRoulette.png
 130	textures\ui.png
+140	textures\mariox3.png
+150	textures\overworld_x3.png
+160	textures\overworld-1.png

@@ -23,7 +23,10 @@
 #include "Hud.h"
 #include "Hud_RewardBox.h"
 #include "Hud_Background.h"
-
+#include "Hud_Number.h"
+#include "Worldmap1_Background.h"
+#include "Worldmap1_Slime.h"
+#include "Worldmap1_Turtle.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -154,6 +157,24 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		break;
 	}
 
+	case OBJECT_TYPE_WORLDMAP_BACKGROUND:
+	{
+		int aniId = atoi(tokens[3].c_str());
+
+		obj = new CWorldmap1_Background(x, y, aniId);
+		break;
+	}
+	case OBJECT_TYPE_WORLDMAP_SLIME:
+	{
+		obj = new CWorldmap1_Slime(x, y);
+		break;
+	}
+	case OBJECT_TYPE_WORLDMAP_TURTLE:
+	{
+		obj = new CWorldmap1_Turtle(x, y);
+		break;
+	}
+
 	case OBJECT_TYPE_HUD:
 	{
 		obj = new CHud(x, y);
@@ -171,6 +192,14 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		int number = atoi(tokens[3].c_str());
 
 		obj = new CHud_Background(x, y, number);
+		break;
+	}
+	case OBJECT_TYPE_HUD_NUMBER_NORMAL:
+	{
+		int type = atoi(tokens[3].c_str());
+		int Objecttype = atoi(tokens[4].c_str());
+
+		obj = new CHud_Number(x, y, type, Objecttype);
 		break;
 	}
 
@@ -474,7 +503,13 @@ void CPlayScene::Update(DWORD dt)
 	if (cx < 0) cx = 0;
 	if (cy > 0) cy = 0;
 
-	CGame::GetInstance()->SetCamPos(cx, cy);
+	CMario* mario = (CMario*)player;
+	if(mario->GetMarioType()==MARIO_TYPE_PLAYSCENE )
+		CGame::GetInstance()->SetCamPos(cx, cy);
+	else
+	{
+		CGame::GetInstance()->SetCamPos(0.0f, 0.0f);
+	}
 
 	PurgeDeletedObjects();
 }

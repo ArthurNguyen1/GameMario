@@ -7,6 +7,9 @@
 #include "Tail.h"
 #include "debug.h"
 
+#define MARIO_WORLDMAP_SPEED_X		1.5f
+#define MARIO_WORLDMAP_SPEED_Y		1.5f
+
 #define MARIO_WALKING_SPEED		0.1f
 #define MARIO_RUNNING_SPEED		0.22f
 
@@ -72,7 +75,15 @@
 #define MARIO_STATE_TRANSFORMATION_BIG_TO_SMALL		917
 #define MARIO_STATE_TRANSFORMATION_TO_HAS_WINGS		918
 
+#define MARIO_STATE_WORLDMAP_GO_LEFT 951
+#define MARIO_STATE_WORLDMAP_GO_RIGHT 952
+#define MARIO_STATE_WORLDMAP_GO_UP 953
+#define MARIO_STATE_WORLDMAP_GO_DOWN 954
+#define MARIO_STATE_WORLDMAP_IDLE 955
+
+
 #pragma region ANIMATION_ID
+#define ID_ANI_MARIO_WORLDMAP 3750
 
 #define ID_ANI_MARIO_IDLE_RIGHT 400
 #define ID_ANI_MARIO_IDLE_LEFT 401
@@ -235,7 +246,7 @@ class CMario : public CGameObject
 	CTail* _tail;
 
 	int level;
-	int type; //0:Mario in playscene, 1:Mario in WorldMap
+	int type; //1:Mario in playscene, 0:Mario in WorldMap
 
 	int untouchable;
 	ULONGLONG untouchable_start;
@@ -347,4 +358,6 @@ public:
 
 	BOOLEAN GetHoldingState() { return this->isHolding; }
 	void IsNoLongerActuallyHolding() { this->isHolding = false; }
+
+	int GetMarioType() { return this->type; }
 };

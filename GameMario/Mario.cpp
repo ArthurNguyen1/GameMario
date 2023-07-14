@@ -27,7 +27,13 @@ CMario::CMario(float x, float y, int level, int type) : CGameObject(x, y)
 	maxVx = 0.0f;
 	maxVy = 0.0f;
 	ax = 0.0f;
-	ay = MARIO_GRAVITY;
+
+	if(type == MARIO_TYPE_PLAYSCENE)
+		ay = MARIO_GRAVITY;
+	else
+	{
+		ay = 0.0f;
+	}
 
 	ObjectType = OBJECT_TYPE_MARIO;
 
@@ -90,7 +96,10 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	vy += ay * dt;
 	vx += ax * dt;
 
-	if (abs(vx) > abs(maxVx)) vx = maxVx;
+	if (type == MARIO_TYPE_PLAYSCENE)
+	{
+		if (abs(vx) > abs(maxVx)) vx = maxVx;
+	}
 
 	// reset untouchable timer if untouchable time has passed
 	if (GetTickCount64() - untouchable_start > MARIO_UNTOUCHABLE_TIME)
@@ -922,8 +931,13 @@ void CMario::OnCollisionWithInvinsibleBlock(LPCOLLISIONEVENT e)
 void CMario::OnCollisionWithPortal(LPCOLLISIONEVENT e)
 {
 	CPortal* p = (CPortal*)e->obj;
-
-	CGame::GetInstance()->InitiateSwitchScene(p->GetSceneId());
+	if(type == MARIO_TYPE_PLAYSCENE)
+		CGame::GetInstance()->InitiateSwitchScene(p->GetSceneId());
+	else
+	{
+		if(CGame::GetInstance()->IsKeyDown(DIK_S))
+			CGame::GetInstance()->InitiateSwitchScene(p->GetSceneId());
+	}
 }
 
 //
@@ -1239,32 +1253,37 @@ void CMario::Render()
 	CAnimations* animations = CAnimations::GetInstance();
 	int aniId = -1;
 
-	if (state == MARIO_STATE_DIE)
-		aniId = ID_ANI_MARIO_DIE;
-	else if (isTransformationToHasWings)
+	if (type == MARIO_TYPE_PLAYSCENE)
 	{
-		aniId = ID_ANI_MARIO_TRANSFORMATION_TO_HAS_WINGS;
+		if (state == MARIO_STATE_DIE)
+			aniId = ID_ANI_MARIO_DIE;
+		else if (isTransformationToHasWings)
+		{
+			aniId = ID_ANI_MARIO_TRANSFORMATION_TO_HAS_WINGS;
+		}
+		else if (isTransformationToBig)
+		{
+			if (nx >= 0)
+				aniId = ID_ANI_MARIO_TRANSFORMATION_FROM_SMALL_TO_BIG_RIGHT;
+			else
+				aniId = ID_ANI_MARIO_TRANSFORMATION_FROM_SMALL_TO_BIG_LEFT;
+		}
+		else if (isTransformationToSmall)
+		{
+			if (nx >= 0)
+				aniId = ID_ANI_MARIO_TRANSFORMATION_FROM_BIG_TO_SMALL_RIGHT;
+			else
+				aniId = ID_ANI_MARIO_TRANSFORMATION_FROM_BIG_TO_SMALL_LEFT;
+		}
+		else if (level == MARIO_LEVEL_BIG)
+			aniId = GetAniIdBig();
+		else if (level == MARIO_LEVEL_SMALL)
+			aniId = GetAniIdSmall();
+		else if (level == MARIO_LEVEL_HAVE_TAIL)
+			aniId = GetAniIdHaveTail();
 	}
-	else if (isTransformationToBig)
-	{
-		if (nx >= 0)
-			aniId = ID_ANI_MARIO_TRANSFORMATION_FROM_SMALL_TO_BIG_RIGHT;
-		else
-			aniId = ID_ANI_MARIO_TRANSFORMATION_FROM_SMALL_TO_BIG_LEFT;
-	}
-	else if (isTransformationToSmall)
-	{
-		if (nx >= 0)
-			aniId = ID_ANI_MARIO_TRANSFORMATION_FROM_BIG_TO_SMALL_RIGHT;
-		else
-			aniId = ID_ANI_MARIO_TRANSFORMATION_FROM_BIG_TO_SMALL_LEFT;
-	}
-	else if (level == MARIO_LEVEL_BIG)
-		aniId = GetAniIdBig();
-	else if (level == MARIO_LEVEL_SMALL)
-		aniId = GetAniIdSmall();
-	else if (level == MARIO_LEVEL_HAVE_TAIL)
-		aniId = GetAniIdHaveTail();
+	else if (type == MARIO_TYPE_WOLRDMAP)
+		aniId = ID_ANI_MARIO_WORLDMAP;
 
 	animations->Get(aniId)->Render(x, y);
 
@@ -1634,6 +1653,23 @@ void CMario::SetState(int state)
 		}
 		break;
 
+		//WORLDMAP STATE
+	case MARIO_STATE_WORLDMAP_GO_LEFT:
+		vx = -MARIO_WORLDMAP_SPEED_X;
+		break;
+	case MARIO_STATE_WORLDMAP_GO_RIGHT:
+		vx = MARIO_WORLDMAP_SPEED_X;
+		break;
+	case MARIO_STATE_WORLDMAP_GO_UP:
+		vy = -MARIO_WORLDMAP_SPEED_Y;
+		break;
+	case MARIO_STATE_WORLDMAP_GO_DOWN:
+		vy = MARIO_WORLDMAP_SPEED_Y;
+		break;
+	case MARIO_STATE_WORLDMAP_IDLE:
+		vx = 0.0f;
+		vy = 0.0f;
+		break;
 	}
 
 	CGameObject::SetState(state);
@@ -1641,46 +1677,56 @@ void CMario::SetState(int state)
 
 void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
-	if (level == MARIO_LEVEL_BIG)
+	if (type == MARIO_TYPE_PLAYSCENE)
 	{
-		if (isSitting)
+		if (level == MARIO_LEVEL_BIG)
 		{
-			left = x - MARIO_BIG_SITTING_BBOX_WIDTH / 2;
-			top = y - MARIO_BIG_SITTING_BBOX_HEIGHT / 2;
-			right = left + MARIO_BIG_SITTING_BBOX_WIDTH;
-			bottom = top + MARIO_BIG_SITTING_BBOX_HEIGHT;
+			if (isSitting)
+			{
+				left = x - MARIO_BIG_SITTING_BBOX_WIDTH / 2;
+				top = y - MARIO_BIG_SITTING_BBOX_HEIGHT / 2;
+				right = left + MARIO_BIG_SITTING_BBOX_WIDTH;
+				bottom = top + MARIO_BIG_SITTING_BBOX_HEIGHT;
+			}
+			else
+			{
+				left = x - MARIO_BIG_BBOX_WIDTH / 2;
+				top = y - MARIO_BIG_BBOX_HEIGHT / 2;
+				right = left + MARIO_BIG_BBOX_WIDTH;
+				bottom = top + MARIO_BIG_BBOX_HEIGHT;
+			}
+		}
+		else if (level == MARIO_LEVEL_HAVE_TAIL)
+		{
+			if (isSitting)
+			{
+				left = x - MARIO_HAVE_TAIL_SITTING_BBOX_WIDTH / 2;
+				top = y - MARIO_HAVE_TAIL_SITTING_BBOX_HEIGHT / 2;
+				right = left + MARIO_HAVE_TAIL_SITTING_BBOX_WIDTH;
+				bottom = top + MARIO_HAVE_TAIL_SITTING_BBOX_HEIGHT;
+			}
+			else
+			{
+				left = x - MARIO_HAVE_TAIL_BBOX_WIDTH / 2;
+				top = y - MARIO_HAVE_TAIL_BBOX_HEIGHT / 2;
+				right = left + MARIO_HAVE_TAIL_BBOX_WIDTH;
+				bottom = top + MARIO_HAVE_TAIL_BBOX_HEIGHT;
+			}
 		}
 		else
 		{
-			left = x - MARIO_BIG_BBOX_WIDTH / 2;
-			top = y - MARIO_BIG_BBOX_HEIGHT / 2;
-			right = left + MARIO_BIG_BBOX_WIDTH;
-			bottom = top + MARIO_BIG_BBOX_HEIGHT;
-		}
-	}
-	else if (level == MARIO_LEVEL_HAVE_TAIL)
-	{
-		if (isSitting)
-		{
-			left = x - MARIO_HAVE_TAIL_SITTING_BBOX_WIDTH / 2;
-			top = y - MARIO_HAVE_TAIL_SITTING_BBOX_HEIGHT / 2;
-			right = left + MARIO_HAVE_TAIL_SITTING_BBOX_WIDTH;
-			bottom = top + MARIO_HAVE_TAIL_SITTING_BBOX_HEIGHT;
-		}
-		else
-		{
-			left = x - MARIO_HAVE_TAIL_BBOX_WIDTH / 2;
-			top = y - MARIO_HAVE_TAIL_BBOX_HEIGHT / 2;
-			right = left + MARIO_HAVE_TAIL_BBOX_WIDTH;
-			bottom = top + MARIO_HAVE_TAIL_BBOX_HEIGHT;
+			left = x - MARIO_SMALL_BBOX_WIDTH / 2;
+			top = y - MARIO_SMALL_BBOX_HEIGHT / 2;
+			right = left + MARIO_SMALL_BBOX_WIDTH;
+			bottom = top + MARIO_SMALL_BBOX_HEIGHT;
 		}
 	}
 	else
 	{
-		left = x - MARIO_SMALL_BBOX_WIDTH / 2;
-		top = y - MARIO_SMALL_BBOX_HEIGHT / 2;
-		right = left + MARIO_SMALL_BBOX_WIDTH;
-		bottom = top + MARIO_SMALL_BBOX_HEIGHT;
+		left = x - MARIO_BIG_BBOX_WIDTH / 2;
+		top = y - MARIO_BIG_BBOX_HEIGHT / 2;
+		right = left + MARIO_BIG_BBOX_WIDTH;
+		bottom = top + MARIO_BIG_BBOX_HEIGHT;
 	}
 }
 
