@@ -27,6 +27,7 @@
 #include "Worldmap1_Background.h"
 #include "Worldmap1_Slime.h"
 #include "Worldmap1_Turtle.h"
+#include "Intro.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -172,6 +173,11 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case OBJECT_TYPE_WORLDMAP_TURTLE:
 	{
 		obj = new CWorldmap1_Turtle(x, y);
+		break;
+	}
+	case OBJECT_TYPE_SCREEN_INTRO:
+	{
+		obj = new CIntro(x, y);
 		break;
 	}
 

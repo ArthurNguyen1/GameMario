@@ -230,10 +230,9 @@
 
 #define MARIO_SET_FALL_STATE_TIME 200000
 
-#define MARIO_TYPE_INTRO -1
 #define MARIO_TYPE_WOLRDMAP 0
 #define MARIO_TYPE_PLAYSCENE 1
-
+#define MARIO_TYPE_INTRO 2
 
 class CMario : public CGameObject
 {

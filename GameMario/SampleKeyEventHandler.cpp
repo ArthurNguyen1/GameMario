@@ -58,8 +58,16 @@ void CSampleKeyHandler::OnKeyDown(int KeyCode)
 			mario->SetState(MARIO_STATE_WORLDMAP_GO_LEFT);
 			break;
 		}
-
 	}	
+	else if (mario->GetMarioType() == MARIO_TYPE_INTRO)
+	{
+		switch (KeyCode)
+		{
+		case DIK_W:
+			CGame::GetInstance()->InitiateSwitchScene(10);
+			break;
+		}
+	}
 }
 
 void CSampleKeyHandler::OnKeyUp(int KeyCode)

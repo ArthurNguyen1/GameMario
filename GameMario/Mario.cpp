@@ -1282,7 +1282,7 @@ void CMario::Render()
 		else if (level == MARIO_LEVEL_HAVE_TAIL)
 			aniId = GetAniIdHaveTail();
 	}
-	else if (type == MARIO_TYPE_WOLRDMAP)
+	else
 		aniId = ID_ANI_MARIO_WORLDMAP;
 
 	animations->Get(aniId)->Render(x, y);

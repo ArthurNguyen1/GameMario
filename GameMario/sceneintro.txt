@@ -1,0 +1,35 @@
+# list of object assets to load in this scene
+[ASSETS]
+mario.txt
+screen.txt
+goalroulette.txt
+
+#
+[OBJECTS]
+# type	x	y	extra_settings per object type
+# type: 0 = Mario , 1 = Question Block, 2 = Goomba, 3 = Koopas
+# See OBJECT_TYPE constants in AssetIDs.h
+
+# MARIO
+0	50	50	1	2
+
+#BACKGROUND
+17	310	268	1
+17	310	108	1
+17	310	-52	1
+17	240	268	1
+17	240	108	1
+17	240	-52	1
+17	170	268	1
+17	170	108	1
+17	170	-52	1
+17	100	268	1
+17	100	108	1
+17	100	-52	1
+17	30	268	1
+17	30	108	1
+17	30	-52	1
+
+#SCREEN
+33	165	150
+
