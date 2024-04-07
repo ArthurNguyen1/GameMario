@@ -7,6 +7,7 @@
 #include "Textures.h"
 #include "Sprites.h"
 #include "Portal.h"
+#include "Node.h"
 #include "Coin.h"
 #include "Platform.h"
 #include "Grass.h"
@@ -392,8 +393,19 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		float b = (float)atof(tokens[4].c_str());
 		int scene_id = atoi(tokens[5].c_str());
 		obj = new CPortal(x, y, r, b, scene_id);
+
+		break;
 	}
-	break;
+
+	case OBJECT_TYPE_NODE:
+	{
+		float r = (float)atof(tokens[3].c_str());
+		float b = (float)atof(tokens[4].c_str());
+		int scene_id = atoi(tokens[5].c_str());
+		obj = new CNode(x, y, r, b, scene_id);
+
+		break;
+	}
 
 
 	default:

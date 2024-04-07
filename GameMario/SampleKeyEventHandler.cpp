@@ -59,7 +59,7 @@ void CSampleKeyHandler::OnKeyDown(int KeyCode)
 			break;
 		}
 	}	
-	else if (mario->GetMarioType() == MARIO_TYPE_INTRO)
+	/*else if (mario->GetMarioType() == MARIO_TYPE_INTRO)
 	{
 		switch (KeyCode)
 		{
@@ -67,7 +67,7 @@ void CSampleKeyHandler::OnKeyDown(int KeyCode)
 			CGame::GetInstance()->InitiateSwitchScene(10);
 			break;
 		}
-	}
+	}*/
 }
 
 void CSampleKeyHandler::OnKeyUp(int KeyCode)

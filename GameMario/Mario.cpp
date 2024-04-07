@@ -16,6 +16,7 @@
 #include "InvinsibleBlock.h"
 #include "Point.h"
 #include "Button.h"
+#include "Node.h"
 
 #include "Collision.h"
 
@@ -288,6 +289,8 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 		OnCollisionWithCoin(e);
 	else if (dynamic_cast<CPortal*>(e->obj))
 		OnCollisionWithPortal(e);
+	else if (dynamic_cast<CNode*>(e->obj))
+		OnCollisionWithNode(e);
 	else if (dynamic_cast<CPiranhaPlant*>(e->obj))
 		OnCollisionWithPiranhaPlant(e);
 	else if (dynamic_cast<CBullet*>(e->obj))
@@ -933,10 +936,29 @@ void CMario::OnCollisionWithPortal(LPCOLLISIONEVENT e)
 	CPortal* p = (CPortal*)e->obj;
 	if(type == MARIO_TYPE_PLAYSCENE)
 		CGame::GetInstance()->InitiateSwitchScene(p->GetSceneId());
-	else
+	//else
+	//{
+	//	/*if (CGame::GetInstance()->IsKeyDown(DIK_S)) {
+	//		CGame::GetInstance()->InitiateSwitchScene(p->GetSceneId());
+	//	}*/
+	//	CCollision 
+	//>OnTriggerStay2D(this);
+
+	//}
+}
+
+void CMario::OnCollisionWithNode(LPCOLLISIONEVENT e)
+{
+	CNode* p = (CNode*)e->obj;
+	if (type != MARIO_TYPE_PLAYSCENE)
 	{
-		if(CGame::GetInstance()->IsKeyDown(DIK_S))
+		this->vx = 0;
+		this->vy = 0;
+		this->ax = 0;
+		this->ay = 0;
+		if (CGame::GetInstance()->IsKeyDown(DIK_S)) {
 			CGame::GetInstance()->InitiateSwitchScene(p->GetSceneId());
+		}
 	}
 }
 
